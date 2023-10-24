@@ -4,21 +4,13 @@
 #include <cmath>
 #include <conio.h>
 
+#include "Common.h"
+#include "Parameter.h"
+
 #define HARMONICS_COUNT 9
 #define HARMONICS_AMPLITUDE_MAX 1.0
 #define HARMONICS_AMPLITUDE_MIN 0.0
 #define HARMONICS_AMPLITUDE_INCREMENT 0.02
-
-struct Parameter {
-    double current_value = 0.0;
-    double target_value = 0.0;
-
-    double change_time_start = 0.0;
-
-    const double min_value = 0.0;
-    const double max_value = 1.0;
-    const double increment_value = 0.05;
-};
 
 const double freq[HARMONICS_COUNT] = {32.7, 65.4, 98.1, 130.8, 163.5, 196.2, 228.9, 261.6, 294.3};
 
@@ -27,80 +19,38 @@ Parameter harmonics_amplitude[HARMONICS_COUNT] = {Parameter()};
 double detune = 0.0;
 double phase = 0.0;
 
-double synth_time = 0;
-double parameter_change_duration = 100; // ms
+double g_synth_time = 0;
+double g_amplitude = 0.1;
 
-void increase_value(Parameter &parameter)
+void play_harmonics(ma_device *pDevice, void *pOutput, const void *pInput, ma_uint32 frameCount)
 {
-    parameter.change_time_start = synth_time;
 
-    if (parameter.target_value < parameter.max_value)
-        parameter.target_value += parameter.increment_value;
-}
-
-void decrease_value(Parameter &parameter)
-{
-    parameter.change_time_start = synth_time;
-
-    if (parameter.target_value > parameter.min_value)
-        parameter.target_value -= parameter.increment_value;
-
-    if (parameter.target_value < parameter.increment_value)
-        parameter.target_value = parameter.min_value;
-}
-
-void update_parameter(Parameter &parameter)
-{
-    if (parameter.target_value != parameter.current_value)
-    {
-        double step_value = pow(synth_time - parameter.change_time_start, 2.0);
-
-        if (parameter.target_value < parameter.current_value)
-        {
-            parameter.current_value -= step_value;
-
-            if (parameter.current_value < parameter.target_value)
-                parameter.current_value = parameter.target_value;
-        }
-
-        if (parameter.target_value > parameter.current_value)
-        {
-            parameter.current_value += step_value;
-
-            if (parameter.current_value > parameter.target_value)
-                parameter.current_value = parameter.target_value;
-        }
-    }
-}
-
-void play_harmonics(ma_device* pDevice, void* pOutput, const void* pInput, ma_uint32 frameCount, int harmonicsCount)
-{
-    double g_amplitude = 0.1;
-    float* pOutputF32 = (float*)pOutput;
+    float *pOutputF32 = (float *)pOutput;
 
     for (ma_uint32 iFrame = 0; iFrame < frameCount; iFrame++)
     {
         double value = 0;
-        double trigger = (g_amplitude * sin(2.0 * M_PI * (freq[0] + freq[0] * detune) * synth_time));
+        double trigger = (g_amplitude * sin(2.0 * M_PI * (freq[0]) * g_synth_time));
 
-        for (int i = 0; i < harmonicsCount; i++) {
+        for (int i = 0; i < HARMONICS_COUNT; i++)
+        {
             update_parameter(harmonics_amplitude[i]);
 
-            value += sin(2.0 * M_PI * (freq[i] + freq[i] * detune) * (synth_time + phase * i)) * harmonics_amplitude[i].current_value * g_amplitude;
+            value += sin(2.0 * M_PI * (freq[i] + freq[i] * detune) * (g_synth_time + phase * i)) * harmonics_amplitude[i].current_value * g_amplitude;
         }
 
         // left channel
-        *pOutputF32++ = (float) trigger;
+        *pOutputF32++ = (float)trigger;
         // right channel
-        *pOutputF32++ = (float) value;
+        *pOutputF32++ = (float)value;
 
-        synth_time += 1.0 / (double) pDevice->playback.internalSampleRate;
+        g_synth_time += 1.0 / (double)pDevice->playback.internalSampleRate;
     }
 }
 
 void DataCallback(ma_device* pDevice, void* pOutput, const void* pInput, ma_uint32 frameCount)
 {
-    play_harmonics(pDevice, pOutput, pInput, frameCount, HARMONICS_COUNT);
+    play_harmonics(pDevice, pOutput, pInput, frameCount);
 }
 
 int main() {
