@@ -7,8 +7,8 @@
 
 struct Parameter
 {
-    double current_value = 0.0;
-    double target_value = 0.0;
+    double current_value = 1.0;
+    double target_value = 1.0;
 
     double change_time_start = 0.0;
 

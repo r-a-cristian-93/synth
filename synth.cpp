@@ -30,13 +30,13 @@ void play_harmonics(ma_device *pDevice, void *pOutput, const void *pInput, ma_ui
     for (ma_uint32 iFrame = 0; iFrame < frameCount; iFrame++)
     {
         double value = 0;
-        double trigger = (g_amplitude * sin(2.0 * M_PI * (freq[0]) * g_synth_time));
+        double trigger = (g_amplitude * sin(M_2PI * (freq[0]) * g_synth_time));
 
         for (int i = 0; i < HARMONICS_COUNT; i++)
         {
             update_parameter(harmonics_amplitude[i]);
 
-            value += sin(2.0 * M_PI * (freq[i] + freq[i] * detune) * (g_synth_time + phase * i)) * harmonics_amplitude[i].current_value * g_amplitude;
+            value += sin(M_2PI * (freq[i] + freq[i] * detune) * (g_synth_time + phase * i) * sin(g_synth_time)) * harmonics_amplitude[i].current_value * g_amplitude;
         }
 
         // left channel
