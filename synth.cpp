@@ -15,28 +15,38 @@
 const double freq[HARMONICS_COUNT] = {32.7, 65.4, 98.1, 130.8, 163.5, 196.2, 228.9, 261.6, 294.3};
 
 Parameter harmonics_amplitude[HARMONICS_COUNT] = {Parameter()};
+Parameter vibrato_amplitude{0.0, 0.0, 0.001, 0.1};
+Parameter vibrato_frequency{5.0, 5.0, 0.01, 10.0};
+Parameter phase_shift{0.0, 0.0, 0.00001, 0.02};
 
-double detune = 0.0;
-double phase = 0.0;
-
-double g_synth_time = 0;
+double g_time = 0;
 double g_amplitude = 0.1;
 
 void play_harmonics(ma_device *pDevice, void *pOutput, const void *pInput, ma_uint32 frameCount)
 {
-
     float *pOutputF32 = (float *)pOutput;
 
     for (ma_uint32 iFrame = 0; iFrame < frameCount; iFrame++)
     {
         double value = 0;
-        double trigger = (g_amplitude * sin(M_2PI * (freq[0]) * g_synth_time));
+        double trigger = (g_amplitude * sin(M_2PI * (freq[0]) * g_time));
+
+        update_parameter(vibrato_amplitude);
+        update_parameter(vibrato_frequency);
+        update_parameter(phase_shift);
 
         for (int i = 0; i < HARMONICS_COUNT; i++)
         {
             update_parameter(harmonics_amplitude[i]);
 
-            value += sin(M_2PI * (freq[i] + freq[i] * detune) * (g_synth_time + phase * i) * sin(g_synth_time)) * harmonics_amplitude[i].current_value * g_amplitude;
+            value +=
+                sin(M_2PI
+                    * (freq[i])
+                    * (g_time + phase_shift.current_value * i)
+                    + (vibrato_amplitude.current_value * freq[i] * sin(M_2PI * vibrato_frequency.current_value * g_time))    // vibrato
+                )
+                * harmonics_amplitude[i].current_value
+                * g_amplitude;
         }
 
         // left channel
@@ -44,7 +54,7 @@ void play_harmonics(ma_device *pDevice, void *pOutput, const void *pInput, ma_ui
         // right channel
         *pOutputF32++ = (float)value;
 
-        g_synth_time += 1.0 / (double)pDevice->playback.internalSampleRate;
+        g_time += 1.0 / (double)pDevice->playback.internalSampleRate;
     }
 }
 
@@ -159,16 +169,22 @@ int main() {
             break;
 
         case 'a':
-            phase += 0.00001;
+            increase_value(phase_shift);
             break;
         case 'z':
-            phase -= 0.00001;
+            decrease_value(phase_shift);
             break;
-        case 's':
-            detune += 0.01;
+        case 'd':
+            increase_value(vibrato_amplitude);
             break;
-        case 'x':
-            detune -= 0.01;
+        case 'c':
+            decrease_value(vibrato_amplitude);
+            break;
+        case 'f':
+            increase_value(vibrato_frequency);
+            break;
+        case 'v':
+            decrease_value(vibrato_frequency);
             break;
         }
 
@@ -176,8 +192,9 @@ int main() {
             std::cout << (i + 1) << " " << harmonics_amplitude[i].current_value << " " << harmonics_amplitude[i].target_value << std::endl;
 
         std::cout << std::endl;
-        std::cout << "DETUNE: " << detune << std::endl;
-        std::cout << "PHASE:  " << phase << std::endl;
+        std::cout << "PHASE:  " << phase_shift.current_value << std::endl;
+        std::cout << "VIBRATO_AMPLITUDE:  " << vibrato_amplitude.current_value << std::endl;
+        std::cout << "VIBRATO_FREQUENCY:  " << vibrato_frequency.current_value << std::endl;
         std::cout << std::endl;
     }
 

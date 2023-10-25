@@ -10,16 +10,17 @@ struct Parameter
     double current_value = 1.0;
     double target_value = 1.0;
 
+    const double increment_value = 0.05;
+    const double max_value = 1.0;
+    const double min_value = 0.0;
+
     double change_time_start = 0.0;
 
-    const double min_value = 0.0;
-    const double max_value = 1.0;
-    const double increment_value = 0.05;
 };
 
 void increase_value(Parameter &parameter)
 {
-    parameter.change_time_start = g_synth_time;
+    parameter.change_time_start = g_time;
 
     if (parameter.target_value < parameter.max_value)
         parameter.target_value += parameter.increment_value;
@@ -27,7 +28,7 @@ void increase_value(Parameter &parameter)
 
 void decrease_value(Parameter &parameter)
 {
-    parameter.change_time_start = g_synth_time;
+    parameter.change_time_start = g_time;
 
     if (parameter.target_value > parameter.min_value)
         parameter.target_value -= parameter.increment_value;
@@ -40,7 +41,7 @@ void update_parameter(Parameter &parameter)
 {
     if (parameter.target_value != parameter.current_value)
     {
-        double step_value = pow(g_synth_time - parameter.change_time_start, 2.0);
+        double step_value = pow(g_time - parameter.change_time_start, 2.0);
 
         if (parameter.target_value < parameter.current_value)
         {
