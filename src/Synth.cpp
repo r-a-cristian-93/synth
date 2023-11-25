@@ -1,4 +1,6 @@
 #define MINIAUDIO_IMPLEMENTATION
+#define MA_ENABLE_ONLY_SPECIFIC_BACKENDS
+#define MA_ENABLE_JACK
 #include <iostream>
 #include <cmath>
 #include <signal.h>
