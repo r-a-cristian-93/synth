@@ -28,11 +28,11 @@ double g_time = 0;
 double g_amplitude = 1.0;
 
 struct EnvelopeADSR {
-    double dAttackDuration = 0.1;
-    double dDecayDuration = 0.1;
+    double dAttackDuration = 0.002;
+    double dDecayDuration = 0.01;
     double dStartAmplitude = 1.0;
     double dSustainAmplitude = 0.8;
-    double dReleaseDuration = 0.01;
+    double dReleaseDuration = 0.002;
 
     double dTriggerOnTime = 0.0;
     double dTriggerOffTime = 0.0;
@@ -200,7 +200,7 @@ void decode_message(double deltatime, std::vector<unsigned char> *buffer, void *
     // Nanomidi does not read from std::vector so send the address of the first element
     midi_istream_from_buffer(&istream, &buffer->at(0), nBytes);
     struct midi_message *message = midi_decode(&istream);
-    print_msg(message);
+    // print_msg(message);
 
     switch (message->type)
     {
@@ -292,7 +292,7 @@ int main()
     }
 
     // Set port
-    midiin->openPort(0);
+    midiin->openPort(1);
     midiin->setCallback(&decode_message);
 
     // Don't ignore sysex, timing, or active sensing messages.
