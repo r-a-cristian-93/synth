@@ -10,13 +10,21 @@ struct Parameter
     double current_value = 1.0;
     double target_value = 1.0;
 
-    const double increment_value = 0.05;
+    const double increment_value = 0.1;
     const double max_value = 1.0;
     const double min_value = 0.0;
 
     double change_time_start = 0.0;
-
 };
+
+void set_parameter_value(Parameter &parameter, double value)
+{
+    if (value <= parameter.max_value) parameter.target_value = value;
+    else parameter.target_value = parameter.max_value;
+
+    if (value >= parameter.min_value) parameter.target_value = value;
+    else parameter.target_value = parameter.min_value;
+}
 
 void increase_value(Parameter &parameter)
 {

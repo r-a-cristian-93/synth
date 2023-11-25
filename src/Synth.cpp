@@ -15,17 +15,38 @@
 #define HARMONICS_AMPLITUDE_MAX 1.0
 #define HARMONICS_AMPLITUDE_MIN 0.0
 #define HARMONICS_AMPLITUDE_INCREMENT 0.02
+#define MAX_POLYPHONY
 
-const double drawbars[HARMONICS_COUNT] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
-double freq[HARMONICS_COUNT] = {0};
-
-Parameter harmonics_amplitude[HARMONICS_COUNT] = {Parameter()};
+Parameter drawbar_amplitude[HARMONICS_COUNT] = {Parameter()};
 Parameter vibrato_amplitude{0.0, 0.0, 0.001, 0.1};
 Parameter vibrato_frequency{5.0, 5.0, 0.01, 10.0};
 Parameter phase_shift{0.0, 0.0, 0.00001, 0.02};
 
 double g_time = 0;
 double g_amplitude = 0.1;
+
+void (*current_instrument)(ma_device*, void*, const void*, ma_uint32);
+
+struct Note {
+    uint8_t value;
+    uint8_t velocity;
+};
+
+std::vector<Note> notes_queue;
+int notes[128];
+
+bool is_drawbar_controller(uint8_t controller)
+{
+    if (controller > 69 && controller < 79)
+        return true;
+    else
+        return false;
+}
+
+unsigned int get_drawbar_id(uint8_t controller)
+{
+    return controller - 70;
+}
 
 void play_harmonics(ma_device *pDevice, void *pOutput, const void *pInput, ma_uint32 frameCount)
 {
@@ -34,22 +55,28 @@ void play_harmonics(ma_device *pDevice, void *pOutput, const void *pInput, ma_ui
     for (ma_uint32 iFrame = 0; iFrame < frameCount; iFrame++)
     {
         double value = 0;
-        double trigger = (g_amplitude * sin(M_2PI * (freq[0]) * g_time));
+        //double trigger = (g_amplitude * sin(M_2PI * (note_frequency[note][0]) * g_time));
 
         update_parameter(vibrato_amplitude);
         update_parameter(vibrato_frequency);
         update_parameter(phase_shift);
 
-        for (int i = 0; i < HARMONICS_COUNT; i++)
+        for (unsigned int note_index = 0; note_index < 128; note_index++)
         {
-            update_parameter(harmonics_amplitude[i]);
+            if (notes[note_index]) 
+            {
+                for (int drawbar_index = 0; drawbar_index < HARMONICS_COUNT; drawbar_index++)
+                {
+                    update_parameter(drawbar_amplitude[drawbar_index]);
 
-            value +=
-                sin(M_2PI * (freq[i]) * (g_time + phase_shift.current_value * i) + (vibrato_amplitude.current_value * freq[i] * sin(M_2PI * vibrato_frequency.current_value * g_time)) // vibrato
-                    ) *
-                harmonics_amplitude[i].current_value * g_amplitude;
+                    value +=
+                        sin(
+                            M_2PI * (note_frequency[note_index][drawbar_index]) * (g_time + phase_shift.current_value * drawbar_index)
+                            + (vibrato_amplitude.current_value * note_frequency[note_index][drawbar_index] * sin(M_2PI * vibrato_frequency.current_value * g_time)) // vibrato
+                        ) * drawbar_amplitude[drawbar_index].current_value * g_amplitude * 0.01;
+                }
+            }
         }
-
         if (value > 0.3)
             value = 0.3;
 
@@ -81,15 +108,28 @@ void decode_message(double deltatime, std::vector<unsigned char> *buffer, void *
     switch (message->type)
     {
         case MIDI_TYPE_NOTE_ON:
-            for (int i = 0; i < HARMONICS_COUNT; i++)
-                freq[i] = note_frequency[message->data.note_on.note] * drawbars[i];
+            notes_queue.push_back(
+                Note{message->data.note_on.note, message->data.note_on.velocity}
+            );
+
+            notes[message->data.note_on.note] = 1;
             break;
-        // case MIDI_TYPE_NOTE_OFF:
-        //     for (int i = 0; i < HARMONICS_COUNT; i++)
-        //         freq[i] = 0;
-        //     break;
+        case MIDI_TYPE_NOTE_OFF:
+            notes[message->data.note_off.note] = 0;
+            break;
+        case MIDI_TYPE_CONTROL_CHANGE:
+            uint8_t controller = message->data.control_change.controller;
+            uint8_t value = message->data.control_change.value;
+
+            if (is_drawbar_controller(controller))
+                set_parameter_value(
+                    drawbar_amplitude[get_drawbar_id(controller)],
+                    value / 127.0f
+                );
+            break;
     }
 }
+
 
 int main()
 {
@@ -100,6 +140,8 @@ int main()
     std::vector<unsigned char> message;
     int nBytes, i;
     double stamp;
+
+    current_instrument = play_harmonics;
 
     // Initialize midi input
     try
@@ -130,7 +172,7 @@ int main()
     }
 
     // Set port
-    midiin->openPort(0);
+    midiin->openPort(1);
     midiin->setCallback(&decode_message);
 
     // Don't ignore sysex, timing, or active sensing messages.
@@ -180,59 +222,59 @@ int main()
         switch (input)
         {
         case '1':
-            increase_value(harmonics_amplitude[0]);
+            increase_value(drawbar_amplitude[0]);
             break;
         case '2':
-            increase_value(harmonics_amplitude[1]);
+            increase_value(drawbar_amplitude[1]);
             break;
         case '3':
-            increase_value(harmonics_amplitude[2]);
+            increase_value(drawbar_amplitude[2]);
             break;
         case '4':
-            increase_value(harmonics_amplitude[3]);
+            increase_value(drawbar_amplitude[3]);
             break;
         case '5':
-            increase_value(harmonics_amplitude[4]);
+            increase_value(drawbar_amplitude[4]);
             break;
         case '6':
-            increase_value(harmonics_amplitude[5]);
+            increase_value(drawbar_amplitude[5]);
             break;
         case '7':
-            increase_value(harmonics_amplitude[6]);
+            increase_value(drawbar_amplitude[6]);
             break;
         case '8':
-            increase_value(harmonics_amplitude[7]);
+            increase_value(drawbar_amplitude[7]);
             break;
         case '9':
-            increase_value(harmonics_amplitude[8]);
+            increase_value(drawbar_amplitude[8]);
             break;
 
         case 'q':
-            decrease_value(harmonics_amplitude[0]);
+            decrease_value(drawbar_amplitude[0]);
             break;
         case 'w':
-            decrease_value(harmonics_amplitude[1]);
+            decrease_value(drawbar_amplitude[1]);
             break;
         case 'e':
-            decrease_value(harmonics_amplitude[2]);
+            decrease_value(drawbar_amplitude[2]);
             break;
         case 'r':
-            decrease_value(harmonics_amplitude[3]);
+            decrease_value(drawbar_amplitude[3]);
             break;
         case 't':
-            decrease_value(harmonics_amplitude[4]);
+            decrease_value(drawbar_amplitude[4]);
             break;
         case 'y':
-            decrease_value(harmonics_amplitude[5]);
+            decrease_value(drawbar_amplitude[5]);
             break;
         case 'u':
-            decrease_value(harmonics_amplitude[6]);
+            decrease_value(drawbar_amplitude[6]);
             break;
         case 'i':
-            decrease_value(harmonics_amplitude[7]);
+            decrease_value(drawbar_amplitude[7]);
             break;
         case 'o':
-            decrease_value(harmonics_amplitude[8]);
+            decrease_value(drawbar_amplitude[8]);
             break;
 
         case 'a':
@@ -256,7 +298,7 @@ int main()
         }
 
         for (int i = 0; i < HARMONICS_COUNT; i++)
-            std::cout << (i + 1) << " " << harmonics_amplitude[i].current_value << " " << harmonics_amplitude[i].target_value << std::endl;
+            std::cout << (i + 1) << " " << drawbar_amplitude[i].current_value << " " << drawbar_amplitude[i].target_value << std::endl;
 
         std::cout << std::endl;
         std::cout << "PHASE:  " << phase_shift.current_value << std::endl;

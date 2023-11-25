@@ -46,6 +46,7 @@
         "streambuf": "cpp",
         "typeinfo": "cpp",
         "msgprint.h": "c",
-        "decoder.h": "c"
+        "decoder.h": "c",
+        "queue": "cpp"
     }
 }
