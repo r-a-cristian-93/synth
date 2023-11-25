@@ -28,11 +28,11 @@ double g_time = 0;
 double g_amplitude = 1.0;
 
 struct EnvelopeADSR {
-    double dAttackDuration = 1.1;
+    double dAttackDuration = 0.1;
     double dDecayDuration = 0.1;
     double dStartAmplitude = 1.0;
     double dSustainAmplitude = 0.8;
-    double dReleaseDuration = 1.01;
+    double dReleaseDuration = 0.01;
 
     double dTriggerOnTime = 0.0;
     double dTriggerOffTime = 0.0;
@@ -221,10 +221,9 @@ void decode_message(double deltatime, std::vector<unsigned char> *buffer, void *
 
             for (Note &note : notes_list)
             {
-                if (note.value = message->data.note_off.note)
+                if (note.value == message->data.note_off.note && note.envelope.bNoteOn)
                 {
                     note.envelope.NoteOff(g_time);
-                    std::cout << "found " << note.value << std::endl;
                     break;
                 }
             }
@@ -263,9 +262,6 @@ int main()
     ma_context context;
     ma_device device;
     RtMidiIn *midiin = 0;
-    std::vector<unsigned char> message;
-    int nBytes, i;
-    double stamp;
 
     // Initialize midi input
     try
