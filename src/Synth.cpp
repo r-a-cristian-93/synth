@@ -23,7 +23,7 @@ Parameter vibrato_frequency{0.8, 0.8, 0.01, 6.8, 0.8, 0.0001};
 Parameter phase_shift{0.0, 0.0, 0.00001, 0.02};
 
 double g_time = 0;
-double g_amplitude = 0.1;
+double g_amplitude = 1.0;
 
 void (*current_instrument)(ma_device*, void*, const void*, ma_uint32);
 
@@ -80,12 +80,13 @@ void play_harmonics(ma_device *pDevice, void *pOutput, const void *pInput, ma_ui
                         sin(
                             M_2PI * (note_frequency[note_index][drawbar_index]) * (g_time + phase_shift.current_value * drawbar_index)
                             + (vibrato_amplitude.current_value * note_frequency[note_index][drawbar_index] * sin(M_2PI * vibrato_frequency.current_value * g_time)) // vibrato
-                        ) * drawbar_amplitude[drawbar_index].current_value * g_amplitude * 0.01;
+                        ) * drawbar_amplitude[drawbar_index].current_value * g_amplitude * 0.03;
                 }
             }
         }
-        if (value > 0.3)
-            value = 0.3;
+
+        // Limit volume so we won't blow up speakers
+        if (value > 1.0) value = 1.0;
 
         // left channel
         *pOutputF32++ = (float)value;
@@ -110,7 +111,7 @@ void decode_message(double deltatime, std::vector<unsigned char> *buffer, void *
     // Nanomidi does not read from std::vector so send the address of the first element
     midi_istream_from_buffer(&istream, &buffer->at(0), nBytes);
     struct midi_message *message = midi_decode(&istream);
-    print_msg(message);
+    // print_msg(message);
 
     switch (message->type)
     {
