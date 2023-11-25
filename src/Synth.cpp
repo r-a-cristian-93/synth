@@ -3,10 +3,12 @@
 #include <cmath>
 #include <signal.h>
 #include <bitset>
+#include <list>
 #include <miniaudio/miniaudio.h>
 #include <RtMidi/RtMidi.h>
 #include <nanomidi/decoder.h>
 #include <nanomidi/msgprint.h>
+#include <mutex>
 
 #include "Common.h"
 #include "Parameter.h"
@@ -25,15 +27,84 @@ Parameter phase_shift{0.0, 0.0, 0.00001, 0.02};
 double g_time = 0;
 double g_amplitude = 1.0;
 
-void (*current_instrument)(ma_device*, void*, const void*, ma_uint32);
+struct EnvelopeADSR {
+    double dAttackDuration = 1.1;
+    double dDecayDuration = 0.1;
+    double dStartAmplitude = 1.0;
+    double dSustainAmplitude = 0.8;
+    double dReleaseDuration = 1.01;
 
-struct Note {
-    uint8_t value;
-    uint8_t velocity;
+    double dTriggerOnTime = 0.0;
+    double dTriggerOffTime = 0.0;
+
+    bool bNoteOn = false;
+
+    EnvelopeADSR(const double dTime)
+    {
+        NoteOn(dTime);
+    }
+
+    double GetAmplitude(const double dTime) const
+    {
+        double dAmplitude = 0.0;
+        
+        if (bNoteOn) 
+        {
+            double dLifeTime = dTime - dTriggerOnTime;
+
+            // Attack
+            if (dLifeTime <= dAttackDuration) 
+                dAmplitude = (dLifeTime / dAttackDuration) * dStartAmplitude;
+            
+            // Decay
+            if (dLifeTime > dAttackDuration && dLifeTime <= (dAttackDuration + dDecayDuration))
+                dAmplitude = ((dLifeTime - dAttackDuration) / dDecayDuration)
+                    * (dSustainAmplitude - dStartAmplitude)
+                    + dStartAmplitude;
+            
+            // Sustain
+            if (dLifeTime > dAttackDuration + dDecayDuration)
+                dAmplitude = dSustainAmplitude;
+        }
+        else 
+        {
+            dAmplitude = ((dTime - dTriggerOffTime) / dReleaseDuration )
+                * (0.0 - dSustainAmplitude)
+                + dSustainAmplitude;
+        }
+
+        if (dAmplitude < 0.0001)
+            dAmplitude = 0.0;
+
+        return dAmplitude;
+    }
+
+    void NoteOn(const double dTime) 
+    {
+        dTriggerOnTime = dTime;
+        bNoteOn = true;
+    }
+
+    void NoteOff(const double dTime)
+    {
+        dTriggerOffTime = dTime;
+        bNoteOn = false;
+    }
 };
 
-std::vector<Note> notes_queue;
-int notes[128];
+
+struct Note {
+    uint8_t value = 0;
+    EnvelopeADSR envelope;
+
+    bool operator ==(const Note &other) const
+    {
+        return value == other.value;
+    }
+};
+
+std::list<Note> notes_list;
+std::mutex notesMutex;
 
 bool is_drawbar_controller(uint8_t controller)
 {
@@ -68,9 +139,10 @@ void play_harmonics(ma_device *pDevice, void *pOutput, const void *pInput, ma_ui
         update_parameter(vibrato_frequency);
         update_parameter(phase_shift);
 
-        for (unsigned int note_index = 0; note_index < 128; note_index++)
         {
-            if (notes[note_index]) 
+            const std::lock_guard<std::mutex> lock(notesMutex);
+
+            for (Note const &note : notes_list)
             {
                 for (int drawbar_index = 0; drawbar_index < HARMONICS_COUNT; drawbar_index++)
                 {
@@ -78,9 +150,12 @@ void play_harmonics(ma_device *pDevice, void *pOutput, const void *pInput, ma_ui
 
                     value +=
                         sin(
-                            M_2PI * (note_frequency[note_index][drawbar_index]) * (g_time + phase_shift.current_value * drawbar_index)
-                            + (vibrato_amplitude.current_value * note_frequency[note_index][drawbar_index] * sin(M_2PI * vibrato_frequency.current_value * g_time)) // vibrato
-                        ) * drawbar_amplitude[drawbar_index].current_value * g_amplitude * 0.03;
+                            M_2PI * (note_frequency[note.value][drawbar_index]) * (g_time + phase_shift.current_value * drawbar_index)
+                            + (vibrato_amplitude.current_value * note_frequency[note.value][drawbar_index] * sin(M_2PI * vibrato_frequency.current_value * g_time)) // vibrato
+                        )
+                            * drawbar_amplitude[drawbar_index].current_value * g_amplitude
+                            * note.envelope.GetAmplitude(g_time)
+                            * 0.03;
                 }
             }
         }
@@ -99,6 +174,20 @@ void play_harmonics(ma_device *pDevice, void *pOutput, const void *pInput, ma_ui
 
 void DataCallback(ma_device *pDevice, void *pOutput, const void *pInput, ma_uint32 frameCount)
 {
+    {
+        const std::lock_guard<std::mutex> lock(notesMutex);
+
+        // Remove silenced notes
+        for (auto it = notes_list.begin(); it != notes_list.end(); it++)
+        {
+            if (it->envelope.GetAmplitude(g_time) <= 0 && !it->envelope.bNoteOn)
+            {
+                notes_list.erase(it++);
+                break;
+            }
+        }
+    }
+
     play_harmonics(pDevice, pOutput, pInput, frameCount);
 }
 
@@ -111,20 +200,37 @@ void decode_message(double deltatime, std::vector<unsigned char> *buffer, void *
     // Nanomidi does not read from std::vector so send the address of the first element
     midi_istream_from_buffer(&istream, &buffer->at(0), nBytes);
     struct midi_message *message = midi_decode(&istream);
-    // print_msg(message);
+    print_msg(message);
 
     switch (message->type)
     {
         case MIDI_TYPE_NOTE_ON:
-            notes_queue.push_back(
-                Note{message->data.note_on.note, message->data.note_on.velocity}
-            );
+        {
+            const std::lock_guard<std::mutex> lock(notesMutex);
 
-            notes[message->data.note_on.note] = 1;
-            break;
+            notes_list.push_back(
+                Note{message->data.note_on.note, EnvelopeADSR(g_time)}
+            );
+        }
+        break;
+
         case MIDI_TYPE_NOTE_OFF:
-            notes[message->data.note_off.note] = 0;
-            break;
+        {
+            // Call NoteOff on first occurence
+            const std::lock_guard<std::mutex> lock(notesMutex);
+
+            for (Note &note : notes_list)
+            {
+                if (note.value = message->data.note_off.note)
+                {
+                    note.envelope.NoteOff(g_time);
+                    std::cout << "found " << note.value << std::endl;
+                    break;
+                }
+            }
+        }
+        break;
+
         case MIDI_TYPE_CONTROL_CHANGE:
             uint8_t controller = message->data.control_change.controller;
             uint8_t value = message->data.control_change.value;
@@ -161,8 +267,6 @@ int main()
     int nBytes, i;
     double stamp;
 
-    current_instrument = play_harmonics;
-
     // Initialize midi input
     try
     {
@@ -192,7 +296,7 @@ int main()
     }
 
     // Set port
-    midiin->openPort(1);
+    midiin->openPort(0);
     midiin->setCallback(&decode_message);
 
     // Don't ignore sysex, timing, or active sensing messages.
@@ -241,62 +345,6 @@ int main()
 
         switch (input)
         {
-        case '1':
-            increase_value(drawbar_amplitude[0]);
-            break;
-        case '2':
-            increase_value(drawbar_amplitude[1]);
-            break;
-        case '3':
-            increase_value(drawbar_amplitude[2]);
-            break;
-        case '4':
-            increase_value(drawbar_amplitude[3]);
-            break;
-        case '5':
-            increase_value(drawbar_amplitude[4]);
-            break;
-        case '6':
-            increase_value(drawbar_amplitude[5]);
-            break;
-        case '7':
-            increase_value(drawbar_amplitude[6]);
-            break;
-        case '8':
-            increase_value(drawbar_amplitude[7]);
-            break;
-        case '9':
-            increase_value(drawbar_amplitude[8]);
-            break;
-
-        case 'q':
-            decrease_value(drawbar_amplitude[0]);
-            break;
-        case 'w':
-            decrease_value(drawbar_amplitude[1]);
-            break;
-        case 'e':
-            decrease_value(drawbar_amplitude[2]);
-            break;
-        case 'r':
-            decrease_value(drawbar_amplitude[3]);
-            break;
-        case 't':
-            decrease_value(drawbar_amplitude[4]);
-            break;
-        case 'y':
-            decrease_value(drawbar_amplitude[5]);
-            break;
-        case 'u':
-            decrease_value(drawbar_amplitude[6]);
-            break;
-        case 'i':
-            decrease_value(drawbar_amplitude[7]);
-            break;
-        case 'o':
-            decrease_value(drawbar_amplitude[8]);
-            break;
-
         case 'a':
             increase_value(phase_shift);
             break;
@@ -324,6 +372,7 @@ int main()
         std::cout << "PHASE:  " << phase_shift.current_value << std::endl;
         std::cout << "VIBRATO_AMPLITUDE:  " << vibrato_amplitude.current_value << std::endl;
         std::cout << "VIBRATO_FREQUENCY:  " << vibrato_frequency.current_value << std::endl;
+        std::cout << "NOTES_LIST:  " << notes_list.size() << std::endl;
         std::cout << std::endl;
     }
 
