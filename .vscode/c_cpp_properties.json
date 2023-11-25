@@ -1,11 +1,32 @@
 {
     "configurations": [
         {
+            "name": "Linux",
+            "includePath": [
+                "/media/alex/0579D7E562703A17/dev/github/synth/**",
+                "/media/alex/0579D7E562703A17/dev/github/synth",
+                "/media/alex/0579D7E562703A17/dev/github/synth/include/miniaudio"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "mergeConfigurations": false,
+            "compilerPath": "/usr/bin/gcc",
+            "browse": {
+                "path": [
+                    "${workspaceFolder}"
+                ],
+                "limitSymbolsToIncludedHeaders": true
+            }
+        },
+        {
             "name": "Win32",
             "includePath": [
                 "${workspaceFolder}/**",
                 "${workspaceFolder}",
-                "${workspaceFolder}/miniaudio"
+                "${workspaceFolder}/include/miniaudio"
             ],
             "defines": [
                 "_DEBUG",
