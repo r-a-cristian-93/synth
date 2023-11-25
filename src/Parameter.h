@@ -13,12 +13,15 @@ struct Parameter
     const double increment_value = 0.1;
     const double max_value = 1.0;
     const double min_value = 0.0;
+    const double update_rate = 1.0;
 
     double change_time_start = 0.0;
 };
 
 void set_parameter_value(Parameter &parameter, double value)
 {
+    parameter.change_time_start = g_time;
+
     if (value <= parameter.max_value) parameter.target_value = value;
     else parameter.target_value = parameter.max_value;
 
@@ -49,7 +52,9 @@ void update_parameter(Parameter &parameter)
 {
     if (parameter.target_value != parameter.current_value)
     {
-        double step_value = pow(g_time - parameter.change_time_start, 2.0);
+        double step_value = pow(g_time - parameter.change_time_start, 2) * parameter.update_rate;
+        if (step_value < 0) step_value = 0;
+        std::cout << step_value << std::endl;
 
         if (parameter.target_value < parameter.current_value)
         {

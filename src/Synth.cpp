@@ -18,8 +18,8 @@
 #define MAX_POLYPHONY
 
 Parameter drawbar_amplitude[HARMONICS_COUNT] = {Parameter()};
-Parameter vibrato_amplitude{0.0, 0.0, 0.001, 0.1};
-Parameter vibrato_frequency{5.0, 5.0, 0.01, 10.0};
+Parameter vibrato_amplitude{0.002, 0.002, 0.001, 0.1};
+Parameter vibrato_frequency{0.8, 0.8, 0.01, 6.8, 0.8, 0.0001};
 Parameter phase_shift{0.0, 0.0, 0.00001, 0.02};
 
 double g_time = 0;
@@ -46,6 +46,13 @@ bool is_drawbar_controller(uint8_t controller)
 unsigned int get_drawbar_id(uint8_t controller)
 {
     return controller - 70;
+}
+
+bool is_vibrato_controller(uint8_t controller)
+{
+    if (controller == 18)
+        return true;
+    else return false;
 }
 
 void play_harmonics(ma_device *pDevice, void *pOutput, const void *pInput, ma_uint32 frameCount)
@@ -126,6 +133,18 @@ void decode_message(double deltatime, std::vector<unsigned char> *buffer, void *
                     drawbar_amplitude[get_drawbar_id(controller)],
                     value / 127.0f
                 );
+            if (is_vibrato_controller(controller))
+            {
+                double vibrato_value;
+
+                if (value == 0) vibrato_value = vibrato_frequency.min_value;
+                else vibrato_value = vibrato_frequency.max_value;
+
+                set_parameter_value(
+                    vibrato_frequency,
+                    vibrato_value
+                );
+            }
             break;
     }
 }
