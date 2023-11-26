@@ -1,6 +1,6 @@
 #define MINIAUDIO_IMPLEMENTATION
-#define MA_ENABLE_ONLY_SPECIFIC_BACKENDS
-#define MA_ENABLE_JACK
+//#define MA_ENABLE_ONLY_SPECIFIC_BACKENDS
+//#define MA_ENABLE_JACK
 #include <iostream>
 #include <cmath>
 #include <signal.h>
@@ -294,7 +294,7 @@ int main()
     }
 
     // Set port
-    midiin->openPort(1);
+    midiin->openPort(0);
     midiin->setCallback(&decode_message);
 
     // Don't ignore sysex, timing, or active sensing messages.
