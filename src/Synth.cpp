@@ -332,6 +332,8 @@ int main()
         return 1;
     }
 
+    notes_list.push_back(Note{64, EnvelopeADSR{g_time}});
+
     // Wait for user input (you can adjust this as needed)
     std::cout << "Press ESC to exit..." << std::endl;
     while (true)
