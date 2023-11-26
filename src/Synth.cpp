@@ -144,7 +144,7 @@ double organGenerateSample(unsigned int note, double time)
     return sample;
 }
 
-void play_harmonics(ma_device *pDevice, void *pOutput, const void *pInput, ma_uint32 frameCount)
+void generateSamples(ma_device *pDevice, void *pOutput, const void *pInput, ma_uint32 frameCount)
 {
     float *pOutputF32 = (float *)pOutput;
 
@@ -190,14 +190,14 @@ void play_harmonics(ma_device *pDevice, void *pOutput, const void *pInput, ma_ui
     }
 }
 
-void DataCallback(ma_device *pDevice, void *pOutput, const void *pInput, ma_uint32 frameCount)
+void clearSilencedNotes()
 {
     {
         const std::lock_guard<std::mutex> lock(notesMutex);
 
-        // Remove silenced notes
         for (auto it = notes_list.begin(); it != notes_list.end(); it++)
         {
+            // Remove one by one in the order they were added
             if (it->envelope.GetAmplitude(g_time) <= 0 && !it->envelope.bNoteOn)
             {
                 notes_list.erase(it++);
@@ -205,8 +205,13 @@ void DataCallback(ma_device *pDevice, void *pOutput, const void *pInput, ma_uint
             }
         }
     }
+}
 
-    play_harmonics(pDevice, pOutput, pInput, frameCount);
+void DataCallback(ma_device *pDevice, void *pOutput, const void *pInput, ma_uint32 frameCount)
+{
+    clearSilencedNotes();
+
+    generateSamples(pDevice, pOutput, pInput, frameCount);
 }
 
 
