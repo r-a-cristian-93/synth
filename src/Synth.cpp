@@ -152,10 +152,15 @@ void play_harmonics(ma_device *pDevice, void *pOutput, const void *pInput, ma_ui
                             M_2PI * (note_frequency[note.value][drawbar_index]) * g_time
                             + (vibrato_amplitude.current_value * note_frequency[note.value][drawbar_index] * sin(M_2PI * vibrato_frequency.current_value * g_time)) // vibrato
                         )
-                            * drawbar_amplitude[drawbar_index].current_value * g_amplitude
-                            * 0.03;
+                            * drawbar_amplitude[drawbar_index].current_value * g_amplitude;
                 }
+                
+                // Apply envelope per note
                 value *= note.envelope.GetAmplitude(g_time);
+
+                // Make room for mote notes to be played simultaneously
+                value *= 0.01;
+
             }
         }
 
@@ -330,7 +335,7 @@ int main()
         return 1;
     }
 
-    notes_list.push_back(Note{64, EnvelopeADSR{g_time}});
+    notes_list.push_back(Note{52, EnvelopeADSR{g_time}});
 
     // Wait for user input (you can adjust this as needed)
     std::cout << "Press ESC to exit..." << std::endl;
