@@ -5,8 +5,6 @@
 
 #include "Common.h"
 
-#define PARAM_LOWEST_VALUE 0.0001
-
 struct Parameter
 {
     double current_value = 1.0;
