@@ -15,6 +15,7 @@
 #include "Common.h"
 #include "Parameter.h"
 #include "EnvelopeADSR.h"
+#include "MidiManager.h"
 
 #define MAX_POLYPHONY
 
@@ -38,34 +39,12 @@ struct Note {
 std::list<Note> notes_list;
 std::mutex notesMutex;
 
-bool is_drawbar_controller(uint8_t controller)
-{
-    if (controller > 69 && controller < 79)
-        return true;
-    else
-        return false;
-}
-
-unsigned int get_drawbar_id(uint8_t controller)
-{
-    return controller - 70;
-}
-
-bool is_vibrato_controller(uint8_t controller)
-{
-    if (controller == 18)
-        return true;
-    else return false;
-}
-
 double organGenerateSample(unsigned int note, double time)
 {
     double sample = 0;
 
     for (int drawbar_index = 0; drawbar_index < DRAWBARS_COUNT; drawbar_index++)
     {
-        update_parameter(drawbar_amplitude[drawbar_index]);
-
         sample +=
             sin(
                 M_2PI * (note_frequency[note][drawbar_index]) * time
@@ -87,6 +66,10 @@ void generateSamples(ma_device *pDevice, void *pOutput, const void *pInput, ma_u
         // Update LFO
         update_parameter(vibrato_amplitude);
         update_parameter(vibrato_frequency);
+
+        // Update drawbar amplitude
+        for (int drawbar_index = 0; drawbar_index < DRAWBARS_COUNT; drawbar_index++)
+            update_parameter(drawbar_amplitude[drawbar_index]);
 
         {
             // Get a lock on notes_list
@@ -139,10 +122,9 @@ void clearSilencedNotes()
     }
 }
 
-void DataCallback(ma_device *pDevice, void *pOutput, const void *pInput, ma_uint32 frameCount)
+void dataCallback(ma_device *pDevice, void *pOutput, const void *pInput, ma_uint32 frameCount)
 {
     clearSilencedNotes();
-
     generateSamples(pDevice, pOutput, pInput, frameCount);
 }
 
@@ -265,7 +247,7 @@ int main()
     config.playback.format = ma_format_f32; // Set to ma_format_unknown to use the device's native format.
     config.playback.channels = 2;           // Set to 0 to use the device's native channel count.
     config.sampleRate = 44100;              // Set to 0 to use the device's native sample rate.
-    config.dataCallback = DataCallback;     // This function will be called when miniaudio needs more data.
+    config.dataCallback = dataCallback;     // This function will be called when miniaudio needs more data.
     config.pUserData = NULL;                // Can be accessed from the device object (device.pUserData).
 
     result = ma_device_init(NULL, &config, &device);
