@@ -15,13 +15,9 @@
 #include "Common.h"
 #include "Parameter.h"
 
-#define HARMONICS_COUNT 9
-#define HARMONICS_AMPLITUDE_MAX 1.0
-#define HARMONICS_AMPLITUDE_MIN 0.0
-#define HARMONICS_AMPLITUDE_INCREMENT 0.02
 #define MAX_POLYPHONY
 
-Parameter drawbar_amplitude[HARMONICS_COUNT] = {Parameter()};
+Parameter drawbar_amplitude[DRAWBARS_COUNT] = {Parameter()};
 Parameter vibrato_amplitude{0.002, 0.002, 0.001, 0.1};
 Parameter vibrato_frequency{0.8, 0.8, 0.01, 6.8, 0.8, 0.0001};
 
@@ -129,7 +125,7 @@ double organGenerateSample(unsigned int note, double time)
 {
     double sample = 0;
 
-    for (int drawbar_index = 0; drawbar_index < HARMONICS_COUNT; drawbar_index++)
+    for (int drawbar_index = 0; drawbar_index < DRAWBARS_COUNT; drawbar_index++)
     {
         update_parameter(drawbar_amplitude[drawbar_index]);
 
@@ -379,7 +375,7 @@ int main()
             break;
         }
 
-        for (int i = 0; i < HARMONICS_COUNT; i++)
+        for (int i = 0; i < DRAWBARS_COUNT; i++)
             std::cout << (i + 1) << " " << drawbar_amplitude[i].current_value << " " << drawbar_amplitude[i].target_value << std::endl;
 
         std::cout << std::endl;
