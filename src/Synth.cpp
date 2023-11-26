@@ -134,7 +134,6 @@ void play_harmonics(ma_device *pDevice, void *pOutput, const void *pInput, ma_ui
     for (ma_uint32 iFrame = 0; iFrame < frameCount; iFrame++)
     {
         double value = 0;
-        //double trigger = (g_amplitude * sin(M_2PI * (note_frequency[note][0]) * g_time));
 
         update_parameter(vibrato_amplitude);
         update_parameter(vibrato_frequency);
@@ -162,6 +161,7 @@ void play_harmonics(ma_device *pDevice, void *pOutput, const void *pInput, ma_ui
 
         // Limit volume so we won't blow up speakers
         if (value > 1.0) value = 1.0;
+        if (value < -1.0) value = -1.0;
 
         // left channel
         *pOutputF32++ = (float)value;
