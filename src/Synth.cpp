@@ -153,9 +153,9 @@ void play_harmonics(ma_device *pDevice, void *pOutput, const void *pInput, ma_ui
                             + (vibrato_amplitude.current_value * note_frequency[note.value][drawbar_index] * sin(M_2PI * vibrato_frequency.current_value * g_time)) // vibrato
                         )
                             * drawbar_amplitude[drawbar_index].current_value * g_amplitude
-                            * note.envelope.GetAmplitude(g_time)
                             * 0.03;
                 }
+                value *= note.envelope.GetAmplitude(g_time);
             }
         }
 
