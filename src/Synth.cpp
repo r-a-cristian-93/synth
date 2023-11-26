@@ -93,7 +93,6 @@ struct EnvelopeADSR {
     }
 };
 
-
 struct Note {
     uint8_t value = 0;
     EnvelopeADSR envelope;
@@ -127,6 +126,24 @@ bool is_vibrato_controller(uint8_t controller)
     else return false;
 }
 
+double organGenerateSample(unsigned int note, double time)
+{
+    double sample = 0;
+
+    for (int drawbar_index = 0; drawbar_index < HARMONICS_COUNT; drawbar_index++)
+    {
+        update_parameter(drawbar_amplitude[drawbar_index]);
+
+        sample +=
+            sin(
+                M_2PI * (note_frequency[note][drawbar_index]) * time
+                + (vibrato_amplitude.current_value * note_frequency[note][drawbar_index] * sin(M_2PI * vibrato_frequency.current_value * time)) // vibrato
+            )
+                * drawbar_amplitude[drawbar_index].current_value;
+    }
+    return sample;
+}
+
 void play_harmonics(ma_device *pDevice, void *pOutput, const void *pInput, ma_uint32 frameCount)
 {
     float *pOutputF32 = (float *)pOutput;
@@ -135,33 +152,26 @@ void play_harmonics(ma_device *pDevice, void *pOutput, const void *pInput, ma_ui
     {
         double value = 0;
 
+        // Update LFO
         update_parameter(vibrato_amplitude);
         update_parameter(vibrato_frequency);
 
         {
+            // Get a lock on notes_list
             const std::lock_guard<std::mutex> lock(notesMutex);
 
             for (Note const &note : notes_list)
             {
-                for (int drawbar_index = 0; drawbar_index < HARMONICS_COUNT; drawbar_index++)
-                {
-                    update_parameter(drawbar_amplitude[drawbar_index]);
-
-                    value +=
-                        sin(
-                            M_2PI * (note_frequency[note.value][drawbar_index]) * g_time
-                            + (vibrato_amplitude.current_value * note_frequency[note.value][drawbar_index] * sin(M_2PI * vibrato_frequency.current_value * g_time)) // vibrato
-                        )
-                            * drawbar_amplitude[drawbar_index].current_value;
-                }
+                // Generate sample for current note
+                value = organGenerateSample(note.value, g_time);
                 
-                // Apply envelope per note
+                // Apply envelope
                 value *= note.envelope.GetAmplitude(g_time);
                 
-                // Apply global amplitude per note
+                // Apply global amplitude
                 value *= g_amplitude;
 
-                // Make room for mote notes to be played simultaneously
+                // Make room for more notes to be played simultaneously
                 value *= 0.01;
             }
         }
@@ -170,11 +180,12 @@ void play_harmonics(ma_device *pDevice, void *pOutput, const void *pInput, ma_ui
         if (value > 1.0) value = 1.0;
         if (value < -1.0) value = -1.0;
 
-        // left channel
+        // Add sample to left channel
         *pOutputF32++ = (float)value;
-        // right channel
+        // Add sample to right channel
         *pOutputF32++ = (float)value;
 
+        // Advance time
         g_time += 1.0 / (double)pDevice->playback.internalSampleRate;
     }
 }
