@@ -24,7 +24,6 @@
 Parameter drawbar_amplitude[HARMONICS_COUNT] = {Parameter()};
 Parameter vibrato_amplitude{0.002, 0.002, 0.001, 0.1};
 Parameter vibrato_frequency{0.8, 0.8, 0.01, 6.8, 0.8, 0.0001};
-Parameter phase_shift{0.0, 0.0, 0.00001, 0.02};
 
 double g_time = 0;
 double g_amplitude = 1.0;
@@ -139,7 +138,6 @@ void play_harmonics(ma_device *pDevice, void *pOutput, const void *pInput, ma_ui
 
         update_parameter(vibrato_amplitude);
         update_parameter(vibrato_frequency);
-        update_parameter(phase_shift);
 
         {
             const std::lock_guard<std::mutex> lock(notesMutex);
@@ -152,7 +150,7 @@ void play_harmonics(ma_device *pDevice, void *pOutput, const void *pInput, ma_ui
 
                     value +=
                         sin(
-                            M_2PI * (note_frequency[note.value][drawbar_index]) * (g_time + phase_shift.current_value * drawbar_index)
+                            M_2PI * (note_frequency[note.value][drawbar_index]) * g_time
                             + (vibrato_amplitude.current_value * note_frequency[note.value][drawbar_index] * sin(M_2PI * vibrato_frequency.current_value * g_time)) // vibrato
                         )
                             * drawbar_amplitude[drawbar_index].current_value * g_amplitude
@@ -345,12 +343,6 @@ int main()
 
         switch (input)
         {
-        case 'a':
-            increase_value(phase_shift);
-            break;
-        case 'z':
-            decrease_value(phase_shift);
-            break;
         case 'd':
             increase_value(vibrato_amplitude);
             break;
@@ -369,7 +361,6 @@ int main()
             std::cout << (i + 1) << " " << drawbar_amplitude[i].current_value << " " << drawbar_amplitude[i].target_value << std::endl;
 
         std::cout << std::endl;
-        std::cout << "PHASE:  " << phase_shift.current_value << std::endl;
         std::cout << "VIBRATO_AMPLITUDE:  " << vibrato_amplitude.current_value << std::endl;
         std::cout << "VIBRATO_FREQUENCY:  " << vibrato_frequency.current_value << std::endl;
         std::cout << "NOTES_LIST:  " << notes_list.size() << std::endl;
