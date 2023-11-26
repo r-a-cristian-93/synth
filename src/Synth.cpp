@@ -16,6 +16,7 @@
 #include "Parameter.h"
 #include "EnvelopeADSR.h"
 #include "MidiManager.h"
+#include "Note.h"
 
 #define MAX_POLYPHONY
 
@@ -26,15 +27,6 @@ Parameter vibrato_frequency{0.8, 0.8, 0.01, 6.8, 0.8, 0.0001};
 double g_time = 0;
 double g_amplitude = 1.0;
 
-struct Note {
-    uint8_t value = 0;
-    EnvelopeADSR envelope;
-
-    bool operator ==(const Note &other) const
-    {
-        return value == other.value;
-    }
-};
 
 std::list<Note> notes_list;
 std::mutex notesMutex;
