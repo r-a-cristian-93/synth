@@ -74,8 +74,7 @@ struct EnvelopeADSR {
                 + dSustainAmplitude;
         }
 
-        if (dAmplitude < 0.0001)
-            dAmplitude = 0.0;
+        if (dAmplitude < PARAM_LOWEST_VALUE) dAmplitude = 0.0;
 
         return dAmplitude;
     }

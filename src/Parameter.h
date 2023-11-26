@@ -5,6 +5,8 @@
 
 #include "Common.h"
 
+#define PARAM_LOWEST_VALUE 0.0001
+
 struct Parameter
 {
     double current_value = 1.0;
@@ -53,8 +55,8 @@ void update_parameter(Parameter &parameter)
     if (parameter.target_value != parameter.current_value)
     {
         double step_value = pow(g_time - parameter.change_time_start, 2) * parameter.update_rate;
-        if (step_value < 0) step_value = 0;
-        std::cout << step_value << std::endl;
+
+        if (step_value < PARAM_LOWEST_VALUE) step_value = 0;
 
         if (parameter.target_value < parameter.current_value)
         {
