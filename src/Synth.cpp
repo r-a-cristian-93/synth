@@ -152,15 +152,17 @@ void play_harmonics(ma_device *pDevice, void *pOutput, const void *pInput, ma_ui
                             M_2PI * (note_frequency[note.value][drawbar_index]) * g_time
                             + (vibrato_amplitude.current_value * note_frequency[note.value][drawbar_index] * sin(M_2PI * vibrato_frequency.current_value * g_time)) // vibrato
                         )
-                            * drawbar_amplitude[drawbar_index].current_value * g_amplitude;
+                            * drawbar_amplitude[drawbar_index].current_value;
                 }
                 
                 // Apply envelope per note
                 value *= note.envelope.GetAmplitude(g_time);
+                
+                // Apply global amplitude per note
+                value *= g_amplitude;
 
                 // Make room for mote notes to be played simultaneously
                 value *= 0.01;
-
             }
         }
 
