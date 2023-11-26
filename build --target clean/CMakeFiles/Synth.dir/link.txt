@@ -1,0 +1,1 @@
+/usr/bin/c++ -g -O0 CMakeFiles/Synth.dir/src/Synth.cpp.o CMakeFiles/Synth.dir/include/RtMidi/RtMidi.cpp.o CMakeFiles/Synth.dir/include/nanomidi/nanomidi_decoder.c.o CMakeFiles/Synth.dir/include/nanomidi/nanomidi_encoder.c.o CMakeFiles/Synth.dir/include/nanomidi/nanomidi_stream.c.o CMakeFiles/Synth.dir/include/nanomidi/msgprint.c.o -o Synth  -ldl -lpthread -lm -lcurses -lasound 

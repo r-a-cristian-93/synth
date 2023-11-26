@@ -1,6 +1,4 @@
 #define MINIAUDIO_IMPLEMENTATION
-//#define MA_ENABLE_ONLY_SPECIFIC_BACKENDS
-//#define MA_ENABLE_JACK
 #include <iostream>
 #include <cmath>
 #include <signal.h>
@@ -18,15 +16,12 @@
 #include "MidiManager.h"
 #include "Note.h"
 
-#define MAX_POLYPHONY
-
 Parameter drawbar_amplitude[DRAWBARS_COUNT] = {Parameter()};
 Parameter vibrato_amplitude{0.002, 0.002, 0.001, 0.1};
 Parameter vibrato_frequency{0.8, 0.8, 0.01, 6.8, 0.8, 0.0001};
 
 double g_time = 0;
 double g_amplitude = 1.0;
-
 
 std::list<Note> notes_list;
 std::mutex notesMutex;
@@ -119,7 +114,6 @@ void dataCallback(ma_device *pDevice, void *pOutput, const void *pInput, ma_uint
     clearSilencedNotes();
     generateSamples(pDevice, pOutput, pInput, frameCount);
 }
-
 
 void decode_message(double deltatime, std::vector<unsigned char> *buffer, void *userData)
 {

@@ -23,6 +23,13 @@ set (SOURCE_SYNTH
 
 ADD_DEFINITIONS(-D__LINUX_ALSA__)
 
+IF (BUILD_FOR_JACK)
+	ADD_DEFINITIONS(
+		-DMA_ENABLE_ONLY_SPECIFIC_BACKENDS
+		-DMA_ENABLE_JACK
+	)
+ENDIF()
+
 add_executable(Synth ${SOURCE_SYNTH} ${SOURCE_RTMIDI} ${SOURCE_NANOMIDI})
 target_link_libraries(Synth dl pthread m curses asound)
 target_include_directories(Synth PRIVATE ${PROJECT_SOURCE_DIR}/include)

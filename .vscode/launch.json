@@ -19,8 +19,32 @@
             "ignoreFailures": true
           }
         ],
-        "preLaunchTask": "make build", // Specify the task to compile your code before debugging
+        "preLaunchTask": "build_make_jack", // Specify the task to compile your code before debugging
         "miDebuggerPath": "/usr/bin/gdb", // Path to your gdb executable
+        "logging": {
+          "engineLogging": true,
+          "trace": true
+        },
+      },
+      {
+        "name": "Run Release Jack",
+        "type": "cppdbg",
+        "request": "launch",
+        "program": "${workspaceFolder}/build/release_jack/Synth", // Path to your release build executable
+        "args": [],
+        "stopAtEntry": false,
+        "cwd": "${workspaceFolder}",
+        "environment": [],
+        "externalConsole": false,
+        "MIMode": "gdb",
+        "setupCommands": [
+          {
+            "description": "Enable pretty-printing for gdb",
+            "text": "-enable-pretty-printing",
+            "ignoreFailures": true
+          }
+        ],
+        "preLaunchTask": "build_make_jack", // Specify the task to compile your code before debugging
         "logging": {
           "engineLogging": true,
           "trace": true
@@ -30,14 +54,13 @@
         "name": "Run Release",
         "type": "cppdbg",
         "request": "launch",
-        "program": "${workspaceFolder}/build/Synth", // Path to your release build executable
+        "program": "${workspaceFolder}/build/release/Synth", // Path to your release build executable
         "args": [],
         "stopAtEntry": false,
         "cwd": "${workspaceFolder}",
         "environment": [],
         "externalConsole": false,
         "MIMode": "gdb",
-        //"defines": ["MA_ENABLE_ONLY_SPECIFIC_BACKENDS" , "MA_ENABLE_JACK"],
         "setupCommands": [
           {
             "description": "Enable pretty-printing for gdb",
@@ -45,7 +68,7 @@
             "ignoreFailures": true
           }
         ],
-        "preLaunchTask": "make build", // Specify the task to compile your code before debugging
+        "preLaunchTask": "build_make", // Specify the task to compile your code before debugging
         "logging": {
           "engineLogging": true,
           "trace": true
