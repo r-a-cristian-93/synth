@@ -20,7 +20,7 @@ Parameter drawbar_amplitude[DRAWBARS_COUNT] = {Parameter()};
 Parameter vibrato_amplitude{0.002, 0.002, 0.001, 0.1};
 Parameter vibrato_frequency{0.8, 0.8, 0.01, 6.8, 0.8, 0.0001};
 
-double g_time = 0;
+double g_time = 0.0;
 double g_amplitude = 1.0;
 
 std::list<Note> notes_list;
@@ -48,7 +48,8 @@ void generateSamples(ma_device *pDevice, void *pOutput, const void *pInput, ma_u
 
     for (ma_uint32 iFrame = 0; iFrame < frameCount; iFrame++)
     {
-        double value = 0;
+        double sample = 0;
+        double noteSample = 0;
 
         // Update LFO
         update_parameter(vibrato_amplitude);
@@ -65,27 +66,30 @@ void generateSamples(ma_device *pDevice, void *pOutput, const void *pInput, ma_u
             for (Note const &note : notes_list)
             {
                 // Generate sample for current note
-                value = organGenerateSample(note.value, g_time);
+                noteSample = organGenerateSample(note.value, g_time);
                 
                 // Apply envelope
-                value *= note.envelope.GetAmplitude(g_time);
+                noteSample *= note.envelope.GetAmplitude(g_time);
                 
                 // Apply global amplitude
-                value *= g_amplitude;
+                noteSample *= g_amplitude;
 
                 // Make room for more notes to be played simultaneously
-                value *= 0.01;
+                noteSample *= 0.01;
+
+                // Add to current sample
+                sample += noteSample;
             }
         }
 
         // Limit volume so we won't blow up speakers
-        if (value > 1.0) value = 1.0;
-        if (value < -1.0) value = -1.0;
+        if (sample > 1.0) sample = 1.0;
+        if (sample < -1.0) sample = -1.0;
 
         // Add sample to left channel
-        *pOutputF32++ = (float)value;
+        *pOutputF32++ = (float)sample;
         // Add sample to right channel
-        *pOutputF32++ = (float)value;
+        *pOutputF32++ = (float)sample;
 
         // Advance time
         g_time += 1.0 / (double)pDevice->playback.internalSampleRate;
@@ -94,17 +98,15 @@ void generateSamples(ma_device *pDevice, void *pOutput, const void *pInput, ma_u
 
 void clearSilencedNotes()
 {
-    {
-        const std::lock_guard<std::mutex> lock(notesMutex);
+    const std::lock_guard<std::mutex> lock(notesMutex);
 
-        for (auto it = notes_list.begin(); it != notes_list.end(); it++)
+    for (auto it = notes_list.begin(); it != notes_list.end(); it++)
+    {
+        // Remove one by one in the order they were added
+        if (it->envelope.GetAmplitude(g_time) <= 0 && !it->envelope.bNoteOn)
         {
-            // Remove one by one in the order they were added
-            if (it->envelope.GetAmplitude(g_time) <= 0 && !it->envelope.bNoteOn)
-            {
-                notes_list.erase(it++);
-                break;
-            }
+            notes_list.erase(it++);
+            break;
         }
     }
 }
@@ -252,8 +254,6 @@ int main()
         ma_context_uninit(&context);
         return 1;
     }
-
-    notes_list.push_back(Note{52, EnvelopeADSR{g_time}});
 
     // Wait for user input (you can adjust this as needed)
     std::cout << "Press ESC to exit..." << std::endl;

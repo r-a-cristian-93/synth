@@ -14,9 +14,11 @@ struct EnvelopeADSR
     double dTriggerOnTime = 0.0;
     double dTriggerOffTime = 0.0;
 
-    bool bNoteOn = false;
+    bool bNoteOn = true;
 
-    EnvelopeADSR(const double dTime)
+    EnvelopeADSR() = delete;
+
+    EnvelopeADSR(const double &dTime)
     {
         NoteOn(dTime);
     }
