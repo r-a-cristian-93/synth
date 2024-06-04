@@ -1,17 +1,15 @@
-#include <list>
-#include <mutex>
-
 #include "Common.h"
 #include "Parameter.h"
 #include "OrganOscillator.h"
+#include <iostream>
+#include <math.h>
 
 OrganOscillator::OrganOscillator()
 {
-    for (int drawbar_index = 0; drawbar_index < DRAWBARS_COUNT; drawbar_index++)
+    for (int drawbar_index = 4; drawbar_index < DRAWBARS_COUNT; drawbar_index++)
     {
-        drawbar_amplitude[drawbar_index] = Parameter();
+        drawbar_amplitude[drawbar_index] = Parameter{0.0, 0.0};
     }
-
 }
 
 void OrganOscillator::updateParameters()
@@ -28,7 +26,7 @@ void OrganOscillator::updateParameters()
 }
 
 
-double OrganOscillator::generateSample(uint8_t midiNote, uint32_t time)
+double OrganOscillator::generateSample(uint8_t midiNote, double time)
 {
     double sample = 0;
 
@@ -37,7 +35,7 @@ double OrganOscillator::generateSample(uint8_t midiNote, uint32_t time)
         sample +=
             sin(
                 M_2PI * (note_frequency[midiNote][drawbar_index]) * time
-                // + (vibrato_amplitude.current_value* sin(M_2PI * vibrato_frequency.current_value * time)) // vibrato
+                + (vibrato_amplitude.current_value* sin(M_2PI * vibrato_frequency.current_value * time)) // vibrato
             )
                 * drawbar_amplitude[drawbar_index].current_value
                 * 0.1;

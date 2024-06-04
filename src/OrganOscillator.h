@@ -12,7 +12,7 @@ class OrganOscillator: public Oscillator
 public:
     OrganOscillator();
     ~OrganOscillator() {}
-    double generateSample(uint8_t midiNoteValue, uint32_t time);
+    double generateSample(uint8_t midiNoteValue, double time);
     void updateParameters();
 
 private:

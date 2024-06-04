@@ -23,7 +23,7 @@ public:
         this->velocity = velocity;
     }
 
-    double generateSample(double time)
+    double generateSample(double time) const
     {
         return oscillator->generateSample(midiNote, time) * envelope.getAmplitude(time);
     }

@@ -6,7 +6,7 @@
 class Oscillator
 {
 public:
-    virtual double generateSample(uint8_t midiNote, uint32_t time) = 0;
+    virtual double generateSample(uint8_t midiNote, double time) = 0;
     virtual void updateParameters() = 0;
     virtual ~Oscillator() = default;
 };

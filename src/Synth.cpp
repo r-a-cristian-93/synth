@@ -24,7 +24,7 @@ double g_amplitude = 1.0;
 std::list<Note> notes_list;
 std::mutex notesMutex;
 
-Instrument organ(new OrganOscillator(), EnvelopeAdsr());
+Instrument* organ = nullptr;
 
 void generateSamples(ma_device *pDevice, void *pOutput, ma_uint32 frameCount)
 {
@@ -35,7 +35,7 @@ void generateSamples(ma_device *pDevice, void *pOutput, ma_uint32 frameCount)
         double sample = 0;
         double noteSample = 0;
 
-        organ.oscillator->updateParameters();
+        organ->oscillator->updateParameters();
 
         {
             // Get a lock on notes_list
@@ -44,10 +44,8 @@ void generateSamples(ma_device *pDevice, void *pOutput, ma_uint32 frameCount)
             for (Note const &note : notes_list)
             {
                 // Generate sample for current note
-                noteSample = organ.oscillator->generateSample(note.midiNote, g_time);
-
-                // Apply envelope
-                // noteSample *= organ.envelope.getAmplitude(g_time);
+                noteSample = note.generateSample(g_time);
+                // noteSample = sin(M_2PI * (note_frequency[note.midiNote][0]) * g_time);
 
                 // Apply global amplitude
                 noteSample *= g_amplitude;
@@ -56,8 +54,6 @@ void generateSamples(ma_device *pDevice, void *pOutput, ma_uint32 frameCount)
                 sample += noteSample;
             }
         }
-
-        // std::cout << sample << " ";
 
         // Limit volume so we won't blow up speakers
         if (sample > 1.0) sample = 1.0;
@@ -111,7 +107,7 @@ void decode_message(double deltatime, std::vector<unsigned char> *buffer, void *
             const std::lock_guard<std::mutex> lock(notesMutex);
 
             notes_list.push_back(
-                Note{&organ, message->data.note_on.note, message->data.note_on.velocity}
+                Note{organ, message->data.note_on.note, message->data.note_on.velocity}
             );
         }
         break;
@@ -157,9 +153,17 @@ void decode_message(double deltatime, std::vector<unsigned char> *buffer, void *
     }
 }
 
+Oscillator *organOsc = nullptr;
 
 int main()
 {
+    OrganOscillator osc;// = new OrganOscillator();
+    organ = new Instrument(&osc, EnvelopeAdsr());
+
+    const double sample = osc.generateSample(60, 1200);
+
+    std::cout << sample << std::endl;
+
     ma_result result;
     ma_context context;
     ma_device device;
@@ -246,6 +250,8 @@ int main()
     }
 
     std::cout << "Internal sample rate: " << device.playback.internalSampleRate << std::endl;
+    std::cout << "PLayback device name: " << device.playback.name << std::endl;
+
 
     // Wait for user input (you can adjust this as needed)
     std::cout << "Press ESC to exit..." << std::endl;
