@@ -2,51 +2,25 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "build_cmake_jack",
-      "type": "shell",
-      "command": "cmake",
-      "args": [
-        "-B${workspaceFolder}/build/release_jack",
-        "-DBUILD_FOR_JACK=1"
-      ],
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      },
-    },
-    {
-      "label": "build_make_jack",
-      "type": "shell",
-      "command": "make",
-      "args": ["-C", "${workspaceFolder}/build/release_jack"],
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      },
-      "dependsOn": ["build_cmake_jack"],
-    },
-    {
-      "label": "build_cmake",
-      "type": "shell",
-      "command": "cmake",
-      "args": [
-        "-B${workspaceFolder}/build/release/"
-      ],
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      },
-    },
-    {
       "label": "build_make",
       "type": "shell",
-      "command": "make",
-      "args": ["-C", "${workspaceFolder}/build/release"],
+      "command": "cmake",
+      "args": [
+        "--no-warn-unused-cli",
+        "-DCMAKE_BUILD_TYPE:STRING=Debug",
+        "-DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE",
+        // "-DCMAKE_C_COMPILER:FILEPATH=C:\\mingw32\bin\\gcc.exe",
+        // "-DCMAKE_CXX_COMPILER:FILEPATH=C:\\mingw32\bin\\g++.exe",
+        "${workspaceFolder}",
+        "-B${workspaceFolder}/build/",
+        "-G \"MinGW Makefiles\"",
+      ],
       "group": {
-        "kind": "build",
-        "isDefault": true
-      },
-      "dependsOn": ["build_cmake"],
+          "kind": "build",
+          "isDefault": true
+      }
     }
   ]
 }
+
+

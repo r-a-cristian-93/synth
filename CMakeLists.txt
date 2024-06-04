@@ -5,32 +5,45 @@ set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0")
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -O0")
 
+message(STATUS "Configuring project for ${CMAKE_SYSTEM_NAME}")
+
+if(WIN32)
+  add_definitions(-D__WINDOWS_MM__)
+  message(STATUS "Compiling for Windows: __WINDOWS_MM__ flag added")
+elseif(UNIX AND NOT APPLE)
+  add_definitions(-D__LINUX_ALSA__)
+  message(STATUS "Compiling for Linux: __LINUX_ALSA__ flag added")
+endif()
 
 set (SOURCE_RTMIDI
-	include/RtMidi/RtMidi.cpp 
+  include/RtMidi/RtMidi.cpp
 )
 
 set (SOURCE_NANOMIDI
-	include/nanomidi/nanomidi_decoder.c
-	include/nanomidi/nanomidi_encoder.c
-	include/nanomidi/nanomidi_stream.c
-	include/nanomidi/msgprint.c
+  include/nanomidi/nanomidi_decoder.c
+  include/nanomidi/nanomidi_encoder.c
+  include/nanomidi/nanomidi_stream.c
+  include/nanomidi/msgprint.c
 )
 
 set (SOURCE_SYNTH
-	src/Synth.cpp
+  src/Synth.cpp
+  src/OrganOscillator.cpp
 )
 
-ADD_DEFINITIONS(-D__LINUX_ALSA__)
-
-IF (BUILD_FOR_JACK)
-	ADD_DEFINITIONS(
-		-DMA_ENABLE_ONLY_SPECIFIC_BACKENDS
-		-DMA_ENABLE_JACK
-	)
-ENDIF()
+if(BUILD_FOR_JACK)
+  add_definitions(
+    -DMA_ENABLE_ONLY_SPECIFIC_BACKENDS
+    -DMA_ENABLE_JACK
+  )
+  message(STATUS "Building with JACK support")
+endif()
 
 add_executable(Synth ${SOURCE_SYNTH} ${SOURCE_RTMIDI} ${SOURCE_NANOMIDI})
-target_link_libraries(Synth dl pthread m curses asound)
 target_include_directories(Synth PRIVATE ${PROJECT_SOURCE_DIR}/include)
 
+if(WIN32)
+  target_link_libraries(Synth winmm)
+elseif(UNIX AND NOT APPLE)
+  target_link_libraries(Synth dl pthread m curses asound)
+endif()

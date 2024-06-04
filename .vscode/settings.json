@@ -47,6 +47,20 @@
         "typeinfo": "cpp",
         "msgprint.h": "c",
         "decoder.h": "c",
-        "queue": "cpp"
+        "queue": "cpp",
+        "bitset": "cpp",
+        "chrono": "cpp",
+        "condition_variable": "cpp",
+        "cstring": "cpp",
+        "ctime": "cpp",
+        "list": "cpp",
+        "map": "cpp",
+        "ratio": "cpp",
+        "regex": "cpp",
+        "fstream": "cpp",
+        "mutex": "cpp",
+        "sstream": "cpp",
+        "thread": "cpp",
+        "cinttypes": "cpp"
     }
 }

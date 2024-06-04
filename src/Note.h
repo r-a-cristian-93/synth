@@ -3,15 +3,34 @@
 
 #include <cstdint>
 #include "EnvelopeADSR.h"
+#include "Oscillator.h"
+#include "Instrument.h"
 
-struct Note
+class Note
 {
-    uint8_t value = 0;
-    EnvelopeADSR envelope;
+public:
+    EnvelopeAdsr envelope;
+    Oscillator *oscillator;
+    uint8_t midiNote;
+    uint8_t velocity;
+
+public:
+    Note(Instrument *instrument, uint8_t midiNote, uint8_t velocity)
+    {
+        this->oscillator = instrument->oscillator;
+        this->envelope = EnvelopeAdsr(g_time);
+        this->midiNote = midiNote;
+        this->velocity = velocity;
+    }
+
+    double generateSample(double time)
+    {
+        return oscillator->generateSample(midiNote, time) * envelope.getAmplitude(time);
+    }
 
     bool operator==(const Note &other) const
     {
-        return value == other.value;
+        return midiNote == other.midiNote;
     }
 };
 

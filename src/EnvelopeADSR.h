@@ -3,7 +3,7 @@
 
 #include "Common.h"
 
-struct EnvelopeADSR
+struct EnvelopeAdsr
 {
     double dAttackDuration = 0.002;
     double dDecayDuration = 0.01;
@@ -16,14 +16,31 @@ struct EnvelopeADSR
 
     bool bNoteOn = true;
 
-    EnvelopeADSR() = delete;
+    EnvelopeAdsr() {}
 
-    EnvelopeADSR(const double &dTime)
+    EnvelopeAdsr(const double &dTime)
     {
         NoteOn(dTime);
     }
 
-    double GetAmplitude(const double dTime) const
+    EnvelopeAdsr& operator=(const EnvelopeAdsr& other)
+    {
+        if (this != &other)
+        {
+            dAttackDuration = other.dAttackDuration;
+            dDecayDuration = other.dDecayDuration;
+            dStartAmplitude = other.dStartAmplitude;
+            dSustainAmplitude = other.dSustainAmplitude;
+            dReleaseDuration = other.dReleaseDuration;
+            dTriggerOnTime = other.dTriggerOnTime;
+            dTriggerOffTime = other.dTriggerOffTime;
+            bNoteOn = other.bNoteOn;
+        }
+        return *this;
+    }
+
+
+    double getAmplitude(const double dTime) const
     {
         double dAmplitude = 0.0;
 

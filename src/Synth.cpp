@@ -9,16 +9,14 @@
 #include <nanomidi/decoder.h>
 #include <nanomidi/msgprint.h>
 #include <mutex>
+#include <string>
 
 #include "Common.h"
 #include "Parameter.h"
 #include "EnvelopeADSR.h"
 #include "MidiManager.h"
 #include "Note.h"
-
-Parameter drawbar_amplitude[DRAWBARS_COUNT] = {Parameter()};
-Parameter vibrato_amplitude{0.002, 0.002, 0.001, 0.1};
-Parameter vibrato_frequency{0.8, 0.8, 0.01, 6.8, 0.8, 0.0001};
+#include "SystemConfig.h"
 
 double g_time = 0.0;
 double g_amplitude = 1.0;
@@ -26,23 +24,9 @@ double g_amplitude = 1.0;
 std::list<Note> notes_list;
 std::mutex notesMutex;
 
-double organGenerateSample(unsigned int note, double time)
-{
-    double sample = 0;
+Instrument organ(new OrganOscillator(), EnvelopeAdsr());
 
-    for (int drawbar_index = 0; drawbar_index < DRAWBARS_COUNT; drawbar_index++)
-    {
-        sample +=
-            sin(
-                M_2PI * (note_frequency[note][drawbar_index]) * time
-                + (vibrato_amplitude.current_value * note_frequency[note][drawbar_index] * sin(M_2PI * vibrato_frequency.current_value * time)) // vibrato
-            )
-                * drawbar_amplitude[drawbar_index].current_value;
-    }
-    return sample;
-}
-
-void generateSamples(ma_device *pDevice, void *pOutput, const void *pInput, ma_uint32 frameCount)
+void generateSamples(ma_device *pDevice, void *pOutput, ma_uint32 frameCount)
 {
     float *pOutputF32 = (float *)pOutput;
 
@@ -51,13 +35,7 @@ void generateSamples(ma_device *pDevice, void *pOutput, const void *pInput, ma_u
         double sample = 0;
         double noteSample = 0;
 
-        // Update LFO
-        update_parameter(vibrato_amplitude);
-        update_parameter(vibrato_frequency);
-
-        // Update drawbar amplitude
-        for (int drawbar_index = 0; drawbar_index < DRAWBARS_COUNT; drawbar_index++)
-            update_parameter(drawbar_amplitude[drawbar_index]);
+        organ.oscillator->updateParameters();
 
         {
             // Get a lock on notes_list
@@ -66,21 +44,20 @@ void generateSamples(ma_device *pDevice, void *pOutput, const void *pInput, ma_u
             for (Note const &note : notes_list)
             {
                 // Generate sample for current note
-                noteSample = organGenerateSample(note.value, g_time);
-                
+                noteSample = organ.oscillator->generateSample(note.midiNote, g_time);
+
                 // Apply envelope
-                noteSample *= note.envelope.GetAmplitude(g_time);
-                
+                // noteSample *= organ.envelope.getAmplitude(g_time);
+
                 // Apply global amplitude
                 noteSample *= g_amplitude;
-
-                // Make room for more notes to be played simultaneously
-                noteSample *= 0.01;
 
                 // Add to current sample
                 sample += noteSample;
             }
         }
+
+        // std::cout << sample << " ";
 
         // Limit volume so we won't blow up speakers
         if (sample > 1.0) sample = 1.0;
@@ -92,7 +69,7 @@ void generateSamples(ma_device *pDevice, void *pOutput, const void *pInput, ma_u
         *pOutputF32++ = (float)sample;
 
         // Advance time
-        g_time += 1.0 / (double)pDevice->playback.internalSampleRate;
+        g_time += 1.0 / (double) pDevice->playback.internalSampleRate;
     }
 }
 
@@ -103,7 +80,7 @@ void clearSilencedNotes()
     for (auto it = notes_list.begin(); it != notes_list.end(); it++)
     {
         // Remove one by one in the order they were added
-        if (it->envelope.GetAmplitude(g_time) <= 0 && !it->envelope.bNoteOn)
+        if (it->envelope.getAmplitude(g_time) <= 0 && !it->envelope.bNoteOn)
         {
             notes_list.erase(it++);
             break;
@@ -114,7 +91,7 @@ void clearSilencedNotes()
 void dataCallback(ma_device *pDevice, void *pOutput, const void *pInput, ma_uint32 frameCount)
 {
     clearSilencedNotes();
-    generateSamples(pDevice, pOutput, pInput, frameCount);
+    generateSamples(pDevice, pOutput, frameCount);
 }
 
 void decode_message(double deltatime, std::vector<unsigned char> *buffer, void *userData)
@@ -125,7 +102,7 @@ void decode_message(double deltatime, std::vector<unsigned char> *buffer, void *
     // Nanomidi does not read from std::vector so send the address of the first element
     midi_istream_from_buffer(&istream, &buffer->at(0), nBytes);
     struct midi_message *message = midi_decode(&istream);
-    // print_msg(message);
+    print_msg(message);
 
     switch (message->type)
     {
@@ -134,7 +111,7 @@ void decode_message(double deltatime, std::vector<unsigned char> *buffer, void *
             const std::lock_guard<std::mutex> lock(notesMutex);
 
             notes_list.push_back(
-                Note{message->data.note_on.note, EnvelopeADSR(g_time)}
+                Note{&organ, message->data.note_on.note, message->data.note_on.velocity}
             );
         }
         break;
@@ -146,7 +123,7 @@ void decode_message(double deltatime, std::vector<unsigned char> *buffer, void *
 
             for (Note &note : notes_list)
             {
-                if (note.value == message->data.note_off.note && note.envelope.bNoteOn)
+                if (note.midiNote == message->data.note_off.note && note.envelope.bNoteOn)
                 {
                     note.envelope.NoteOff(g_time);
                     break;
@@ -155,28 +132,28 @@ void decode_message(double deltatime, std::vector<unsigned char> *buffer, void *
         }
         break;
 
-        case MIDI_TYPE_CONTROL_CHANGE:
-            uint8_t controller = message->data.control_change.controller;
-            uint8_t value = message->data.control_change.value;
+        // case MIDI_TYPE_CONTROL_CHANGE:
+        //     uint8_t controller = message->data.control_change.controller;
+        //     uint8_t value = message->data.control_change.value;
 
-            if (is_drawbar_controller(controller))
-                set_parameter_value(
-                    drawbar_amplitude[get_drawbar_id(controller)],
-                    value / 127.0f
-                );
-            if (is_vibrato_controller(controller))
-            {
-                double vibrato_value;
+        //     if (is_drawbar_controller(controller))
+        //         set_parameter_value(
+        //             drawbar_amplitude[get_drawbar_id(controller)],
+        //             value / 127.0f
+        //         );
+        //     if (is_vibrato_controller(controller))
+        //     {
+        //         double vibrato_value;
 
-                if (value == 0) vibrato_value = vibrato_frequency.min_value;
-                else vibrato_value = vibrato_frequency.max_value;
+        //         if (value == 0) vibrato_value = vibrato_frequency.min_value;
+        //         else vibrato_value = vibrato_frequency.max_value;
 
-                set_parameter_value(
-                    vibrato_frequency,
-                    vibrato_value
-                );
-            }
-            break;
+        //         set_parameter_value(
+        //             vibrato_frequency,
+        //             vibrato_value
+        //         );
+        //     }
+        //     break;
     }
 }
 
@@ -216,8 +193,21 @@ int main()
         std::cout << "  Input Port #" << i + 1 << ": " << portName << '\n';
     }
 
+    std::cout << "Pick midi input port: ";
+    std::string inputString = "";
+    int port = 0;
+
+    getline(std::cin, inputString);
+
+    try {
+        port = std::stoi(inputString);
+    }
+    catch (std::invalid_argument) {
+        return 1;
+    }
+
     // Set port
-    midiin->openPort(0);
+    midiin->openPort(port);
     midiin->setCallback(&decode_message);
 
     // Don't ignore sysex, timing, or active sensing messages.
@@ -255,40 +245,44 @@ int main()
         return 1;
     }
 
+    std::cout << "Internal sample rate: " << device.playback.internalSampleRate << std::endl;
+
     // Wait for user input (you can adjust this as needed)
     std::cout << "Press ESC to exit..." << std::endl;
-    while (true)
-    {
-        int input = getchar();
+    getchar();
 
-        if (input == 27)
-            break;
+    // while (true)
+    // {
+    //     int input = getchar();
 
-        switch (input)
-        {
-        case 'd':
-            increase_value(vibrato_amplitude);
-            break;
-        case 'c':
-            decrease_value(vibrato_amplitude);
-            break;
-        case 'f':
-            increase_value(vibrato_frequency);
-            break;
-        case 'v':
-            decrease_value(vibrato_frequency);
-            break;
-        }
+    //     if (input == 27)
+    //         break;
 
-        for (int i = 0; i < DRAWBARS_COUNT; i++)
-            std::cout << (i + 1) << " " << drawbar_amplitude[i].current_value << " " << drawbar_amplitude[i].target_value << std::endl;
+    //     switch (input)
+    //     {
+    //     case 'd':
+    //         increase_value(vibrato_amplitude);
+    //         break;
+    //     case 'c':
+    //         decrease_value(vibrato_amplitude);
+    //         break;
+    //     case 'f':
+    //         increase_value(vibrato_frequency);
+    //         break;
+    //     case 'v':
+    //         decrease_value(vibrato_frequency);
+    //         break;
+    //     }
 
-        std::cout << std::endl;
-        std::cout << "VIBRATO_AMPLITUDE:  " << vibrato_amplitude.current_value << std::endl;
-        std::cout << "VIBRATO_FREQUENCY:  " << vibrato_frequency.current_value << std::endl;
-        std::cout << "NOTES_LIST:  " << notes_list.size() << std::endl;
-        std::cout << std::endl;
-    }
+    //     for (int i = 0; i < DRAWBARS_COUNT; i++)
+    //         std::cout << (i + 1) << " " << drawbar_amplitude[i].current_value << " " << drawbar_amplitude[i].target_value << std::endl;
+
+    //     std::cout << std::endl;
+    //     std::cout << "VIBRATO_AMPLITUDE:  " << vibrato_amplitude.current_value << std::endl;
+    //     std::cout << "VIBRATO_FREQUENCY:  " << vibrato_frequency.current_value << std::endl;
+    //     std::cout << "NOTES_LIST:  " << notes_list.size() << std::endl;
+    //     std::cout << std::endl;
+    // }
 
     ma_device_uninit(&device);
     ma_context_uninit(&context);
