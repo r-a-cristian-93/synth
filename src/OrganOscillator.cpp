@@ -16,6 +16,9 @@ OrganOscillator::OrganOscillator()
     }
     generate_sine_table();
     generate_phase_increment();
+
+    this->vibrato_frequency = Parameter{ 6.0, 6.0, 0.1, 10.0, 0.0, 1.0 };
+    this->vibrato_amplitude = Parameter{ 2.0, 2.0, 0.1, 10.0, 0.0, 1.0 };
 }
 
 void OrganOscillator::updateParameters()
@@ -70,7 +73,8 @@ double OrganOscillator::generateSample(uint8_t midiNote, double time)
         //         * drawbar_amplitude[drawbar_index].current_value
         //         * 0.1;
 
-        sample += sine_table[(int)(phase_accumulator[drawbar_index] )] * 0.1;
+
+        sample += sine_table[(int)(phase_accumulator[drawbar_index] )] * 0.1 * drawbar_amplitude[drawbar_index].current_value;
         phase_accumulator[drawbar_index] += phase_increment[midiNote][drawbar_index];
 
         if (phase_accumulator[drawbar_index]  >= LUT_SIZE)

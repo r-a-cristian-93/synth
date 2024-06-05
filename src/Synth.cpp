@@ -84,6 +84,9 @@ void clearSilencedNotes()
     }
 }
 
+
+
+
 void dataCallback(ma_device *pDevice, void *pOutput, const void *pInput, ma_uint32 frameCount)
 {
     clearSilencedNotes();
@@ -252,7 +255,7 @@ int main()
     std::cout << "Internal sample rate: " << device.playback.internalSampleRate << std::endl;
     std::cout << "PLayback device name: " << device.playback.name << std::endl;
 
-    notes_list.push_back(Note{organ, 33, 127});
+    notes_list.push_back(Note{organ, 45, 127});
 
     // Wait for user input (you can adjust this as needed)
     std::cout << "Press ESC to exit..." << std::endl;
