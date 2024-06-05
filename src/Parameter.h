@@ -3,7 +3,7 @@
 
 #include <cmath>
 
-#include "Common.h"
+#include "Config.h"
 
 struct Parameter
 {

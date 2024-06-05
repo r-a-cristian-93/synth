@@ -11,20 +11,18 @@
 #include <mutex>
 #include <string>
 
-#include "Common.h"
+#include "Config.h"
 #include "Parameter.h"
 #include "EnvelopeADSR.h"
 #include "MidiManager.h"
 #include "Note.h"
-#include "SystemConfig.h"
+#include "OrganOscillator.h"
 
 double g_time = 0.0;
 double g_amplitude = 1.0;
 
 std::list<Note> notes_list;
 std::mutex notesMutex;
-
-Instrument* organ = nullptr;
 
 void generateSamples(ma_device *pDevice, void *pOutput, ma_uint32 frameCount)
 {
@@ -35,22 +33,16 @@ void generateSamples(ma_device *pDevice, void *pOutput, ma_uint32 frameCount)
         double sample = 0;
         double noteSample = 0;
 
-        organ->oscillator->updateParameters();
+        osc_update();
 
         {
             // Get a lock on notes_list
             const std::lock_guard<std::mutex> lock(notesMutex);
 
-            for (Note const &note : notes_list)
+            for (Note &note : notes_list)
             {
-                // Generate sample for current note
-                noteSample = note.generateSample(g_time);
-                // noteSample = sin(M_2PI * (note_frequency[note.midiNote][0]) * g_time);
-
-                // Apply global amplitude
+                noteSample = osc_generate_sample(note);
                 noteSample *= g_amplitude;
-
-                // Add to current sample
                 sample += noteSample;
             }
         }
@@ -110,7 +102,7 @@ void decode_message(double deltatime, std::vector<unsigned char> *buffer, void *
             const std::lock_guard<std::mutex> lock(notesMutex);
 
             notes_list.push_back(
-                Note{organ, message->data.note_on.note, message->data.note_on.velocity}
+                Note{message->data.note_on.note, EnvelopeAdsr(g_time)}
             );
         }
         break;
@@ -156,16 +148,11 @@ void decode_message(double deltatime, std::vector<unsigned char> *buffer, void *
     }
 }
 
-Oscillator *organOsc = nullptr;
+
 
 int main()
 {
-    OrganOscillator osc;// = new OrganOscillator();
-    organ = new Instrument(&osc, EnvelopeAdsr());
-
-    const double sample = osc.generateSample(60, 1200);
-
-    std::cout << sample << std::endl;
+    osc_init();
 
     ma_result result;
     ma_context context;

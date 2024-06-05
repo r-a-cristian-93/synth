@@ -1,8 +1,6 @@
 #ifndef ENVELOPE_ADSR_H
 #define ENVELOPE_ADSR_H
 
-#include "Common.h"
-
 struct EnvelopeAdsr
 {
     double dAttackDuration = 0.005;
