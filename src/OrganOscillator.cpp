@@ -4,12 +4,18 @@
 #include <iostream>
 #include <math.h>
 
+
+void generate_sine_table();
+void generate_phase_increment();
+
 OrganOscillator::OrganOscillator()
 {
     for (int drawbar_index = 4; drawbar_index < DRAWBARS_COUNT; drawbar_index++)
     {
         drawbar_amplitude[drawbar_index] = Parameter{0.0, 0.0};
     }
+    generate_sine_table();
+    generate_phase_increment();
 }
 
 void OrganOscillator::updateParameters()
@@ -26,27 +32,62 @@ void OrganOscillator::updateParameters()
 }
 
 
+#define LUT_SIZE 1024
+#define PHASE_LUT_SCALE_FACTOR LUT_SIZE / M_2PI
+
+float sine_table[LUT_SIZE];
+float phase_increment[MIDI_NOTES_COUNT][DRAWBARS_COUNT] = {{0}};
+float phase_accumulator[DRAWBARS_COUNT] = {0};
+
+void generate_sine_table() {
+    for (int i = 0; i < LUT_SIZE; i++) {
+        sine_table[i] = sin(M_2PI * i / LUT_SIZE);
+    }
+}
+
+void generate_phase_increment() {
+    for (int midiNote = 0; midiNote < MIDI_NOTES_COUNT; midiNote++) {
+        for (int drawbar_index = 0; drawbar_index < DRAWBARS_COUNT; drawbar_index++) {
+            phase_increment[midiNote][drawbar_index] =
+                note_frequency[midiNote][drawbar_index] *
+                TWO_PI_OVER_SAMPLE_RATE * PHASE_LUT_SCALE_FACTOR ;
+        }
+    }
+
+}
+
 double OrganOscillator::generateSample(uint8_t midiNote, double time)
 {
     double sample = 0;
 
     for (int drawbar_index = 0; drawbar_index < DRAWBARS_COUNT; drawbar_index++)
     {
-        sample +=
-            sin(
-                M_2PI * (note_frequency[midiNote][drawbar_index]) * time
-                + (vibrato_amplitude.current_value* sin(M_2PI * vibrato_frequency.current_value * time)) // vibrato
-            )
-                * drawbar_amplitude[drawbar_index].current_value
-                * 0.1;
+        // sample +=
+        //     sin(
+        //         M_2PI * (note_frequency[midiNote][drawbar_index]) * time
+        //         + (vibrato_amplitude.current_value* sin(M_2PI * vibrato_frequency.current_value * time)) // vibrato
+        //     )
+        //         * drawbar_amplitude[drawbar_index].current_value
+        //         * 0.1;
+
+        sample += sine_table[(int)(phase_accumulator[drawbar_index] )] * 0.1;
+        phase_accumulator[drawbar_index] += phase_increment[midiNote][drawbar_index];
+
+        if (phase_accumulator[drawbar_index]  >= LUT_SIZE)
+            phase_accumulator[drawbar_index]  -= LUT_SIZE;
+
+        if (phase_accumulator[drawbar_index]  < 0)
+            phase_accumulator[drawbar_index]  += LUT_SIZE;
     }
+
+    // sample = sin(phase_accumulator);
 
     return sample;
 }
 
-#include "Common.h"
 
-double note_frequency[MIDI_NOTES_COUNT][DRAWBARS_COUNT] = {
+
+float note_frequency[MIDI_NOTES_COUNT][DRAWBARS_COUNT] = {
     {4.09, 8.18, 12.25, 16.35, 24.51, 32.70, 41.21, 49.02, 65.41},
     {4.33, 8.66, 12.98, 17.32, 25.97, 34.65, 43.66, 51.93, 69.30},
     {4.59, 9.18, 13.75, 18.35, 27.51, 36.71, 46.26, 55.02, 73.42},

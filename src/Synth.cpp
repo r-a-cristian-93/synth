@@ -252,7 +252,7 @@ int main()
     std::cout << "Internal sample rate: " << device.playback.internalSampleRate << std::endl;
     std::cout << "PLayback device name: " << device.playback.name << std::endl;
 
-    notes_list.push_back(Note{organ, 81, 127});
+    notes_list.push_back(Note{organ, 33, 127});
 
     // Wait for user input (you can adjust this as needed)
     std::cout << "Press ESC to exit..." << std::endl;

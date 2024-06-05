@@ -5,7 +5,7 @@
 #include "Parameter.h"
 #include "Oscillator.h"
 
-extern double note_frequency[MIDI_NOTES_COUNT][DRAWBARS_COUNT];
+extern float note_frequency[MIDI_NOTES_COUNT][DRAWBARS_COUNT];
 
 class OrganOscillator: public Oscillator
 {
