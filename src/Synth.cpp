@@ -76,7 +76,7 @@ void clearSilencedNotes()
     for (auto it = notes_list.begin(); it != notes_list.end(); it++)
     {
         // Remove one by one in the order they were added
-        if (it->envelope.getAmplitude(g_time) <= 0 && !it->envelope.bNoteOn)
+        if (std::abs(it->envelope.getAmplitude(g_time)) <= 0.001 && !it->envelope.bNoteOn)
         {
             notes_list.erase(it++);
             break;
@@ -204,14 +204,17 @@ int main()
     std::string inputString = "";
     int port = 0;
 
-    // getline(std::cin, inputString);
+    getline(std::cin, inputString);
 
-    // try {
-    //     port = std::stoi(inputString);
-    // }
-    // catch (std::invalid_argument) {
-    //     return 1;
-    // }
+    try {
+        port = std::stoi(inputString);
+    }
+    catch (std::invalid_argument) {
+        return 1;
+    }
+
+    // notes_list.push_back(Note{organ, 45, 127});
+
 
     // Set port
     midiin->openPort(port);
@@ -254,8 +257,6 @@ int main()
 
     std::cout << "Internal sample rate: " << device.playback.internalSampleRate << std::endl;
     std::cout << "PLayback device name: " << device.playback.name << std::endl;
-
-    notes_list.push_back(Note{organ, 45, 127});
 
     // Wait for user input (you can adjust this as needed)
     std::cout << "Press ESC to exit..." << std::endl;

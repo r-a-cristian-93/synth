@@ -5,7 +5,7 @@
 
 struct EnvelopeAdsr
 {
-    double dAttackDuration = 0.002;
+    double dAttackDuration = 0.005;
     double dDecayDuration = 0.01;
     double dStartAmplitude = 1.0;
     double dSustainAmplitude = 0.8;

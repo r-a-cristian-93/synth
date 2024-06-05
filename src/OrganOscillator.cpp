@@ -40,7 +40,7 @@ void OrganOscillator::updateParameters()
 
 float sine_table[LUT_SIZE];
 float phase_increment[MIDI_NOTES_COUNT][DRAWBARS_COUNT] = {{0}};
-float phase_accumulator[DRAWBARS_COUNT] = {0};
+float phase_accumulator[MIDI_NOTES_COUNT][DRAWBARS_COUNT] = {{0}};
 
 void generate_sine_table() {
     for (int i = 0; i < LUT_SIZE; i++) {
@@ -74,14 +74,14 @@ double OrganOscillator::generateSample(uint8_t midiNote, double time)
         //         * 0.1;
 
 
-        sample += sine_table[(int)(phase_accumulator[drawbar_index] )] * 0.1 * drawbar_amplitude[drawbar_index].current_value;
-        phase_accumulator[drawbar_index] += phase_increment[midiNote][drawbar_index];
+        sample += sine_table[(int)(phase_accumulator[midiNote][drawbar_index] )] * 0.1 * drawbar_amplitude[drawbar_index].current_value;
+        phase_accumulator[midiNote][drawbar_index] += phase_increment[midiNote][drawbar_index];
 
-        if (phase_accumulator[drawbar_index]  >= LUT_SIZE)
-            phase_accumulator[drawbar_index]  -= LUT_SIZE;
+        if (phase_accumulator[midiNote][drawbar_index]  >= LUT_SIZE)
+            phase_accumulator[midiNote][drawbar_index]  -= LUT_SIZE;
 
-        if (phase_accumulator[drawbar_index]  < 0)
-            phase_accumulator[drawbar_index]  += LUT_SIZE;
+        if (phase_accumulator[midiNote][drawbar_index]  < 0)
+            phase_accumulator[midiNote][drawbar_index]  += LUT_SIZE;
     }
 
     // sample = sin(phase_accumulator);
