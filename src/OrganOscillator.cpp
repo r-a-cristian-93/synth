@@ -32,6 +32,11 @@ void osc_init()
 {
     generate_sine_table();
     generate_phase_increment();
+
+    for (int index = 4; index <= DRAWBARS_COUNT ; index++)
+    {
+        drawbar_amplitude[index] = { 0.0, 0.0, 0.1, 10.0, 0.0, 1.0 };
+    }
 }
 
 void osc_update()

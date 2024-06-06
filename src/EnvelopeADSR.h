@@ -19,9 +19,9 @@ struct EnvelopeAdsr
     float amplitudeValue;
 
     float attackRate = 10.0 / SAMPLE_RATE;
-    float decayRate = 0.01 / SAMPLE_RATE;
-    float sustainLevel = 0.8;
-    float releaseRate = 100.0 / SAMPLE_RATE;
+    float decayRate = 2.0 / SAMPLE_RATE;
+    float sustainLevel = 0.5;
+    float releaseRate = 5.0 / SAMPLE_RATE;
 
     EnvelopeAdsr()
     {
