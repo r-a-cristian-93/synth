@@ -19,7 +19,7 @@
 #include "OrganOscillator.h"
 
 double g_time = 0.0;
-double g_amplitude = 1.0;
+double g_amplitude = 0.3;
 
 std::list<Note> notes_list;
 std::mutex notesMutex;
@@ -68,7 +68,7 @@ void clearSilencedNotes()
     for (auto it = notes_list.begin(); it != notes_list.end(); it++)
     {
         // Remove one by one in the order they were added
-        if (std::abs(it->envelope.getAmplitude(g_time)) <= 0.001 && !it->envelope.bNoteOn)
+        if (std::abs(it->envelope.getAmplitude()) <= 0.001 && !it->envelope.bNoteOn)
         {
             notes_list.erase(it++);
             break;
@@ -102,7 +102,7 @@ void decode_message(double deltatime, std::vector<unsigned char> *buffer, void *
             const std::lock_guard<std::mutex> lock(notesMutex);
 
             notes_list.push_back(
-                Note{message->data.note_on.note, EnvelopeAdsr(g_time)}
+                Note{message->data.note_on.note, EnvelopeAdsr()}
             );
         }
         break;
@@ -116,7 +116,7 @@ void decode_message(double deltatime, std::vector<unsigned char> *buffer, void *
             {
                 if (note.midiNote == message->data.note_off.note && note.envelope.bNoteOn)
                 {
-                    note.envelope.NoteOff(g_time);
+                    note.envelope.NoteOff();
                     break;
                 }
             }

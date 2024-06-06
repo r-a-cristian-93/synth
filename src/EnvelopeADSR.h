@@ -1,84 +1,74 @@
 #ifndef ENVELOPE_ADSR_H
 #define ENVELOPE_ADSR_H
 
+#include "Config.h"
+
+enum ADSR_STATE{
+    ADSR_IDLE = 0,
+    ADSR_ATTACK,
+    ADSR_DECAY,
+    ADSR_SUSTAIN,
+    ADSR_RELEASE
+};
+
 struct EnvelopeAdsr
 {
-    double dAttackDuration = 0.005;
-    double dDecayDuration = 0.01;
-    double dStartAmplitude = 1.0;
-    double dSustainAmplitude = 0.8;
-    double dReleaseDuration = 0.002;
-
-    double dTriggerOnTime = 0.0;
-    double dTriggerOffTime = 0.0;
-
     bool bNoteOn = true;
+    ADSR_STATE state = ADSR_ATTACK;
 
-    EnvelopeAdsr() {}
+    float amplitudeValue;
 
-    EnvelopeAdsr(const double &dTime)
+    float attackRate = 10.0 / SAMPLE_RATE;
+    float decayRate = 0.01 / SAMPLE_RATE;
+    float sustainLevel = 0.8;
+    float releaseRate = 100.0 / SAMPLE_RATE;
+
+    EnvelopeAdsr()
     {
-        NoteOn(dTime);
+        NoteOn();
     }
 
-    EnvelopeAdsr& operator=(const EnvelopeAdsr& other)
-    {
-        if (this != &other)
-        {
-            dAttackDuration = other.dAttackDuration;
-            dDecayDuration = other.dDecayDuration;
-            dStartAmplitude = other.dStartAmplitude;
-            dSustainAmplitude = other.dSustainAmplitude;
-            dReleaseDuration = other.dReleaseDuration;
-            dTriggerOnTime = other.dTriggerOnTime;
-            dTriggerOffTime = other.dTriggerOffTime;
-            bNoteOn = other.bNoteOn;
+    float getAmplitude() {
+        switch (state) {
+            case ADSR_IDLE:
+                break;
+            case ADSR_ATTACK:
+                amplitudeValue += attackRate;
+                if (amplitudeValue >= 1.0) {
+                    amplitudeValue = 1.0;
+                    state = ADSR_DECAY;
+                }
+                break;
+            case ADSR_DECAY:
+                amplitudeValue -= decayRate;
+                if (amplitudeValue <= sustainLevel) {
+                    amplitudeValue = sustainLevel;
+                    state = ADSR_SUSTAIN;
+                }
+                break;
+            case ADSR_SUSTAIN:
+                break;
+            case ADSR_RELEASE:
+                amplitudeValue -= releaseRate;
+                if (amplitudeValue <= 0.0) {
+                    amplitudeValue = 0.0;
+                    state = ADSR_IDLE;
+                }
         }
-        return *this;
+
+        return amplitudeValue;
     }
 
-
-    double getAmplitude(const double dTime) const
+    void NoteOn()
     {
-        double dAmplitude = 0.0;
-
-        if (bNoteOn)
-        {
-            double dLifeTime = dTime - dTriggerOnTime;
-
-            // Attack
-            if (dLifeTime <= dAttackDuration)
-                dAmplitude = (dLifeTime / dAttackDuration) * dStartAmplitude;
-
-            // Decay
-            if (dLifeTime > dAttackDuration && dLifeTime <= (dAttackDuration + dDecayDuration))
-                dAmplitude = ((dLifeTime - dAttackDuration) / dDecayDuration) * (dSustainAmplitude - dStartAmplitude) + dStartAmplitude;
-
-            // Sustain
-            if (dLifeTime > dAttackDuration + dDecayDuration)
-                dAmplitude = dSustainAmplitude;
-        }
-        else
-        {
-            dAmplitude = ((dTime - dTriggerOffTime) / dReleaseDuration) * (0.0 - dSustainAmplitude) + dSustainAmplitude;
-        }
-
-        if (dAmplitude < PARAM_LOWEST_VALUE)
-            dAmplitude = 0.0;
-
-        return dAmplitude;
-    }
-
-    void NoteOn(const double dTime)
-    {
-        dTriggerOnTime = dTime;
         bNoteOn = true;
+        state = ADSR_ATTACK;
     }
 
-    void NoteOff(const double dTime)
+    void NoteOff()
     {
-        dTriggerOffTime = dTime;
         bNoteOn = false;
+        state = ADSR_RELEASE;
     }
 };
 

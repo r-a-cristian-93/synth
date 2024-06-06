@@ -51,7 +51,11 @@ double osc_generate_sample(Note& note)
 
     for (int drawbar_index = 0; drawbar_index < DRAWBARS_COUNT; drawbar_index++)
     {
-        sample += sine_table[(int)(note.phaseAccumulator[drawbar_index] )] * 0.1 * drawbar_amplitude[drawbar_index].current_value;
+
+        sample += sine_table[(int)(note.phaseAccumulator[drawbar_index] )]
+            * drawbar_amplitude[drawbar_index].current_value * note.envelope.getAmplitude()
+            * 0.1;
+
         note.phaseAccumulator[drawbar_index] += phase_increment[note.midiNote][drawbar_index];
 
         if (note.phaseAccumulator[drawbar_index]  >= LUT_SIZE)
