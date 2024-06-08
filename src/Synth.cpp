@@ -1,6 +1,6 @@
 #include "AudioDriver.h"
+#include "MidiDriver.h"
 #include "OrganSynthesizer.h"
-
 
 int main()
 {

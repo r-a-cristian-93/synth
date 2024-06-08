@@ -10,7 +10,5 @@
 
 void dataCallback(ma_device *pDevice, void *pOutput, const void *pInput, ma_uint32 frameCount);
 
-int midi_init();
-void midi_close();
 
 #endif

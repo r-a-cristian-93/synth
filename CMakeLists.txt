@@ -32,6 +32,9 @@ set (SOURCE_SYNTH
   src/OrganOscillator.cpp
   src/Envelope.cpp
   src/AudioDriver.cpp
+  src/MidiDriver.cpp
+  src/SharedResources.cpp
+  src/MidiManager.cpp
 )
 
 if(BUILD_FOR_JACK)
