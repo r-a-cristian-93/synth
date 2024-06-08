@@ -4,14 +4,13 @@
 #include <vector>
 #include <iostream>
 
+#include <miniaudio/miniaudio.h>
+
 #include "OrganOscillator.h"
 
+void dataCallback(ma_device *pDevice, void *pOutput, const void *pInput, ma_uint32 frameCount);
 
 int midi_init();
 void midi_close();
-
-int audio_driver_init();
-void audio_driver_close();
-
 
 #endif

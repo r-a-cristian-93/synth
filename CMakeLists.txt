@@ -31,6 +31,7 @@ set (SOURCE_SYNTH
   src/OrganSynthesizer.cpp
   src/OrganOscillator.cpp
   src/Envelope.cpp
+  src/AudioDriver.cpp
 )
 
 if(BUILD_FOR_JACK)
