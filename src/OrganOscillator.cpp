@@ -7,9 +7,23 @@
 float sine_table[LUT_SIZE];
 float phase_increment[MIDI_NOTES_COUNT][DRAWBARS_COUNT] = {{0}};
 
+#define VIBRATO_AMPLITUDE 0.15
+#define VIBRATO_FAST (3.0 * PHASE_LUT_SCALE_FACTOR)
+#define VIBRATO_SLOW (1.0 * PHASE_LUT_SCALE_FACTOR)
+
 Parameter drawbar_amplitude[DRAWBARS_COUNT];
-Parameter vibrato_amplitude{ 6.0, 6.0, 0.1, 10.0, 0.0, 1.0 };
-Parameter vibrato_frequency{ 2.0, 2.0, 0.1, 10.0, 0.0, 1.0 };
+
+Parameter vibrato_phase_increment
+{
+    VIBRATO_FAST,
+    VIBRATO_FAST,
+    0.001,
+    VIBRATO_FAST,
+    0.0,
+    0.01 / SAMPLE_RATE
+};
+
+float vibrato_phase_accumulator;
 
 void generate_sine_table() {
     for (int i = 0; i < LUT_SIZE; i++) {
@@ -21,8 +35,7 @@ void generate_phase_increment() {
     for (int midiNote = 0; midiNote < MIDI_NOTES_COUNT; midiNote++) {
         for (int drawbar_index = 0; drawbar_index < DRAWBARS_COUNT; drawbar_index++) {
             phase_increment[midiNote][drawbar_index] =
-                note_frequency[midiNote][drawbar_index] *
-                TWO_PI_OVER_SAMPLE_RATE * PHASE_LUT_SCALE_FACTOR ;
+                note_frequency[midiNote][drawbar_index] * PHASE_LUT_SCALE_FACTOR ;
         }
     }
 }
@@ -35,8 +48,7 @@ void osc_init()
 
 void osc_update()
 {
-    vibrato_amplitude.update();
-    vibrato_frequency.update();
+    vibrato_phase_increment.update();
 
     for (int drawbar_index = 0; drawbar_index < DRAWBARS_COUNT; drawbar_index++)
     {
@@ -62,13 +74,38 @@ double osc_generate_sample(Note& note)
 
         if (note.phaseAccumulator[drawbar_index]  < 0)
             note.phaseAccumulator[drawbar_index]  += LUT_SIZE;
+
+
     }
+
+    // + 1.0 to bring it to positive values
+    sample *= (sine_table[(int)vibrato_phase_accumulator] * VIBRATO_AMPLITUDE + 1.0);
+
+    vibrato_phase_accumulator += vibrato_phase_increment.current_value;
+
+    if (vibrato_phase_accumulator  >= LUT_SIZE)
+        vibrato_phase_accumulator  -= LUT_SIZE;
+
+    if (vibrato_phase_accumulator  < 0)
+        vibrato_phase_accumulator  += LUT_SIZE;
 
     return sample;
 }
 
 void osc_set_drawbar_amplitude(int drawbar_index, float amplitude) {
     drawbar_amplitude[drawbar_index].target_value = amplitude;
+}
+
+void osc_set_vibrato_fast() {
+    vibrato_phase_increment.setValue(VIBRATO_FAST);
+}
+
+void osc_set_vibrato_slow() {
+    vibrato_phase_increment.setValue(VIBRATO_SLOW);
+}
+
+void osc_set_vibrato_off() {
+    vibrato_phase_increment.setValue(0.0);
 }
 
 float note_frequency[MIDI_NOTES_COUNT][DRAWBARS_COUNT] = {

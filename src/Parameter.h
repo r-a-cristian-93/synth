@@ -15,15 +15,12 @@ struct Parameter
     const double min_value = 0.0;
     const double update_rate = 20.0 / SAMPLE_RATE;
 
-    double change_time_start = 0.0;
-
     Parameter& operator=(const Parameter& other)
     {
         if (this != &other)
         {
             current_value = other.current_value;
             target_value = other.target_value;
-            change_time_start = other.change_time_start;
         }
         return *this;
     }
@@ -31,8 +28,6 @@ struct Parameter
 
     void setValue(double value)
     {
-        change_time_start = g_time;
-
         if (value <= max_value) target_value = value;
         else target_value = max_value;
 
@@ -42,16 +37,12 @@ struct Parameter
 
     void increaseValue()
     {
-        change_time_start = g_time;
-
         if (target_value < max_value)
             target_value += increment_value;
     }
 
     void decreaseValue()
     {
-        change_time_start = g_time;
-
         if (target_value > min_value)
             target_value -= increment_value;
 

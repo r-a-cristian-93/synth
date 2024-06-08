@@ -5,17 +5,19 @@
 #include <cstdint>
 
 std::map<uint8_t, unsigned int> midi_cc_drawbar_id_map = {
-    {70, 0},
-    {71, 1},
-    {72, 2},
-    {73, 3},
-    {74, 4},
-    {75, 5},
-    {76, 6},
-    {77, 7},
-    {78, 8}};
+    {102, 0},
+    {103, 1},
+    {104, 2},
+    {105, 3},
+    {106, 4},
+    {107, 5},
+    {108, 6},
+    {109, 7},
+    {110, 8}};
 
-#define MIDI_CC_VIBRATO 10
+#define MIDI_CC_VIBRATO_FAST 111
+#define MIDI_CC_VIBRATO_SLOW 112
+#define MIDI_CC_VIBRATO_OFF 113
 
 bool is_drawbar_controller(uint8_t controller)
 {
@@ -28,14 +30,6 @@ bool is_drawbar_controller(uint8_t controller)
 unsigned int get_drawbar_id(uint8_t controller)
 {
     return midi_cc_drawbar_id_map.find(controller)->second;
-}
-
-bool is_vibrato_controller(uint8_t controller)
-{
-    if (controller == MIDI_CC_VIBRATO)
-        return true;
-    else
-        return false;
 }
 
 #endif

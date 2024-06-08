@@ -127,18 +127,16 @@ void decode_message(double deltatime, std::vector<unsigned char> *buffer, void *
 
         if (is_drawbar_controller(controller))
             osc_set_drawbar_amplitude(get_drawbar_id(controller), value / 127.0f);
-        // if (is_vibrato_controller(controller))
-        // {
-        //     double vibrato_value;
 
-        //     if (value == 0) vibrato_value = vibrato_frequency.min_value;
-        //     else vibrato_value = vibrato_frequency.max_value;
+        if (controller == MIDI_CC_VIBRATO_FAST)
+            osc_set_vibrato_fast();
 
-        //     set_parameter_value(
-        //         vibrato_frequency,
-        //         vibrato_value
-        //     );
-        // }
+        if (controller == MIDI_CC_VIBRATO_SLOW)
+            osc_set_vibrato_slow();
+
+        if (controller == MIDI_CC_VIBRATO_OFF)
+            osc_set_vibrato_off();
+
         break;
     }
 }
