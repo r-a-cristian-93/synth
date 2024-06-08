@@ -13,7 +13,6 @@ enum ADSR_STATE{
 
 struct EnvelopeAdsr
 {
-    bool bNoteOn = true;
     ADSR_STATE state = ADSR_ATTACK;
 
     float amplitudeValue;
@@ -61,13 +60,11 @@ struct EnvelopeAdsr
 
     void NoteOn()
     {
-        bNoteOn = true;
         state = ADSR_ATTACK;
     }
 
     void NoteOff()
     {
-        bNoteOn = false;
         state = ADSR_RELEASE;
     }
 };

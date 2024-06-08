@@ -101,9 +101,7 @@ void decode_message(double deltatime, std::vector<unsigned char> *buffer, void *
         {
             const std::lock_guard<std::mutex> lock(notesMutex);
 
-            notes_list.push_back(
-                Note{message->data.note_on.note, EnvelopeAdsr()}
-            );
+            notes_list.emplace_back(Note{message->data.note_on.note, EnvelopeAdsr()});
         }
         break;
 
@@ -114,7 +112,7 @@ void decode_message(double deltatime, std::vector<unsigned char> *buffer, void *
 
             for (Note &note : notes_list)
             {
-                if (note.midiNote == message->data.note_off.note && note.envelope.bNoteOn)
+                if (note.midiNote == message->data.note_off.note && note.envelope.state != ADSR_IDLE)
                 {
                     note.envelope.NoteOff();
                     break;
