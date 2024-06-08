@@ -18,8 +18,6 @@
 #include "Note.h"
 #include "OrganOscillator.h"
 
-double g_time = 0.0;
-
 std::list<Note> notes_list;
 std::mutex notesMutex;
 
@@ -30,7 +28,6 @@ void generateSamples(ma_device *pDevice, void *pOutput, ma_uint32 frameCount)
     for (ma_uint32 iFrame = 0; iFrame < frameCount; iFrame++)
     {
         double sample = 0;
-        double noteSample = 0;
 
         osc_update();
 
@@ -40,8 +37,7 @@ void generateSamples(ma_device *pDevice, void *pOutput, ma_uint32 frameCount)
 
             for (Note &note : notes_list)
             {
-                noteSample = osc_generate_sample(note);
-                sample += noteSample;
+                sample += osc_generate_sample(note);
             }
         }
 
@@ -55,10 +51,6 @@ void generateSamples(ma_device *pDevice, void *pOutput, ma_uint32 frameCount)
         *pOutputF32++ = (float)sample;
         // Add sample to right channel
         *pOutputF32++ = (float)sample;
-
-        // Advance time
-        g_time += 1.0 / (double)pDevice->playback.internalSampleRate;
-
     }
 }
 

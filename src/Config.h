@@ -17,7 +17,4 @@
 #define HUMAN_FINGERS_COUNT 10
 #define HEADROOM_SCALE_FACTOR (MAX_AMPLITUDE / DRAWBARS_COUNT / HUMAN_FINGERS_COUNT)
 
-extern double g_time;
-extern double g_amplitude;
-
 #endif
