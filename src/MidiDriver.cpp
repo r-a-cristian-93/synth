@@ -1,8 +1,5 @@
 #include "MidiDriver.h"
 
-#include <mutex>
-#include <list>
-
 #include <RtMidi/RtMidi.h>
 #include <nanomidi/decoder.h>
 #include <nanomidi/msgprint.h>

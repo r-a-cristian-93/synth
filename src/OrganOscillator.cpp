@@ -1,8 +1,10 @@
-#include "Config.h"
-#include "Parameter.h"
 #include "OrganOscillator.h"
+
 #include <iostream>
 #include <math.h>
+
+#include "Config.h"
+#include "Parameter.h"
 
 float sine_table[LUT_SIZE];
 float phase_increment[MIDI_NOTES_COUNT][DRAWBARS_COUNT] = {{0}};
@@ -74,8 +76,6 @@ double osc_generate_sample(Note& note)
 
         if (note.phaseAccumulator[drawbar_index]  < 0)
             note.phaseAccumulator[drawbar_index]  += LUT_SIZE;
-
-
     }
 
     // + 1.0 to bring it to positive values

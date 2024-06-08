@@ -1,7 +1,6 @@
 #ifndef MIDI_MANAGER_H
 #define MIDI_MANAGER_H
 
-#include <map>
 #include <cstdint>
 
 #define MIDI_CC_VIBRATO_FAST 111

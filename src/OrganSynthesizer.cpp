@@ -2,22 +2,7 @@
 
 #include "OrganSynthesizer.h"
 
-#include <cmath>
-#include <list>
-#include <mutex>
-
-#include <RtMidi/RtMidi.h>
-#include <nanomidi/decoder.h>
-#include <nanomidi/msgprint.h>
-#include <miniaudio/miniaudio.h>
-
 #include "SharedResources.h"
-#include "Config.h"
-#include "Parameter.h"
-#include "Envelope.h"
-#include "MidiManager.h"
-#include "Note.h"
-
 
 void generateSamples(ma_device* pDevice, float* pOutput, ma_uint32 frameCount)
 {
@@ -28,7 +13,6 @@ void generateSamples(ma_device* pDevice, float* pOutput, ma_uint32 frameCount)
         osc_update();
 
         {
-            // Get a lock on notesList
             const std::lock_guard<std::mutex> lock(notesMutex);
 
             for (Note &note : notesList)

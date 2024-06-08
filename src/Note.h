@@ -11,5 +11,4 @@ struct Note
     float phaseAccumulator[DRAWBARS_COUNT] = {0.0};
 };
 
-
 #endif

@@ -1,8 +1,6 @@
 #ifndef PARAMETER_H
 #define PARAMETER_H
 
-#include <cmath>
-
 #include "Config.h"
 
 struct Parameter

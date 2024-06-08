@@ -1,5 +1,7 @@
 #include "MidiManager.h"
 
+#include <map>
+
 std::map<uint8_t, unsigned int> midi_cc_drawbar_id_map = {
     {102, 0},
     {103, 1},
