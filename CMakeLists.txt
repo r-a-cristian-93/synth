@@ -29,6 +29,7 @@ set (SOURCE_NANOMIDI
 set (SOURCE_SYNTH
   src/Synth.cpp
   src/OrganOscillator.cpp
+  src/Envelope.cpp
 )
 
 if(BUILD_FOR_JACK)

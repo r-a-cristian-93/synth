@@ -13,7 +13,7 @@
 
 #include "Config.h"
 #include "Parameter.h"
-#include "EnvelopeADSR.h"
+#include "Envelope.h"
 #include "MidiManager.h"
 #include "Note.h"
 #include "OrganOscillator.h"
@@ -48,8 +48,10 @@ void generateSamples(ma_device *pDevice, void *pOutput, ma_uint32 frameCount)
         }
 
         // Limit volume so we won't blow up speakers
-        if (sample > 1.0) sample = 1.0;
-        if (sample < -1.0) sample = -1.0;
+        if (sample > 1.0)
+            sample = 1.0;
+        if (sample < -1.0)
+            sample = -1.0;
 
         // Add sample to left channel
         *pOutputF32++ = (float)sample;
@@ -57,7 +59,8 @@ void generateSamples(ma_device *pDevice, void *pOutput, ma_uint32 frameCount)
         *pOutputF32++ = (float)sample;
 
         // Advance time
-        g_time += 1.0 / (double) pDevice->playback.internalSampleRate;
+        g_time += 1.0 / (double)pDevice->playback.internalSampleRate;
+
     }
 }
 
@@ -75,9 +78,6 @@ void clearSilencedNotes()
         }
     }
 }
-
-
-
 
 void dataCallback(ma_device *pDevice, void *pOutput, const void *pInput, ma_uint32 frameCount)
 {
@@ -97,29 +97,29 @@ void decode_message(double deltatime, std::vector<unsigned char> *buffer, void *
 
     switch (message->type)
     {
-        case MIDI_TYPE_NOTE_ON:
+    case MIDI_TYPE_NOTE_ON:
+    {
+        const std::lock_guard<std::mutex> lock(notesMutex);
+
+        notes_list.emplace_back(Note{message->data.note_on.note});
+    }
+    break;
+
+    case MIDI_TYPE_NOTE_OFF:
+    {
+        // Call NoteOff on first occurence
+        const std::lock_guard<std::mutex> lock(notesMutex);
+
+        for (Note &note : notes_list)
         {
-            const std::lock_guard<std::mutex> lock(notesMutex);
-
-            notes_list.emplace_back(Note{message->data.note_on.note, EnvelopeAdsr()});
-        }
-        break;
-
-        case MIDI_TYPE_NOTE_OFF:
-        {
-            // Call NoteOff on first occurence
-            const std::lock_guard<std::mutex> lock(notesMutex);
-
-            for (Note &note : notes_list)
+            if (note.midiNote == message->data.note_off.note && note.envelope.state != ADSR_IDLE)
             {
-                if (note.midiNote == message->data.note_off.note && note.envelope.state != ADSR_IDLE)
-                {
-                    note.envelope.NoteOff();
-                    break;
-                }
+                EnvelopeAdsr_NoteOff(&note.envelope);
+                break;
             }
         }
-        break;
+    }
+    break;
 
         // case MIDI_TYPE_CONTROL_CHANGE:
         //     uint8_t controller = message->data.control_change.controller;
@@ -145,8 +145,6 @@ void decode_message(double deltatime, std::vector<unsigned char> *buffer, void *
         //     break;
     }
 }
-
-
 
 int main()
 {
@@ -191,15 +189,16 @@ int main()
 
     getline(std::cin, inputString);
 
-    try {
+    try
+    {
         port = std::stoi(inputString);
     }
-    catch (std::invalid_argument) {
+    catch (std::invalid_argument)
+    {
         return 1;
     }
 
     // notes_list.push_back(Note{organ, 45, 127});
-
 
     // Set port
     midiin->openPort(port);

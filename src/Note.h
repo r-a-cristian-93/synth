@@ -2,13 +2,13 @@
 #define NOTE_H
 
 #include <cstdint>
-#include "EnvelopeADSR.h"
+#include "Envelope.h"
 
 struct Note
 {
-    uint8_t midiNote;
+    uint8_t midiNote = 0;
     EnvelopeAdsr envelope;
-    float phaseAccumulator[DRAWBARS_COUNT];
+    float phaseAccumulator[DRAWBARS_COUNT] = {0.0};
 };
 
 

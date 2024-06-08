@@ -11,7 +11,6 @@ Parameter drawbar_amplitude[DRAWBARS_COUNT];
 Parameter vibrato_amplitude{ 6.0, 6.0, 0.1, 10.0, 0.0, 1.0 };
 Parameter vibrato_frequency{ 2.0, 2.0, 0.1, 10.0, 0.0, 1.0 };
 
-
 void generate_sine_table() {
     for (int i = 0; i < LUT_SIZE; i++) {
         sine_table[i] = sin(M_2PI * i / LUT_SIZE);
@@ -58,7 +57,7 @@ double osc_generate_sample(Note& note)
     {
 
         sample += sine_table[(int)(note.phaseAccumulator[drawbar_index] )]
-            * drawbar_amplitude[drawbar_index].current_value * note.envelope.getAmplitude()
+            * drawbar_amplitude[drawbar_index].current_value * EnvelopeAdsr_GetAmplitude(&note.envelope)
             * 0.1;
 
         note.phaseAccumulator[drawbar_index] += phase_increment[note.midiNote][drawbar_index];
