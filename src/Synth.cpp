@@ -71,8 +71,8 @@ void clearSilencedNotes()
 
 void dataCallback(ma_device *pDevice, void *pOutput, const void *pInput, ma_uint32 frameCount)
 {
-    clearSilencedNotes();
     generateSamples(pDevice, pOutput, frameCount);
+    clearSilencedNotes();
 }
 
 void decode_message(double deltatime, std::vector<unsigned char> *buffer, void *userData)
