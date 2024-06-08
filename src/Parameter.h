@@ -13,7 +13,7 @@ struct Parameter
     const double increment_value = 0.1;
     const double max_value = 1.0;
     const double min_value = 0.0;
-    const double update_rate = 1.0;
+    const double update_rate = 20.0 / SAMPLE_RATE;
 
     double change_time_start = 0.0;
 
@@ -61,27 +61,20 @@ struct Parameter
 
     void update()
     {
-        if (target_value != current_value)
+        if (current_value < target_value)
         {
-            double step_value = pow(g_time - change_time_start, 2) * update_rate;
+            current_value += update_rate;
 
-            if (step_value < PARAM_LOWEST_VALUE) step_value = 0;
+            if (current_value > target_value)
+                current_value = target_value;
+        }
 
-            if (target_value < current_value)
-            {
-                current_value -= step_value;
+        if (current_value > target_value)
+        {
+            current_value -= update_rate;
 
-                if (current_value < target_value)
-                    current_value = target_value;
-            }
-
-            if (target_value > current_value)
-            {
-                current_value += step_value;
-
-                if (current_value > target_value)
-                    current_value = target_value;
-            }
+            if (current_value < target_value)
+                current_value = target_value;
         }
     }
 };

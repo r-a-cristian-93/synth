@@ -19,7 +19,6 @@
 #include "OrganOscillator.h"
 
 double g_time = 0.0;
-double g_amplitude = 0.3;
 
 std::list<Note> notes_list;
 std::mutex notesMutex;
@@ -42,16 +41,15 @@ void generateSamples(ma_device *pDevice, void *pOutput, ma_uint32 frameCount)
             for (Note &note : notes_list)
             {
                 noteSample = osc_generate_sample(note);
-                noteSample *= g_amplitude;
                 sample += noteSample;
             }
         }
 
         // Limit volume so we won't blow up speakers
-        if (sample > 1.0)
-            sample = 1.0;
-        if (sample < -1.0)
-            sample = -1.0;
+        if (sample > MAX_AMPLITUDE)
+            sample = MAX_AMPLITUDE;
+        if (sample < -MAX_AMPLITUDE)
+            sample = -MAX_AMPLITUDE;
 
         // Add sample to left channel
         *pOutputF32++ = (float)sample;
@@ -121,34 +119,37 @@ void decode_message(double deltatime, std::vector<unsigned char> *buffer, void *
     }
     break;
 
-        // case MIDI_TYPE_CONTROL_CHANGE:
-        //     uint8_t controller = message->data.control_change.controller;
-        //     uint8_t value = message->data.control_change.value;
+    case MIDI_TYPE_CONTROL_CHANGE:
+        uint8_t controller = message->data.control_change.controller;
+        uint8_t value = message->data.control_change.value;
 
-        //     if (is_drawbar_controller(controller))
-        //         set_parameter_value(
-        //             drawbar_amplitude[get_drawbar_id(controller)],
-        //             value / 127.0f
-        //         );
-        //     if (is_vibrato_controller(controller))
-        //     {
-        //         double vibrato_value;
+        std::cout << "Controller: " << (int)controller << " Value: " << (int)value << std::endl;
 
-        //         if (value == 0) vibrato_value = vibrato_frequency.min_value;
-        //         else vibrato_value = vibrato_frequency.max_value;
+        if (is_drawbar_controller(controller))
+            osc_set_drawbar_amplitude(get_drawbar_id(controller), value / 127.0f);
+        // if (is_vibrato_controller(controller))
+        // {
+        //     double vibrato_value;
 
-        //         set_parameter_value(
-        //             vibrato_frequency,
-        //             vibrato_value
-        //         );
-        //     }
-        //     break;
+        //     if (value == 0) vibrato_value = vibrato_frequency.min_value;
+        //     else vibrato_value = vibrato_frequency.max_value;
+
+        //     set_parameter_value(
+        //         vibrato_frequency,
+        //         vibrato_value
+        //     );
+        // }
+        break;
     }
 }
 
 int main()
 {
     osc_init();
+    for (int i = 3; i < DRAWBARS_COUNT; i++)
+    {
+        osc_set_drawbar_amplitude(i, 0.0);
+    }
 
     ma_result result;
     ma_context context;

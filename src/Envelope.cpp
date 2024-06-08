@@ -9,8 +9,8 @@ float EnvelopeAdsr_GetAmplitude(EnvelopeAdsr* envelope)
             break;
         case ADSR_ATTACK:
             envelope->amplitudeValue += envelope_settings.attackRate;
-            if (envelope->amplitudeValue >= 1.0) {
-                envelope->amplitudeValue = 1.0;
+            if (envelope->amplitudeValue >= MAX_AMPLITUDE) {
+                envelope->amplitudeValue = MAX_AMPLITUDE;
                 envelope->state = ADSR_DECAY;
             }
             break;
@@ -25,8 +25,8 @@ float EnvelopeAdsr_GetAmplitude(EnvelopeAdsr* envelope)
             break;
         case ADSR_RELEASE:
             envelope->amplitudeValue -= envelope_settings.releaseRate;
-            if (envelope->amplitudeValue <= 0.0) {
-                envelope->amplitudeValue = 0.0;
+            if (envelope->amplitudeValue <= MIN_AMPLITUDE) {
+                envelope->amplitudeValue = MIN_AMPLITUDE;
                 envelope->state = ADSR_IDLE;
             }
     }

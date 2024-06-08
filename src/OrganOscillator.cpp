@@ -31,11 +31,6 @@ void osc_init()
 {
     generate_sine_table();
     generate_phase_increment();
-
-    for (int index = 4; index <= DRAWBARS_COUNT ; index++)
-    {
-        drawbar_amplitude[index] = { 0.0, 0.0, 0.1, 10.0, 0.0, 1.0 };
-    }
 }
 
 void osc_update()
@@ -58,7 +53,7 @@ double osc_generate_sample(Note& note)
 
         sample += sine_table[(int)(note.phaseAccumulator[drawbar_index] )]
             * drawbar_amplitude[drawbar_index].current_value * EnvelopeAdsr_GetAmplitude(&note.envelope)
-            * 0.1;
+            * HEADROOM_SCALE_FACTOR;
 
         note.phaseAccumulator[drawbar_index] += phase_increment[note.midiNote][drawbar_index];
 
@@ -70,6 +65,10 @@ double osc_generate_sample(Note& note)
     }
 
     return sample;
+}
+
+void osc_set_drawbar_amplitude(int drawbar_index, float amplitude) {
+    drawbar_amplitude[drawbar_index].target_value = amplitude;
 }
 
 float note_frequency[MIDI_NOTES_COUNT][DRAWBARS_COUNT] = {
