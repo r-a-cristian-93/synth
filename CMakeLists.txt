@@ -28,6 +28,7 @@ set (SOURCE_NANOMIDI
 
 set (SOURCE_SYNTH
   src/Synth.cpp
+  src/OrganSynthesizer.cpp
   src/OrganOscillator.cpp
   src/Envelope.cpp
 )
