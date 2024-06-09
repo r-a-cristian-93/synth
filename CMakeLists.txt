@@ -41,7 +41,7 @@ set (SOURCE_SYNTH
   src/MidiDriver.cpp
   src/SharedResources.cpp
   src/MidiManager.cpp
-  src/VibratoEffect.cpp
+  src/RotarySpeakerEffect.cpp
 )
 
 if(BUILD_FOR_JACK)

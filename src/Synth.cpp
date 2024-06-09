@@ -1,12 +1,12 @@
 #include "AudioDriver.h"
 #include "MidiDriver.h"
 #include "OrganSynthesizer.h"
-#include "VibratoEffect.h"
+#include "RotarySpeakerEffect.h"
 
 int main()
 {
     osc_init();
-    vibrato_effect_init();
+    rotary_speaker_effect_init();
 
     for (int i = 3; i < DRAWBARS_COUNT; i++)
     {
