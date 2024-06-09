@@ -32,8 +32,12 @@ public:
         float value = buffer.getHermiteAt(delay);
 
         buffer.write_margined(input);
-        return value;   
-    }	
+
+        // Tremolo
+        value *= (lfoValue / 2.0 + 1.0);
+
+        return value;
+    }
 
 private:
 	float sampleRate;

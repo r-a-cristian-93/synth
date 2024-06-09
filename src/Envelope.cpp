@@ -2,6 +2,13 @@
 
 EnvelopeSettings envelope_settings;
 
+void EnvelopeAdsr_Init() {
+    envelope_settings.attackRate = 50.0 / SAMPLE_RATE;
+    envelope_settings.decayRate = 30.0 / SAMPLE_RATE;
+    envelope_settings.releaseRate = 30.0 / SAMPLE_RATE;
+    envelope_settings.sustainLevel = 0.8;
+}
+
 float EnvelopeAdsr_GetAmplitude(EnvelopeAdsr* envelope)
 {
     switch (envelope->state) {

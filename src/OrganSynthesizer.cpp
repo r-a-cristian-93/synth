@@ -5,7 +5,9 @@
 
 #include "SharedResources.h"
 
-void generateSamples(ma_device* pDevice, float* pOutput, ma_uint32 frameCount)
+const float alpha = 0.4;
+
+void generateSamples(ma_device* pDevice, float* pInput, float* pOutput, ma_uint32 frameCount)
 {
     for (ma_uint32 iFrame = 0; iFrame < frameCount; iFrame++)
     {
@@ -22,6 +24,10 @@ void generateSamples(ma_device* pDevice, float* pOutput, ma_uint32 frameCount)
             }
         }
 
+        // LPF
+        // sample = (1 - alpha) * sample + alpha * *pOutput;
+
+        // Vibrato
         sample = vibrato_effect_process_sample(sample);
 
         // Limit volume so we won't blow up speakers
@@ -29,6 +35,7 @@ void generateSamples(ma_device* pDevice, float* pOutput, ma_uint32 frameCount)
             sample = MAX_AMPLITUDE;
         if (sample < -MAX_AMPLITUDE)
             sample = -MAX_AMPLITUDE;
+
 
         // Add sample to left channel
         *pOutput++ = (float)sample;
@@ -54,6 +61,6 @@ void clearSilencedNotes()
 
 void dataCallback(ma_device *pDevice, void *pOutput, const void *pInput, ma_uint32 frameCount)
 {
-    generateSamples(pDevice, (float *)pOutput, frameCount);
+    generateSamples(pDevice, (float *)pInput, (float *)pOutput, frameCount);
     clearSilencedNotes();
 }

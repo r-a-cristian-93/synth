@@ -46,6 +46,7 @@ void osc_init()
 {
     generate_sine_table();
     generate_phase_increment();
+    EnvelopeAdsr_Init();
 }
 
 void osc_update()
@@ -77,17 +78,6 @@ double osc_generate_sample(Note& note)
         if (note.phaseAccumulator[drawbar_index]  < 0)
             note.phaseAccumulator[drawbar_index]  += LUT_SIZE;
     }
-
-    // + 1.0 to bring it to positive values
-    sample *= (sine_table[(int)vibrato_phase_accumulator] * VIBRATO_AMPLITUDE + 1.0);
-
-    vibrato_phase_accumulator += vibrato_phase_increment.current_value;
-
-    if (vibrato_phase_accumulator  >= LUT_SIZE)
-        vibrato_phase_accumulator  -= LUT_SIZE;
-
-    if (vibrato_phase_accumulator  < 0)
-        vibrato_phase_accumulator  += LUT_SIZE;
 
     return sample;
 }

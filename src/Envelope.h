@@ -20,14 +20,15 @@ struct EnvelopeAdsr
 
 struct EnvelopeSettings
 {
-    float attackRate = 10.0 / SAMPLE_RATE;
-    float decayRate = 2.0 / SAMPLE_RATE;
-    float sustainLevel = 0.5;
-    float releaseRate = 5.0 / SAMPLE_RATE;
+    float attackRate;
+    float decayRate;
+    float sustainLevel;
+    float releaseRate;
 };
 
 extern EnvelopeSettings envelope_settings;
 
+void EnvelopeAdsr_Init();
 float EnvelopeAdsr_GetAmplitude(EnvelopeAdsr *envelope);
 void EnvelopeAdsr_NoteOn(EnvelopeAdsr *envelope);
 void EnvelopeAdsr_NoteOff(EnvelopeAdsr *envelope);
