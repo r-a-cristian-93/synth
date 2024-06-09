@@ -1,6 +1,7 @@
 #define MINIAUDIO_IMPLEMENTATION
 
 #include "OrganSynthesizer.h"
+#include "VibratoEffect.h"
 
 #include "SharedResources.h"
 
@@ -20,6 +21,8 @@ void generateSamples(ma_device* pDevice, float* pOutput, ma_uint32 frameCount)
                 sample += osc_generate_sample(note);
             }
         }
+
+        sample = vibrato_effect_process_sample(sample);
 
         // Limit volume so we won't blow up speakers
         if (sample > MAX_AMPLITUDE)
