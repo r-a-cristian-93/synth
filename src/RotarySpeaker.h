@@ -31,7 +31,7 @@ public:
     {
         lfo_update();
 
-        float lfoValue = (lfo_get_value() + 1.0) * 0.5;
+        float lfoValue = lfo_get_value();
         int maxDelay = BASE_DELAY_SEC * sampleRate;
 
         float delay = lfoValue * depth * maxDelay;
@@ -62,7 +62,7 @@ public:
 
     float lfo_get_value()
     {
-        return (sine_table[(int)(lfo_phase)] + 1.0) * 0.5;
+        return sine_table_lfo[(int)(lfo_phase)];
     }
 
     void organ_oscillator_set_vibrato_fast() {
