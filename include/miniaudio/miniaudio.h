@@ -3308,7 +3308,7 @@ the high shelf filter does the same thing for high frequencies.
 12. Waveform and Noise Generation
 =================================
 
-12.1. Waveforms
+12.1. WaveTables
 ---------------
 miniaudio supports generation of sine, square, triangle and sawtooth waveforms. This is achieved
 with the `ma_waveform` API. Example:

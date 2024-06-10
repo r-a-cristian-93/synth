@@ -5,7 +5,7 @@
 
 #include "Config.h"
 #include "Parameter.h"
-#include "Waveforms.h"
+#include "WaveTables.h"
 
 float phase_increment[MIDI_NOTES_COUNT][DRAWBARS_COUNT] = {{0}};
 

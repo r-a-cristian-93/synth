@@ -2,7 +2,7 @@
 #include "MidiDriver.h"
 #include "OrganSynthesizer.h"
 #include "RotarySpeaker.h"
-#include "Waveforms.h"
+#include "WaveTables.h"
 
 int main()
 {

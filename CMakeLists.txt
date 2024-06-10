@@ -37,7 +37,7 @@ set (SOURCE_SYNTH
   src/MidiManager.cpp
   src/RotarySpeaker.cpp
   src/RingBuffer.cpp
-  src/Waveforms.cpp
+  src/WaveTables.cpp
 )
 
 if(BUILD_FOR_JACK)

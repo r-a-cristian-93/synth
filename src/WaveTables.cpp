@@ -1,4 +1,4 @@
-#include "Waveforms.h"
+#include "WaveTables.h"
 #include <math.h>
 
 float sine_table[LUT_SIZE];

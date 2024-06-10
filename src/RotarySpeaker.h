@@ -3,7 +3,7 @@
 
 #include "RingBuffer.h"
 #include "Parameter.h"
-#include "Waveforms.h"
+#include "WaveTables.h"
 
 #define ROTARY_SPEAKER_FAST (6.0 * PHASE_LUT_SCALE_FACTOR)
 #define ROTARY_SPEAKER_SLOW (2.0 * PHASE_LUT_SCALE_FACTOR)
