@@ -1,31 +1,30 @@
 #include "Lfo.h"
 #define _USE_MATH_DEFINES
-#include <math.h> /*sin*/
+#include <math.h>
 
-Lfo::Lfo()
-	: index(0), sampleRate(0), frequency(0), phase(0)
-{}
+Lfo lfo;
 
-Lfo::~Lfo(void) {}
-
-void Lfo::initialize(float sr, float freq)
+void lfo_initialize(float sampleRate, float frequency)
 {
-	sampleRate = sr;
-	frequency = freq;
+	lfo.sampleRate = sampleRate;
+	lfo.frequency = frequency;
 }
 
-void Lfo::setFrequency(float freq)
+void lfo_set_frequency(float frequency)
 {
-	frequency = freq;
-    phaseIncrement = 2 * M_PI * frequency / sampleRate;
+	lfo.frequency = frequency;
+    lfo.phaseIncrement = 2 * M_PI * lfo.frequency / lfo.sampleRate;
 }
 
-void Lfo::setPhase(float ph)
+void lfo_update()
 {
-	phase = ph;
+    lfo.phase += lfo.phaseIncrement;
+
+    while(lfo.phase > 2 * M_PI)
+        lfo.phase -= 2 * M_PI;
 }
 
-float Lfo::getValue()
+float lfo_get_value()
 {
-    return sin(phase);
+    return sin(lfo.phase);
 }

@@ -19,14 +19,12 @@ public:
     void process(float* input, float*output, int numberOfSamples);
     void setFrequency(float frequency);
     void setDepth(float depth);
-    inline void update() {
-        lfo.update();
-    }
+
 
 public:
     INLINE float processOneSample(float input)
     {
-        float lfoValue = (lfo.getValue() + 1.0) * 0.5;
+        float lfoValue = (lfo_get_value() + 1.0) * 0.5;
         int maxDelay = BASE_DELAY_SEC * sampleRate;
 
         float delay = lfoValue * depth * maxDelay;

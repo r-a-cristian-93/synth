@@ -11,13 +11,13 @@ BerVibrato::BerVibrato()
 void BerVibrato::initialize(float sr)
 {
 	sampleRate = sr;
-	lfo.initialize(sampleRate, VIBRATO_FREQUENCY_DEFAULT_HZ);
+	lfo_initialize(sampleRate, VIBRATO_FREQUENCY_DEFAULT_HZ);
 	buffer.resize(BASE_DELAY_SEC * sampleRate * 2);
 }
 
 void BerVibrato::setFrequency(float frequency)
 {
-	lfo.setFrequency(frequency);
+	lfo_set_frequency(frequency);
 }
 
 void BerVibrato::setDepth(float dt)

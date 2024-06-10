@@ -5,16 +5,16 @@
 
 int main()
 {
-    osc_init();
+    organ_oscillator_init();
     rotary_speaker_effect_init();
 
     for (int i = 3; i < DRAWBARS_COUNT; i++)
     {
-        osc_set_drawbar_amplitude(i, 0.0);
+        organ_oscillator_set_drawbar_amplitude(i, 0.0);
     }
 
-    osc_set_drawbar_amplitude(6, 0.1);
-    osc_set_drawbar_amplitude(7, 0.1);
+    organ_oscillator_set_drawbar_amplitude(6, 0.1);
+    organ_oscillator_set_drawbar_amplitude(7, 0.1);
 
 
     midi_init();

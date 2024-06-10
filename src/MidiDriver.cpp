@@ -53,16 +53,16 @@ void decode_message(double deltatime, std::vector<unsigned char> *buffer, void *
         std::cout << "Controller: " << (int)controller << " Value: " << (int)value << std::endl;
 
         if (is_drawbar_controller(controller))
-            osc_set_drawbar_amplitude(get_drawbar_id(controller), value / 127.0f);
+            organ_oscillator_set_drawbar_amplitude(get_drawbar_id(controller), value / 127.0f);
 
-        if (controller == MIDI_CC_VIBRATO_FAST)
-            osc_set_vibrato_fast();
+        // if (controller == MIDI_CC_VIBRATO_FAST)
+        //     organ_oscillator_set_vibrato_fast();
 
-        if (controller == MIDI_CC_VIBRATO_SLOW)
-            osc_set_vibrato_slow();
+        // if (controller == MIDI_CC_VIBRATO_SLOW)
+        //     organ_oscillator_set_vibrato_slow();
 
-        if (controller == MIDI_CC_VIBRATO_OFF)
-            osc_set_vibrato_off();
+        // if (controller == MIDI_CC_VIBRATO_OFF)
+        //     organ_oscillator_set_vibrato_off();
 
         break;
     }

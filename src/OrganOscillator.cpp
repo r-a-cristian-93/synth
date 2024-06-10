@@ -15,18 +15,6 @@ float phase_increment[MIDI_NOTES_COUNT][DRAWBARS_COUNT] = {{0}};
 
 Parameter drawbar_amplitude[DRAWBARS_COUNT];
 
-Parameter vibrato_phase_increment
-{
-    VIBRATO_FAST,
-    VIBRATO_FAST,
-    0.001,
-    VIBRATO_FAST,
-    0.0,
-    0.01 / SAMPLE_RATE
-};
-
-float vibrato_phase_accumulator;
-
 void generate_sine_table() {
     for (int i = 0; i < LUT_SIZE; i++) {
         sine_table[i] = sin(M_2PI * i / LUT_SIZE);
@@ -42,24 +30,22 @@ void generate_phase_increment() {
     }
 }
 
-void osc_init()
+void organ_oscillator_init()
 {
     generate_sine_table();
     generate_phase_increment();
     EnvelopeAdsr_Init();
 }
 
-void osc_update()
+void organ_oscillator_update()
 {
-    vibrato_phase_increment.update();
-
     for (int drawbar_index = 0; drawbar_index < DRAWBARS_COUNT; drawbar_index++)
     {
         drawbar_amplitude[drawbar_index].update();
     }
 }
 
-double osc_generate_sample(Note& note)
+double organ_oscillator_generate_sample(Note& note)
 {
     double sample = 0;
 
@@ -82,20 +68,8 @@ double osc_generate_sample(Note& note)
     return sample;
 }
 
-void osc_set_drawbar_amplitude(int drawbar_index, float amplitude) {
+void organ_oscillator_set_drawbar_amplitude(int drawbar_index, float amplitude) {
     drawbar_amplitude[drawbar_index].target_value = amplitude;
-}
-
-void osc_set_vibrato_fast() {
-    vibrato_phase_increment.setValue(VIBRATO_FAST);
-}
-
-void osc_set_vibrato_slow() {
-    vibrato_phase_increment.setValue(VIBRATO_SLOW);
-}
-
-void osc_set_vibrato_off() {
-    vibrato_phase_increment.setValue(0.0);
 }
 
 float note_frequency[MIDI_NOTES_COUNT][DRAWBARS_COUNT] = {

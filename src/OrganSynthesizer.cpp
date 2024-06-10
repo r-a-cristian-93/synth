@@ -2,6 +2,7 @@
 
 #include "OrganSynthesizer.h"
 #include "RotarySpeakerEffect.h"
+#include "BerVibrato/Lfo.h"
 
 #include "SharedResources.h"
 
@@ -13,15 +14,15 @@ void generateSamples(ma_device* pDevice, float* pInput, float* pOutput, ma_uint3
     {
         double sample = 0;
 
-        rotary_speaker_effect_update();
-        osc_update();
+        lfo_update();
+        organ_oscillator_update();
 
         {
             const std::lock_guard<std::mutex> lock(notesMutex);
 
             for (Note &note : notesList)
             {
-                sample += osc_generate_sample(note);
+                sample += organ_oscillator_generate_sample(note);
             }
         }
 

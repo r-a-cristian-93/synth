@@ -4,27 +4,8 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-class Lfo
+struct Lfo
 {
-public:
-	Lfo();
-	~Lfo();
-
-	void initialize(float sampleRate, float freq);
-	void setFrequency(float freq);
-	void setPhase(float phase);
-
-public:
-    float getValue();
-
-	inline void update()
-	{
-		phase += phaseIncrement;
-		while(phase > 2 * M_PI)
-			phase -= 2 * M_PI;
-	}
-
-private:
 	float sampleRate;
 	float frequency;
 	float phase;
@@ -32,4 +13,41 @@ private:
 	float phaseIncrement;
 };
 
+void lfo_initialize(float sampleRate, float freq);
+void lfo_set_frequency(float freq);
+void lfo_update();
+float lfo_get_value();
+
+
 #endif
+
+
+
+
+// Parameter vibrato_phase_increment
+// {
+//     VIBRATO_FAST,
+//     VIBRATO_FAST,
+//     0.001,
+//     VIBRATO_FAST,
+//     0.0,
+//     0.01 / SAMPLE_RATE
+// };
+
+
+//     vibrato_phase_increment.update();
+
+
+// float vibrato_phase_accumulator;
+
+// void organ_oscillator_set_vibrato_fast() {
+//     vibrato_phase_increment.setValue(VIBRATO_FAST);
+// }
+
+// void organ_oscillator_set_vibrato_slow() {
+//     vibrato_phase_increment.setValue(VIBRATO_SLOW);
+// }
+
+// void organ_oscillator_set_vibrato_off() {
+//     vibrato_phase_increment.setValue(0.0);
+// }
