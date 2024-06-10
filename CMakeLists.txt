@@ -35,7 +35,6 @@ set (SOURCE_SYNTH
   src/MidiDriver.cpp
   src/SharedResources.cpp
   src/MidiManager.cpp
-  src/RotarySpeakerEffect.cpp
   src/RotarySpeaker.cpp
   src/Lfo.cpp
   src/RingBuffer.cpp

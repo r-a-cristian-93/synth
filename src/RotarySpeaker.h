@@ -49,4 +49,6 @@ private:
     static const int additionalDelay = 3;
 };
 
+extern RotarySpeaker rotarySpeaker;
+
 #endif

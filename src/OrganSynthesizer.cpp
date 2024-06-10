@@ -1,7 +1,7 @@
 #define MINIAUDIO_IMPLEMENTATION
 
 #include "OrganSynthesizer.h"
-#include "RotarySpeakerEffect.h"
+#include "RotarySpeaker.h"
 #include "Lfo.h"
 
 #include "SharedResources.h"
@@ -30,7 +30,7 @@ void generateSamples(ma_device* pDevice, float* pInput, float* pOutput, ma_uint3
         // sample = (1 - alpha) * sample + alpha * *pOutput;
 
         // Vibrato
-        sample = rotary_speaker_effect_process_sample(sample);
+        sample = rotarySpeaker.processOneSample(sample);
 
         // Limit volume so we won't blow up speakers
         if (sample > MAX_AMPLITUDE)

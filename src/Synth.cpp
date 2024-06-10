@@ -1,12 +1,12 @@
 #include "AudioDriver.h"
 #include "MidiDriver.h"
 #include "OrganSynthesizer.h"
-#include "RotarySpeakerEffect.h"
+#include "RotarySpeaker.h"
 
 int main()
 {
     organ_oscillator_init();
-    rotary_speaker_effect_init();
+    rotarySpeaker.initialize(SAMPLE_RATE);
 
     for (int i = 3; i < DRAWBARS_COUNT; i++)
     {
