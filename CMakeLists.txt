@@ -48,7 +48,7 @@ if(BUILD_FOR_JACK)
   message(STATUS "Building with JACK support")
 endif()
 
-add_executable(Synth ${SOURCE_SYNTH} ${SOURCE_RTMIDI} ${SOURCE_NANOMIDI} ${SOURCE_BER_VIBRATO})
+add_executable(Synth ${SOURCE_SYNTH} ${SOURCE_RTMIDI} ${SOURCE_NANOMIDI})
 target_include_directories(Synth PRIVATE ${PROJECT_SOURCE_DIR}/include)
 
 if(WIN32)
