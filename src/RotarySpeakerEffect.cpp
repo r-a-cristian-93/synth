@@ -1,9 +1,9 @@
 #include "RotarySpeakerEffect.h"
 #include "Config.h"
 
-#include "BerVibrato/BerVibrato.h"
+#include "RotarySpeaker.h"
 
-BerVibrato rotarySpeakerEffect;
+RotarySpeaker rotarySpeakerEffect;
 
 void rotary_speaker_effect_init()
 {
@@ -12,10 +12,10 @@ void rotary_speaker_effect_init()
     rotarySpeakerEffect.setDepth(0.1);
 }
 
-// void rotary_speaker_effect_update()
-// {
-//     rotarySpeakerEffect.update();
-// }
+void rotary_speaker_effect_update()
+{
+    // rotarySpeakerEffect.update();
+}
 
 float rotary_speaker_effect_process_sample(float input) {
     return rotarySpeakerEffect.processOneSample(input);

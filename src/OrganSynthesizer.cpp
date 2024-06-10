@@ -2,7 +2,7 @@
 
 #include "OrganSynthesizer.h"
 #include "RotarySpeakerEffect.h"
-#include "BerVibrato/Lfo.h"
+#include "Lfo.h"
 
 #include "SharedResources.h"
 

@@ -9,10 +9,10 @@ const float VIBRATO_FREQUENCY_DEFAULT_HZ = 2;
 const float VIBRATO_FREQUENCY_MAX_HZ = 14;
 const float VIBRATO_DEPTH_DEFAULT_PERCENT = 50;
 
-class BerVibrato
+class RotarySpeaker
 {
 public:
-	BerVibrato();
+	RotarySpeaker();
 
 public:
 	void initialize(float sampleRate);

@@ -26,12 +26,6 @@ set (SOURCE_NANOMIDI
   include/nanomidi/msgprint.c
 )
 
-set (SOURCE_BER_VIBRATO
-  include/BerVibrato/BerVibrato.cpp
-  include/BerVibrato/Lfo.cpp
-  include/BerVibrato/RingBuffer.cpp
-)
-
 set (SOURCE_SYNTH
   src/Synth.cpp
   src/OrganSynthesizer.cpp
@@ -42,6 +36,9 @@ set (SOURCE_SYNTH
   src/SharedResources.cpp
   src/MidiManager.cpp
   src/RotarySpeakerEffect.cpp
+  src/RotarySpeaker.cpp
+  src/Lfo.cpp
+  src/RingBuffer.cpp
 )
 
 if(BUILD_FOR_JACK)
