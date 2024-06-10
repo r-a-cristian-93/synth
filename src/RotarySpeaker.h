@@ -3,6 +3,11 @@
 
 #include "Lfo.h"
 #include "RingBuffer.h"
+#include "Parameter.h"
+
+#define ROTARY_SPEAKER_FAST 6.0
+#define ROTARY_SPEAKER_SLOW 2.0
+#define ROTARY_SPEAKER_OFF 0.0
 
 const float BASE_DELAY_SEC = 0.002; // 2 ms
 const float VIBRATO_FREQUENCY_DEFAULT_HZ = 2;
@@ -45,6 +50,17 @@ private:
 	Lfo lfo;
 	RingBuffer buffer;
 	float depth;
+
+    float lfo_phase;
+    Parameter lfo_phase_increment
+    {
+        ROTARY_SPEAKER_FAST,
+        ROTARY_SPEAKER_FAST,
+        0.001,
+        ROTARY_SPEAKER_FAST,
+        0.0,
+        0.01 / SAMPLE_RATE
+    };
 
     static const int additionalDelay = 3;
 };
