@@ -13,6 +13,7 @@ void generateSamples(ma_device* pDevice, float* pInput, float* pOutput, ma_uint3
     {
         double sample = 0;
 
+        rotary_speaker_effect_update();
         osc_update();
 
         {
