@@ -2,8 +2,6 @@
 
 #include "OrganSynthesizer.h"
 #include "RotarySpeaker.h"
-#include "Lfo.h"
-
 #include "SharedResources.h"
 
 const float alpha = 0.4;
@@ -14,7 +12,6 @@ void generateSamples(ma_device* pDevice, float* pInput, float* pOutput, ma_uint3
     {
         double sample = 0;
 
-        lfo_update();
         organ_oscillator_update();
 
         {

@@ -1,12 +1,12 @@
 #ifndef VIBRATO_PROCESSOR_H
 #define VIBRATO_PROCESSOR_H
 
-#include "Lfo.h"
 #include "RingBuffer.h"
 #include "Parameter.h"
+#include "Waveforms.h"
 
-#define ROTARY_SPEAKER_FAST 6.0
-#define ROTARY_SPEAKER_SLOW 2.0
+#define ROTARY_SPEAKER_FAST (6.0 * PHASE_LUT_SCALE_FACTOR)
+#define ROTARY_SPEAKER_SLOW (2.0 * PHASE_LUT_SCALE_FACTOR)
 #define ROTARY_SPEAKER_OFF 0.0
 
 const float BASE_DELAY_SEC = 0.002; // 2 ms
@@ -29,6 +29,8 @@ public:
 public:
     INLINE float processOneSample(float input)
     {
+        lfo_update();
+
         float lfoValue = (lfo_get_value() + 1.0) * 0.5;
         int maxDelay = BASE_DELAY_SEC * sampleRate;
 
@@ -45,9 +47,38 @@ public:
         return value;
     }
 
+    void lfo_update()
+    {
+        lfo_phase += lfo_phase_increment.current_value;
+
+        if (lfo_phase  >= LUT_SIZE)
+            lfo_phase  -= LUT_SIZE;
+
+        if (lfo_phase  < 0)
+            lfo_phase  += LUT_SIZE;
+
+        lfo_phase_increment.update();
+    }
+
+    float lfo_get_value()
+    {
+        return (sine_table[(int)(lfo_phase)] + 1.0) * 0.5;
+    }
+
+    void organ_oscillator_set_vibrato_fast() {
+        lfo_phase_increment.setValue(ROTARY_SPEAKER_FAST);
+    }
+
+    void organ_oscillator_set_vibrato_slow() {
+        lfo_phase_increment.setValue(ROTARY_SPEAKER_SLOW);
+    }
+
+    void organ_oscillator_set_vibrato_off() {
+        lfo_phase_increment.setValue(ROTARY_SPEAKER_OFF);
+    }
+
 private:
 	float sampleRate;
-	Lfo lfo;
 	RingBuffer buffer;
 	float depth;
 
@@ -64,6 +95,8 @@ private:
 
     static const int additionalDelay = 3;
 };
+
+
 
 extern RotarySpeaker rotarySpeaker;
 

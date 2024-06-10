@@ -10,10 +10,7 @@ RotarySpeaker::RotarySpeaker()
 
 void RotarySpeaker::initialize(float sampleRate)
 {
-
-
 	sampleRate = sampleRate;
-	lfo_initialize(sampleRate, VIBRATO_FREQUENCY_DEFAULT_HZ);
 	buffer.resize(BASE_DELAY_SEC * sampleRate * 2);
 
 	setFrequency(6.0);
@@ -22,7 +19,7 @@ void RotarySpeaker::initialize(float sampleRate)
 
 void RotarySpeaker::setFrequency(float frequency)
 {
-	lfo_set_frequency(frequency);
+	// lfo_set_frequency(frequency);
 }
 
 void RotarySpeaker::setDepth(float dt)

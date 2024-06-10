@@ -2,9 +2,11 @@
 #include "MidiDriver.h"
 #include "OrganSynthesizer.h"
 #include "RotarySpeaker.h"
+#include "Waveforms.h"
 
 int main()
 {
+    waveforms_initialize();
     organ_oscillator_init();
     rotarySpeaker.initialize(SAMPLE_RATE);
 

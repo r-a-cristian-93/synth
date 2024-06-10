@@ -5,21 +5,11 @@
 
 #include "Config.h"
 #include "Parameter.h"
+#include "Waveforms.h"
 
-float sine_table[LUT_SIZE];
 float phase_increment[MIDI_NOTES_COUNT][DRAWBARS_COUNT] = {{0}};
 
-#define VIBRATO_AMPLITUDE 0.15
-#define VIBRATO_FAST (3.0 * PHASE_LUT_SCALE_FACTOR)
-#define VIBRATO_SLOW (1.0 * PHASE_LUT_SCALE_FACTOR)
-
 Parameter drawbar_amplitude[DRAWBARS_COUNT];
-
-void generate_sine_table() {
-    for (int i = 0; i < LUT_SIZE; i++) {
-        sine_table[i] = sin(M_2PI * i / LUT_SIZE);
-    }
-}
 
 void generate_phase_increment() {
     for (int midiNote = 0; midiNote < MIDI_NOTES_COUNT; midiNote++) {
@@ -32,7 +22,6 @@ void generate_phase_increment() {
 
 void organ_oscillator_init()
 {
-    generate_sine_table();
     generate_phase_increment();
     EnvelopeAdsr_Init();
 }
