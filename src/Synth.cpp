@@ -7,7 +7,7 @@
 int main()
 {
     waveforms_initialize();
-    organ_oscillator_init();
+    organ_oscillator_initialize();
     rotary_speaker_initialize();
 
     for (int i = 3; i < DRAWBARS_COUNT; i++)

@@ -15,7 +15,7 @@ void generate_phase_increment() {
     }
 }
 
-void organ_oscillator_init()
+void organ_oscillator_initialize()
 {
     generate_phase_increment();
     EnvelopeAdsr_Init();

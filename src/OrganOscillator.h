@@ -8,8 +8,13 @@
 extern float note_phase_increment[MIDI_NOTES_COUNT][DRAWBARS_COUNT];
 extern Parameter drawbar_amplitude[DRAWBARS_COUNT];
 
-void organ_oscillator_init();
+void organ_oscillator_initialize();
 void organ_oscillator_set_drawbar_amplitude(int drawbar, float amplitude);
+
+// Inline
+double organ_oscillator_generate_sample(Note& note);
+void organ_oscillator_update();
+
 
  __attribute__((always_inline)) inline
 void organ_oscillator_update()
