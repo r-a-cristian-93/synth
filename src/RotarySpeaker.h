@@ -1,6 +1,7 @@
 #ifndef VIBRATO_PROCESSOR_H
 #define VIBRATO_PROCESSOR_H
 
+#include "Config.h"
 #include "RingBuffer.h"
 #include "Parameter.h"
 #include "WaveTables.h"
@@ -20,7 +21,7 @@ public:
 	RotarySpeaker();
 
 public:
-	void initialize(float sampleRate);
+	void initialize();
     void process(float* input, float*output, int numberOfSamples);
     void setFrequency(float frequency);
     void setDepth(float depth);
@@ -32,7 +33,7 @@ public:
         lfo_update();
 
         float lfoValue = lfo_get_value();
-        int maxDelay = BASE_DELAY_SEC * sampleRate;
+        int maxDelay = BASE_DELAY_SEC * SAMPLE_RATE;
 
         float delay = lfoValue * depth * maxDelay;
         delay += additionalDelay;
@@ -78,7 +79,6 @@ public:
     }
 
 private:
-	float sampleRate;
 	RingBuffer buffer;
 	float depth;
 

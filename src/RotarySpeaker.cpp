@@ -2,16 +2,14 @@
 
 RotarySpeaker::RotarySpeaker()
 : depth(0)
-, sampleRate(0)
 {
 	setFrequency(VIBRATO_FREQUENCY_DEFAULT_HZ);
 	setDepth(VIBRATO_DEPTH_DEFAULT_PERCENT / 100);
 }
 
-void RotarySpeaker::initialize(float sampleRate)
+void RotarySpeaker::initialize()
 {
-	sampleRate = sampleRate;
-	buffer.resize(BASE_DELAY_SEC * sampleRate * 2);
+	buffer.resize(BASE_DELAY_SEC * SAMPLE_RATE * 2);
 
 	setFrequency(6.0);
     setDepth(0.1);
