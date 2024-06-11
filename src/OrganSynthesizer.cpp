@@ -11,6 +11,7 @@ void generateSamples(ma_device* pDevice, float* pInput, float* pOutput, ma_uint3
         double sample = 0;
 
         organ_oscillator_update();
+        rotary_speaker_parameters_update();
 
         {
             const std::lock_guard<std::mutex> lock(notesMutex);
@@ -21,7 +22,7 @@ void generateSamples(ma_device* pDevice, float* pInput, float* pOutput, ma_uint3
             }
         }
 
-        sample = rotarySpeaker.processOneSample(sample);
+        sample = rotary_speaker_process_sample(sample);
 
         // Limit volume so we won't blow up speakers
         if (sample > MAX_AMPLITUDE)
