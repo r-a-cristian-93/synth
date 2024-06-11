@@ -3,7 +3,7 @@
 
 #include "Note.h"
 
-extern float note_frequency[MIDI_NOTES_COUNT][DRAWBARS_COUNT];
+// extern float note_frequency[MIDI_NOTES_COUNT][DRAWBARS_COUNT];
 
 void organ_oscillator_init();
 void organ_oscillator_update();
