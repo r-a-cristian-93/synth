@@ -22,7 +22,6 @@ public:
 
 public:
 	void initialize();
-    void process(float* input, float*output, int numberOfSamples);
     void setFrequency(float frequency);
     void setDepth(float depth);
 
@@ -38,9 +37,9 @@ public:
         float delay = lfoValue * depth * maxDelay;
         delay += additionalDelay;
 
-        float value = buffer.getHermiteAt(delay);
+        float value = rotarySpeakerRingBuffer.getHermiteAt(delay);
 
-        buffer.write_margined(input);
+        rotarySpeakerRingBuffer.write_margined(input);
 
         // Tremolo
         value *= (lfoValue / 2.0 + 1.0);
@@ -79,7 +78,7 @@ public:
     }
 
 private:
-	RingBuffer buffer;
+	RingBuffer rotarySpeakerRingBuffer;
 	float depth;
 
     float lfo_phase;

@@ -9,7 +9,7 @@ RotarySpeaker::RotarySpeaker()
 
 void RotarySpeaker::initialize()
 {
-	buffer.resize(BASE_DELAY_SEC * SAMPLE_RATE * 2);
+	rotarySpeakerRingBuffer.resize(BASE_DELAY_SEC * SAMPLE_RATE * 2);
 
 	setFrequency(6.0);
     setDepth(0.1);
