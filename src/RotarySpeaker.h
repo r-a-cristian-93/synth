@@ -34,12 +34,12 @@ public:
         float lfoValue = lfo_get_value();
         int maxDelay = BASE_DELAY_SEC * SAMPLE_RATE;
 
-        float delay = lfoValue * depth * maxDelay;
-        delay += additionalDelay;
+        float delay = lfoValue * rotarySpeaker_depth * maxDelay;
+        delay += rotarySpeaker_additionalDelay;
 
-        float value = rotarySpeakerRingBuffer.getHermiteAt(delay);
+        float value = rotarySpeaker_ringBuffer.getHermiteAt(delay);
 
-        rotarySpeakerRingBuffer.write_margined(input);
+        rotarySpeaker_ringBuffer.write_margined(input);
 
         // Tremolo
         value *= (lfoValue / 2.0 + 1.0);
@@ -49,40 +49,40 @@ public:
 
     void lfo_update()
     {
-        lfo_phase += lfo_phase_increment.current_value;
+        rotarySpeaker_lfoPhase += rotarySpeaker_lfoPhaseIncrement.current_value;
 
-        if (lfo_phase  >= LUT_SIZE)
-            lfo_phase  -= LUT_SIZE;
+        if (rotarySpeaker_lfoPhase  >= LUT_SIZE)
+            rotarySpeaker_lfoPhase  -= LUT_SIZE;
 
-        if (lfo_phase  < 0)
-            lfo_phase  += LUT_SIZE;
+        if (rotarySpeaker_lfoPhase  < 0)
+            rotarySpeaker_lfoPhase  += LUT_SIZE;
 
-        lfo_phase_increment.update();
+        rotarySpeaker_lfoPhaseIncrement.update();
     }
 
     float lfo_get_value()
     {
-        return sine_table_lfo[(int)(lfo_phase)];
+        return sine_table_lfo[(int)(rotarySpeaker_lfoPhase)];
     }
 
     void organ_oscillator_set_vibrato_fast() {
-        lfo_phase_increment.setValue(ROTARY_SPEAKER_FAST);
+        rotarySpeaker_lfoPhaseIncrement.setValue(ROTARY_SPEAKER_FAST);
     }
 
     void organ_oscillator_set_vibrato_slow() {
-        lfo_phase_increment.setValue(ROTARY_SPEAKER_SLOW);
+        rotarySpeaker_lfoPhaseIncrement.setValue(ROTARY_SPEAKER_SLOW);
     }
 
     void organ_oscillator_set_vibrato_off() {
-        lfo_phase_increment.setValue(ROTARY_SPEAKER_OFF);
+        rotarySpeaker_lfoPhaseIncrement.setValue(ROTARY_SPEAKER_OFF);
     }
 
 private:
-	RingBuffer rotarySpeakerRingBuffer;
-	float depth;
+	RingBuffer rotarySpeaker_ringBuffer;
+	float rotarySpeaker_depth;
 
-    float lfo_phase;
-    Parameter lfo_phase_increment
+    float rotarySpeaker_lfoPhase;
+    Parameter rotarySpeaker_lfoPhaseIncrement
     {
         ROTARY_SPEAKER_FAST,
         ROTARY_SPEAKER_FAST,
@@ -92,7 +92,7 @@ private:
         0.01 / SAMPLE_RATE
     };
 
-    static const int additionalDelay = 3;
+    static const int rotarySpeaker_additionalDelay = 3;
 };
 
 
