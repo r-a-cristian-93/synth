@@ -4,8 +4,6 @@
 #include "RotarySpeaker.h"
 #include "SharedResources.h"
 
-const float alpha = 0.4;
-
 void generateSamples(ma_device* pDevice, float* pInput, float* pOutput, ma_uint32 frameCount)
 {
     for (ma_uint32 iFrame = 0; iFrame < frameCount; iFrame++)
@@ -23,10 +21,6 @@ void generateSamples(ma_device* pDevice, float* pInput, float* pOutput, ma_uint3
             }
         }
 
-        // LPF
-        // sample = (1 - alpha) * sample + alpha * *pOutput;
-
-        // Vibrato
         sample = rotarySpeaker.processOneSample(sample);
 
         // Limit volume so we won't blow up speakers
