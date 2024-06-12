@@ -33,7 +33,7 @@ double organ_oscillator_generate_sample(Note& note)
     for (int drawbar_index = 0; drawbar_index < DRAWBARS_COUNT; drawbar_index++)
     {
         sample += sine_table[(int)(note.phaseAccumulator[drawbar_index] )]
-            * drawbar_amplitude[drawbar_index].current_value * EnvelopeAdsr_GetAmplitude(&note.envelope)
+            * drawbar_amplitude[drawbar_index].current_value * envelope_get_amplitude(&note.envelope)
             * HEADROOM_SCALE_FACTOR;
 
         note.phaseAccumulator[drawbar_index] += note_phase_increment[note.midiNote][drawbar_index];

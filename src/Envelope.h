@@ -12,7 +12,7 @@ enum ADSR_STATE
     ADSR_RELEASE
 };
 
-struct EnvelopeAdsr
+struct Envelope
 {
     ADSR_STATE state = ADSR_ATTACK;
     float amplitudeValue = 0.0;
@@ -28,9 +28,9 @@ struct EnvelopeSettings
 
 extern EnvelopeSettings envelope_settings;
 
-void EnvelopeAdsr_Init();
-float EnvelopeAdsr_GetAmplitude(EnvelopeAdsr *envelope);
-void EnvelopeAdsr_NoteOn(EnvelopeAdsr *envelope);
-void EnvelopeAdsr_NoteOff(EnvelopeAdsr *envelope);
+void envelope_initialize();
+float envelope_get_amplitude(Envelope *envelope);
+void envelope_note_on(Envelope *envelope);
+void envelope_note_off(Envelope *envelope);
 
 #endif

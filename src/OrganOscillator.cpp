@@ -18,7 +18,7 @@ void generate_phase_increment() {
 void organ_oscillator_initialize()
 {
     generate_phase_increment();
-    EnvelopeAdsr_Init();
+    envelope_initialize();
 }
 
 void organ_oscillator_set_drawbar_amplitude(int drawbar_index, float amplitude) {

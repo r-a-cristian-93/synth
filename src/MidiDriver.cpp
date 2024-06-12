@@ -39,7 +39,7 @@ void decode_message(double deltatime, std::vector<unsigned char> *buffer, void *
         {
             if (note.midiNote == message->data.note_off.note && note.envelope.state != ADSR_IDLE)
             {
-                EnvelopeAdsr_NoteOff(&note.envelope);
+                envelope_note_off(&note.envelope);
                 break;
             }
         }

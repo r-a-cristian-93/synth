@@ -7,7 +7,7 @@
 struct Note
 {
     uint8_t midiNote = 0;
-    EnvelopeAdsr envelope;
+    Envelope envelope;
     float phaseAccumulator[DRAWBARS_COUNT] = {0.0};
 };
 
