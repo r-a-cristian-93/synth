@@ -3,7 +3,7 @@
 
 #include "Config.h"
 
-float note_frequency[MIDI_NOTES_COUNT][DRAWBARS_COUNT] = {
+float noteFrequency[MIDI_NOTES_COUNT][DRAWBARS_COUNT] = {
     {4.09, 8.18, 12.25, 16.35, 24.51, 32.70, 41.21, 49.02, 65.41},
     {4.33, 8.66, 12.98, 17.32, 25.97, 34.65, 43.66, 51.93, 69.30},
     {4.59, 9.18, 13.75, 18.35, 27.51, 36.71, 46.26, 55.02, 73.42},
