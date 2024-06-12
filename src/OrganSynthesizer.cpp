@@ -45,7 +45,7 @@ void clearSilencedNotes()
     for (auto it = notesList.begin(); it != notesList.end(); it++)
     {
         // Remove one by one in the order they were added
-        if (std::abs(it->envelope.state) == ADSR_IDLE)
+        if (std::abs(it->envelope.getState()) == ADSR_IDLE)
         {
             notesList.erase(it++);
             break;

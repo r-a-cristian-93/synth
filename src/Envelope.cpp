@@ -1,21 +1,18 @@
 #include "Envelope.h"
 
-EnvelopeSettings envelope_settings;
+EnvelopeSettings envelopeSettings {
+    attackRate: 50.0 / SAMPLE_RATE,
+    decayRate: 30.0 / SAMPLE_RATE,
+    sustainLevel: 0.8,
+    releaseRate: 30.0 / SAMPLE_RATE,
+};
 
-void envelope_initialize()
+void Envelope::noteOn()
 {
-    envelope_settings.attackRate = 50.0 / SAMPLE_RATE;
-    envelope_settings.decayRate = 30.0 / SAMPLE_RATE;
-    envelope_settings.releaseRate = 30.0 / SAMPLE_RATE;
-    envelope_settings.sustainLevel = 0.8;
+    state = ADSR_ATTACK;
 }
 
-void envelope_note_on(Envelope* envelope)
+void Envelope::noteOff()
 {
-    envelope->state = ADSR_ATTACK;
-}
-
-void envelope_note_off(Envelope* envelope)
-{
-    envelope->state = ADSR_RELEASE;
+    state = ADSR_RELEASE;
 }
