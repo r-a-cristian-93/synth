@@ -30,13 +30,12 @@ set (SOURCE_SYNTH
   src/Synth.cpp
   src/AudioDriver.cpp
   src/MidiDriver.cpp
+  src/OrganSynthesizer.cpp
 )
 
 set (SOURCE_SYNTH_ENGINE
-  include/SynthEngine/OrganSynthesizer.cpp
   include/SynthEngine/OrganOscillator.cpp
   include/SynthEngine/Envelope.cpp
-
   include/SynthEngine/SharedResources.cpp
   include/SynthEngine/MidiManager.cpp
   include/SynthEngine/RotarySpeaker.cpp

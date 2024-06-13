@@ -2,8 +2,8 @@
 
 #include <iostream>
 #include <miniaudio/miniaudio.h>
-
-#include <SynthEngine/OrganSynthesizer.h>
+#include <SynthEngine/Config.h>
+#include "OrganSynthesizer.h"
 
 ma_context audioContext;
 ma_device audioDevice;
@@ -23,7 +23,7 @@ int audio_driver_init()
     ma_device_config audioConfig = ma_device_config_init(ma_device_type_playback);
     audioConfig.playback.format = ma_format_f32; // Set to ma_format_unknown to use the device's native format.
     audioConfig.playback.channels = 2;           // Set to 0 to use the device's native channel count.
-    audioConfig.sampleRate = 44100;              // Set to 0 to use the device's native sample rate.
+    audioConfig.sampleRate = SAMPLE_RATE;        // Set to 0 to use the device's native sample rate.
     audioConfig.dataCallback = dataCallback;     // This function will be called when miniaudio needs more data.
     audioConfig.pUserData = NULL;                // Can be accessed from the device object (device.pUserData).
 
