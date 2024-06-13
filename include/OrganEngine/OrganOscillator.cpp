@@ -1,7 +1,6 @@
-#include "OrganOscillator.h"
-
-#include "Config.h"
-#include "NoteFrequency.h"
+#include <OrganEngine/OrganOscillator.h>
+#include <OrganEngine/Config.h>
+#include <OrganEngine/NoteFrequency.h>
 
 float notePhaseIncrement[MIDI_NOTES_COUNT][DRAWBARS_COUNT] = {{0}};
 Parameter drawbarAmplitude[DRAWBARS_COUNT];

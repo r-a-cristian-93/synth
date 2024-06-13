@@ -3,7 +3,7 @@
 
 #include <list>
 #include <mutex>
-#include <SynthEngine/Note.h>
+#include <OrganEngine/Note.h>
 
 extern std::list<Note> notesList;
 extern std::mutex notesMutex;

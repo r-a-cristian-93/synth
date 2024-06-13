@@ -1,7 +1,7 @@
 #ifndef PARAMETER_H
 #define PARAMETER_H
 
-#include <SynthEngine/Config.h>
+#include <OrganEngine/Config.h>
 
 struct Parameter
 {

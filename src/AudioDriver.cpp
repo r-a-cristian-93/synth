@@ -2,7 +2,7 @@
 
 #include <iostream>
 #include <miniaudio/miniaudio.h>
-#include <SynthEngine/Config.h>
+#include <OrganEngine/Config.h>
 #include "OrganSynthesizer.h"
 
 ma_context audioContext;

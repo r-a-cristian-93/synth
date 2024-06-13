@@ -1,7 +1,7 @@
 #ifndef NOTE_FREQUENCY_H
 #define NOTE_FREQUENCY_H
 
-#include <SynthEngine/Config.h>
+#include <OrganEngine/Config.h>
 
 float noteFrequency[MIDI_NOTES_COUNT][DRAWBARS_COUNT] = {
     {4.09, 8.18, 12.25, 16.35, 24.51, 32.70, 41.21, 49.02, 65.41},

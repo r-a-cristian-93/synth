@@ -4,9 +4,9 @@
 #include <nanomidi/decoder.h>
 #include <nanomidi/msgprint.h>
 
-#include <SynthEngine/SharedResources.h>
-#include <SynthEngine/OrganOscillator.h>
-#include <SynthEngine/MidiManager.h>
+#include <OrganEngine/SharedResources.h>
+#include <OrganEngine/OrganOscillator.h>
+#include <OrganEngine/MidiManager.h>
 
 RtMidiIn *midiDevice = 0;
 

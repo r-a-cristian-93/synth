@@ -1,7 +1,7 @@
 #ifndef ENVELOPE_ADSR_H
 #define ENVELOPE_ADSR_H
 
-#include <SynthEngine/Config.h>
+#include <OrganEngine/Config.h>
 
 enum AdsrState
 {

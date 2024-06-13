@@ -1,9 +1,9 @@
 #include "AudioDriver.h"
 #include "MidiDriver.h"
-#include <SynthEngine/Config.h>
-#include <SynthEngine/OrganOscillator.h>
-#include <SynthEngine/RotarySpeaker.h>
-#include <SynthEngine/WaveTables.h>
+#include <OrganEngine/Config.h>
+#include <OrganEngine/OrganOscillator.h>
+#include <OrganEngine/RotarySpeaker.h>
+#include <OrganEngine/WaveTables.h>
 #include <iostream>
 
 int main()

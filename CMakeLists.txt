@@ -34,13 +34,13 @@ set (SOURCE_SYNTH
 )
 
 set (SOURCE_SYNTH_ENGINE
-  include/SynthEngine/OrganOscillator.cpp
-  include/SynthEngine/Envelope.cpp
-  include/SynthEngine/SharedResources.cpp
-  include/SynthEngine/MidiManager.cpp
-  include/SynthEngine/RotarySpeaker.cpp
-  include/SynthEngine/RingBuffer.cpp
-  include/SynthEngine/WaveTables.cpp
+  include/OrganEngine/OrganOscillator.cpp
+  include/OrganEngine/Envelope.cpp
+  include/OrganEngine/SharedResources.cpp
+  include/OrganEngine/MidiManager.cpp
+  include/OrganEngine/RotarySpeaker.cpp
+  include/OrganEngine/RingBuffer.cpp
+  include/OrganEngine/WaveTables.cpp
 )
 
 if(BUILD_FOR_JACK)
