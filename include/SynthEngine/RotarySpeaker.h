@@ -1,10 +1,10 @@
 #ifndef VIBRATO_PROCESSOR_H
 #define VIBRATO_PROCESSOR_H
 
-#include "Config.h"
-#include "RingBuffer.h"
-#include "Parameter.h"
-#include "WaveTables.h"
+#include <SynthEngine/Config.h>
+#include <SynthEngine/RingBuffer.h>
+#include <SynthEngine/Parameter.h>
+#include <SynthEngine/WaveTables.h>
 
 #define ROTARY_SPEAKER_FAST (6.0 * PHASE_LUT_SCALE_FACTOR)
 #define ROTARY_SPEAKER_SLOW (2.0 * PHASE_LUT_SCALE_FACTOR)

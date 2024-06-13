@@ -2,7 +2,7 @@
 #define NOTE_H
 
 #include <cstdint>
-#include "Envelope.h"
+#include <SynthEngine/Envelope.h>
 
 struct Note
 {

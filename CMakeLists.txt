@@ -28,16 +28,20 @@ set (SOURCE_NANOMIDI
 
 set (SOURCE_SYNTH
   src/Synth.cpp
-  src/OrganSynthesizer.cpp
-  src/OrganOscillator.cpp
-  src/Envelope.cpp
   src/AudioDriver.cpp
   src/MidiDriver.cpp
-  src/SharedResources.cpp
-  src/MidiManager.cpp
-  src/RotarySpeaker.cpp
-  src/RingBuffer.cpp
-  src/WaveTables.cpp
+)
+
+set (SOURCE_SYNTH_ENGINE
+  include/SynthEngine/OrganSynthesizer.cpp
+  include/SynthEngine/OrganOscillator.cpp
+  include/SynthEngine/Envelope.cpp
+
+  include/SynthEngine/SharedResources.cpp
+  include/SynthEngine/MidiManager.cpp
+  include/SynthEngine/RotarySpeaker.cpp
+  include/SynthEngine/RingBuffer.cpp
+  include/SynthEngine/WaveTables.cpp
 )
 
 if(BUILD_FOR_JACK)
@@ -48,7 +52,7 @@ if(BUILD_FOR_JACK)
   message(STATUS "Building with JACK support")
 endif()
 
-add_executable(Synth ${SOURCE_SYNTH} ${SOURCE_RTMIDI} ${SOURCE_NANOMIDI})
+add_executable(Synth ${SOURCE_SYNTH} ${SOURCE_SYNTH_ENGINE} ${SOURCE_RTMIDI} ${SOURCE_NANOMIDI})
 target_include_directories(Synth PRIVATE ${PROJECT_SOURCE_DIR}/include)
 
 if(WIN32)

@@ -3,7 +3,7 @@
 #include <iostream>
 #include <miniaudio/miniaudio.h>
 
-#include "OrganSynthesizer.h"
+#include <SynthEngine/OrganSynthesizer.h>
 
 ma_context audioContext;
 ma_device audioDevice;

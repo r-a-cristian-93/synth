@@ -1,9 +1,9 @@
 #ifndef ORGAN_OSCILATOR_H
 #define ORGAN_OSCILATOR_H
 
-#include "Note.h"
-#include "Parameter.h"
-#include "WaveTables.h"
+#include <SynthEngine/Note.h>
+#include <SynthEngine/Parameter.h>
+#include <SynthEngine/WaveTables.h>
 
 extern float notePhaseIncrement[MIDI_NOTES_COUNT][DRAWBARS_COUNT];
 extern Parameter drawbarAmplitude[DRAWBARS_COUNT];

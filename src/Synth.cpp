@@ -1,8 +1,8 @@
 #include "AudioDriver.h"
 #include "MidiDriver.h"
-#include "OrganSynthesizer.h"
-#include "RotarySpeaker.h"
-#include "WaveTables.h"
+#include "SynthEngine/OrganSynthesizer.h"
+#include "SynthEngine/RotarySpeaker.h"
+#include "SynthEngine/WaveTables.h"
 
 int main()
 {
