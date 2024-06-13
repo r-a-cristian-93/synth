@@ -36,7 +36,7 @@ set (SOURCE_SYNTH
 set (SOURCE_SYNTH_ENGINE
   include/OrganEngine/OrganOscillator.cpp
   include/OrganEngine/Envelope.cpp
-  include/OrganEngine/SharedResources.cpp
+  include/OrganEngine/NoteManager.cpp
   include/OrganEngine/MidiManager.cpp
   include/OrganEngine/RotarySpeaker.cpp
   include/OrganEngine/RingBuffer.cpp

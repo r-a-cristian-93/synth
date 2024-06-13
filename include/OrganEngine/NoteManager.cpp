@@ -1,4 +1,4 @@
-#include "SharedResources.h"
+#include "NoteManager.h"
 
 std::list<Note> notesList;
 std::mutex notesMutex;

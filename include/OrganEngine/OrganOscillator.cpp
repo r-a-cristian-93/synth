@@ -1,6 +1,7 @@
 #include <OrganEngine/OrganOscillator.h>
 #include <OrganEngine/Config.h>
 #include <OrganEngine/NoteFrequency.h>
+#include <OrganEngine/MidiManager.h>
 
 float notePhaseIncrement[MIDI_NOTES_COUNT][DRAWBARS_COUNT] = {{0}};
 Parameter drawbarAmplitude[DRAWBARS_COUNT];
@@ -19,6 +20,6 @@ void organ_oscillator_initialize()
     generate_phase_increment();
 }
 
-void organ_oscillator_set_drawbar_amplitude(int drawbar_index, float amplitude) {
-    drawbarAmplitude[drawbar_index].target_value = amplitude;
+void organ_oscillator_set_drawbar_amplitude(uint8_t controller, float amplitude) {
+    drawbarAmplitude[get_drawbar_id(controller)].target_value = amplitude;
 }

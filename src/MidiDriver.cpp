@@ -4,7 +4,7 @@
 #include <nanomidi/decoder.h>
 #include <nanomidi/msgprint.h>
 
-#include <OrganEngine/SharedResources.h>
+#include <OrganEngine/NoteManager.h>
 #include <OrganEngine/OrganOscillator.h>
 #include <OrganEngine/MidiManager.h>
 
@@ -24,25 +24,13 @@ void decode_message(double deltatime, std::vector<unsigned char> *buffer, void *
     {
     case MIDI_TYPE_NOTE_ON:
     {
-        const std::lock_guard<std::mutex> lock(notesMutex);
-
-        notesList.emplace_back(Note{message->data.note_on.note});
+        note_on(message->data.note_on.note);
     }
     break;
 
     case MIDI_TYPE_NOTE_OFF:
     {
-        // Call NoteOff on first occurence
-        const std::lock_guard<std::mutex> lock(notesMutex);
-
-        for (Note &note : notesList)
-        {
-            if (note.midiNote == message->data.note_off.note && note.envelope.getState() != ADSR_IDLE)
-            {
-                note.envelope.noteOff();
-                break;
-            }
-        }
+        note_off(message->data.note_off.note);
     }
     break;
 
@@ -53,7 +41,7 @@ void decode_message(double deltatime, std::vector<unsigned char> *buffer, void *
         std::cout << "Controller: " << (int)controller << " Value: " << (int)value << std::endl;
 
         if (is_drawbar_controller(controller))
-            organ_oscillator_set_drawbar_amplitude(get_drawbar_id(controller), value / 127.0f);
+            organ_oscillator_set_drawbar_amplitude(controller, value / 127.0f);
 
         // if (controller == MIDI_CC_VIBRATO_FAST)
         //     organ_oscillator_set_vibrato_fast();

@@ -1,7 +1,7 @@
 #define MINIAUDIO_IMPLEMENTATION
 
 #include <OrganEngine/RotarySpeaker.h>
-#include <OrganEngine/SharedResources.h>
+#include <OrganEngine/NoteManager.h>
 #include "OrganSynthesizer.h"
 
 void generateSamples(ma_device* pDevice, float* pInput, float* pOutput, ma_uint32 frameCount)
