@@ -14,10 +14,10 @@ enum AdsrState
 
 struct EnvelopeSettings
 {
-    float attackRate;
-    float decayRate;
-    float sustainLevel;
-    float releaseRate;
+    int16_t attackRate;
+    int16_t decayRate;
+    int16_t sustainLevel;
+    int16_t releaseRate;
 };
 
 extern EnvelopeSettings envelopeSettings;
@@ -25,7 +25,7 @@ extern EnvelopeSettings envelopeSettings;
 class Envelope
 {
     AdsrState state = ADSR_IDLE;
-    float amplitudeValue = 0.0;
+    int16_t amplitudeValue = 0;
 
 public:
     void noteOn();

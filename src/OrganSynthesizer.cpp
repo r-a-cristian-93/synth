@@ -24,7 +24,7 @@ void generateSamples(ma_device* pDevice, float* pInput, float* pOutput, ma_uint3
 
             for (int iFrame = 0; iFrame < frameCount; iFrame++)
             {
-                sample = (float)organ_oscillator_generate_sample(note);
+                sample = (float) (organ_oscillator_generate_sample(note)) / (0xFFFFF);
                 *out++ += sample;
                 *out++ += sample;
             }
@@ -33,17 +33,17 @@ void generateSamples(ma_device* pDevice, float* pInput, float* pOutput, ma_uint3
         }
     }
 
-    float sample = 0;
-    out = out2;
+    // float sample = 0;
+    // out = out2;
 
-    // apply rotary speaker effect and mix with original
+    // // apply rotary speaker effect and mix with original
 
-    for (int iFrame = 0; iFrame < frameCount; iFrame++)
-    {
-        sample = rotary_speaker_process_sample(*out);
-        *out++ += (sample);
-        *out++ = (sample);
-    }
+    // for (int iFrame = 0; iFrame < frameCount; iFrame++)
+    // {
+    //     sample = rotary_speaker_process_sample(*out);
+    //     *out++ += (sample);
+    //     *out++ = (sample);
+    // }
 
     memcpy(pOutput, out2, frameCount * 2 *sizeof(float));
     free(out2);

@@ -1,10 +1,10 @@
 #include "Envelope.h"
 
 EnvelopeSettings envelopeSettings {
-    attackRate: 50.0 / SAMPLE_RATE,
-    decayRate: 30.0 / SAMPLE_RATE,
-    sustainLevel: 0.8,
-    releaseRate: 30.0 / SAMPLE_RATE,
+    attackRate: (int16_t) (50 * MAX_AMPLITUDE / SAMPLE_RATE),
+    decayRate: (int16_t) (30 * MAX_AMPLITUDE/ SAMPLE_RATE),
+    sustainLevel: (int16_t) (0.8 * MAX_AMPLITUDE),
+    releaseRate: (int16_t) (30 * MAX_AMPLITUDE/ SAMPLE_RATE),
 };
 
 void Envelope::noteOn()

@@ -3,8 +3,8 @@
 
 #include <OrganEngine/Config.h>
 
-extern float sine_table[LUT_SIZE];
-extern float sine_table_lfo[LUT_SIZE];
+extern int16_t sine_table[LUT_SIZE];
+extern int16_t sine_table_lfo[LUT_SIZE];
 
 void waveforms_initialize();
 
