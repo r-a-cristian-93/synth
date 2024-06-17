@@ -48,6 +48,7 @@ struct Parameter
             target_value = min_value;
     }
 
+    __attribute((always_inline)) inline
     void update()
     {
         if (current_value < target_value)
