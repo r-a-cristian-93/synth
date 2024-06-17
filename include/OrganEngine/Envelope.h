@@ -24,7 +24,7 @@ extern EnvelopeSettings envelopeSettings;
 
 class Envelope
 {
-    AdsrState state = ADSR_ATTACK;
+    AdsrState state = ADSR_IDLE;
     float amplitudeValue = 0.0;
 
 public:

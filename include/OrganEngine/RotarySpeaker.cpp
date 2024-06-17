@@ -18,7 +18,7 @@ Parameter   rotarySpeaker_lfoPhaseIncrement
 void rotary_speaker_initialize()
 {
 	rotarySpeaker_ringBuffer.resize(BASE_DELAY_SEC * SAMPLE_RATE * 2);
-	rotary_speaker_set_depth(0.1);
+	rotary_speaker_set_depth(0.5);
 	rotary_speaker_set_velocity_fast();
 }
 
