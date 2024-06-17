@@ -32,7 +32,7 @@ public:
     void noteOff();
 
     __attribute__((always_inline)) inline
-    float getAmplitude()
+    uint16_t getAmplitude()
     {
         switch (state) {
             case ADSR_IDLE:
@@ -55,8 +55,8 @@ public:
                 break;
             case ADSR_RELEASE:
                 amplitudeValue -= envelopeSettings.releaseRate;
-                if (amplitudeValue <= MIN_AMPLITUDE) {
-                    amplitudeValue = MIN_AMPLITUDE;
+                if (amplitudeValue <= 0) {
+                    amplitudeValue = 0;
                     state = ADSR_IDLE;
                 }
         }

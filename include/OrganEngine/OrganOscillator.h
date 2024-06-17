@@ -13,7 +13,7 @@ void organ_oscillator_initialize();
 void organ_oscillator_set_drawbar_amplitude(uint8_t drawbar, float amplitude);
 
 // Inline
-int32_t organ_oscillator_generate_sample(Note& note);
+int16_t organ_oscillator_generate_sample(Note& note);
 void organ_oscillator_update();
 
 
@@ -27,7 +27,7 @@ void organ_oscillator_update()
 }
 
  __attribute__((always_inline)) inline
-int32_t organ_oscillator_generate_sample(Note& note)
+int16_t organ_oscillator_generate_sample(Note& note)
 {
     int32_t sample = 0;
 
@@ -46,7 +46,7 @@ int32_t organ_oscillator_generate_sample(Note& note)
             note.phaseAccumulator[drawbar_index]  += LUT_SIZE;
     }
 
-    return sample;
+    return sample >> 8;
 }
 
 #endif
