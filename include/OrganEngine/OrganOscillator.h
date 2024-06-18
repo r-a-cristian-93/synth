@@ -33,9 +33,9 @@ int16_t organ_oscillator_generate_sample(Note& note)
 
     for (int drawbar_index = 0; drawbar_index < DRAWBARS_COUNT; drawbar_index++)
     {
-        sample += sine_table[(int)(note.phaseAccumulator[drawbar_index] )];
-            //* drawbarAmplitude[drawbar_index].current_value * note.envelope.getAmplitude()
-            //* HEADROOM_SCALE_FACTOR;
+        // 16bit * 16bit = 32bit
+        // right shift 16 to bring back in 16bit range
+        sample += (sine_table[(int)(note.phaseAccumulator[drawbar_index] )] * note.envelope.getAmplitude()) >> 16;
 
         note.phaseAccumulator[drawbar_index] += notePhaseIncrement[note.midiNote][drawbar_index];
 
@@ -46,7 +46,8 @@ int16_t organ_oscillator_generate_sample(Note& note)
             note.phaseAccumulator[drawbar_index]  += LUT_SIZE;
     }
 
-    return sample >> 8;
+    // Right shift 4 to take account of drawbars and headroom. Good enugh for  24 notes polyphony.
+    return (int16_t) (sample >> 4);
 }
 
 #endif

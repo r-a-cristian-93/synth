@@ -24,6 +24,7 @@ void generateSamples(ma_device* pDevice, float* pInput, float* pOutput, ma_uint3
 
             for (int iFrame = 0; iFrame < frameCount; iFrame++)
             {
+                // Scale to float -1 to 1. Platform dependent
                 sample = (float) (organ_oscillator_generate_sample(note)) / (MAX_AMPLITUDE);
                 *out++ += sample;
                 *out++ += sample;
