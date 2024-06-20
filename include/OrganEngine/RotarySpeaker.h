@@ -17,8 +17,7 @@ extern int         rotarySpeaker_additionalDelay;
 extern RingBuffer  rotarySpeaker_ringBuffer;
 
 extern float       rotarySpeaker_lfoPhase;
-// extern Parameter   rotarySpeaker_lfoPhaseIncrement;
-extern float       rotarySpeaker_lfoPhaseIncrement;
+extern Parameter   rotarySpeaker_lfoPhaseIncrement;
 
 void rotary_speaker_initialize();
 void rotary_speaker_set_depth(float depth);
@@ -35,7 +34,7 @@ void rotary_speaker_parameters_update();
 __attribute__((always_inline)) inline
 float rotary_speaker_process_sample(float input)
 {
-    float lfoValue = (float) (sine_table_lfo[(int)(rotarySpeaker_lfoPhase)]) / (MAX_AMPLITUDE);
+    float lfoValue = sine_table_lfo[(int)(rotarySpeaker_lfoPhase)];
     int maxDelay = BASE_DELAY_SEC * SAMPLE_RATE;
 
     float delay = lfoValue * rotarySpeaker_depth * maxDelay;
@@ -56,9 +55,7 @@ float rotary_speaker_process_sample(float input)
 __attribute__((always_inline)) inline
 void rotary_speaker_lfo_advance()
 {
-    // rotarySpeaker_lfoPhase += rotarySpeaker_lfoPhaseIncrement.current_value;
-    rotarySpeaker_lfoPhase += rotarySpeaker_lfoPhaseIncrement;
-
+    rotarySpeaker_lfoPhase += rotarySpeaker_lfoPhaseIncrement.current_value;
 
     if (rotarySpeaker_lfoPhase  >= LUT_SIZE)
         rotarySpeaker_lfoPhase  -= LUT_SIZE;
@@ -70,7 +67,7 @@ void rotary_speaker_lfo_advance()
 __attribute__((always_inline)) inline
 void rotary_speaker_parameters_update()
 {
-    // rotarySpeaker_lfoPhaseIncrement.update();
+    rotarySpeaker_lfoPhaseIncrement.update();
 }
 
 #endif

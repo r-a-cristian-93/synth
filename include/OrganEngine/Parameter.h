@@ -5,13 +5,13 @@
 
 struct Parameter
 {
-    int16_t current_value = MAX_AMPLITUDE;
-    int16_t target_value = MAX_AMPLITUDE;
+    double current_value = 1.0;
+    double target_value = 1.0;
 
-    const int16_t increment_value = (int16_t) (0.1 * MAX_AMPLITUDE);
-    const int16_t max_value = MAX_AMPLITUDE;
-    const int16_t min_value = 0;
-    const int16_t update_rate = 20 * MAX_AMPLITUDE / SAMPLE_RATE;
+    const double increment_value = 0.1;
+    const double max_value = 1.0;
+    const double min_value = 0.0;
+    const double update_rate = 20.0 / SAMPLE_RATE;
 
     Parameter& operator=(const Parameter& other)
     {
@@ -24,7 +24,7 @@ struct Parameter
     }
 
 
-    void setValue(int16_t value)
+    void setValue(double value)
     {
         if (value <= max_value) target_value = value;
         else target_value = max_value;
@@ -48,7 +48,6 @@ struct Parameter
             target_value = min_value;
     }
 
-    __attribute((always_inline)) inline
     void update()
     {
         if (current_value < target_value)

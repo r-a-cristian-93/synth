@@ -6,51 +6,55 @@
 
 void generateSamples(ma_device* pDevice, float* pInput, float* pOutput, ma_uint32 frameCount)
 {
-    organ_oscillator_update();
-    rotary_speaker_parameters_update();
-
-    Note note;
-    float* out = (float*) calloc(frameCount * 2, sizeof(float));
-    float* const out_initial = out;
-
-    for (int noteIndex = 0; noteIndex < MAX_NOTES; noteIndex++)
+    for (ma_uint32 iFrame = 0; iFrame < frameCount; iFrame++)
     {
-        note = notesList[noteIndex];
+        double sample = 0;
 
-        if (note.envelope.getState() != ADSR_IDLE)
+        organ_oscillator_update();
+        rotary_speaker_parameters_update();
+
         {
-            float sample = 0;
-            out = out_initial;
+            const std::lock_guard<std::mutex> lock(notesMutex);
 
-            for (int iFrame = 0; iFrame < frameCount; iFrame++)
+            for (Note &note : notesList)
             {
-                // Scale to float -1 to 1. Platform dependent
-                sample = (float) (organ_oscillator_generate_sample(note)) / (MAX_AMPLITUDE);
-                *out++ += sample;
-                *out++ += sample;
+                sample += organ_oscillator_generate_sample(note);
             }
+        }
 
-            notesList[noteIndex] = note;
+        sample = rotary_speaker_process_sample(sample);
+
+        // Limit volume so we won't blow up speakers
+        if (sample > MAX_AMPLITUDE)
+            sample = MAX_AMPLITUDE;
+        if (sample < -MAX_AMPLITUDE)
+            sample = -MAX_AMPLITUDE;
+
+
+        // Add sample to left channel
+        *pOutput++ = (float)sample;
+        // Add sample to right channel
+        *pOutput++ = (float)sample;
+    }
+}
+
+void clearSilencedNotes()
+{
+    const std::lock_guard<std::mutex> lock(notesMutex);
+
+    for (auto it = notesList.begin(); it != notesList.end(); it++)
+    {
+        // Remove one by one in the order they were added
+        if (std::abs(it->envelope.getState()) == ADSR_IDLE)
+        {
+            notesList.erase(it++);
+            break;
         }
     }
-
-    float sample = 0;
-    out = out_initial;
-
-    // apply rotary speaker effect and mix with original
-
-    for (int iFrame = 0; iFrame < frameCount; iFrame++)
-    {
-        sample = rotary_speaker_process_sample(*out);
-        *out++ += (sample);
-        *out++ += (sample);
-    }
-
-    memcpy(pOutput, out_initial, frameCount * 2 *sizeof(float));
-    free(out_initial);
 }
 
 void dataCallback(ma_device *pDevice, void *pOutput, const void *pInput, ma_uint32 frameCount)
 {
     generateSamples(pDevice, (float *)pInput, (float *)pOutput, frameCount);
+    clearSilencedNotes();
 }

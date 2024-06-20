@@ -10,8 +10,7 @@
 #include <vector>
 
 // Hermite polynomial interpolation
-__attribute__((always_inline)) inline
-float getSampleHermite4p3o(float x, float *y)
+INLINE float getSampleHermite4p3o(float x, float *y)
 {
     static float c0, c1, c2, c3;
 
@@ -34,8 +33,7 @@ public:
 	void resize(int size);
 
 public:
-	__attribute__((always_inline)) inline
-    float getHermiteAt(float delay)
+    INLINE float getHermiteAt(float delay)
     {
         float fReadIndex = writeIndex - 1 - delay;
         while(fReadIndex < 0)

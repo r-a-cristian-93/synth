@@ -1,24 +1,18 @@
 #include "Envelope.h"
 
 EnvelopeSettings envelopeSettings {
-    attackRate: (int32_t) (30 * MAX_AMPLITUDE / SAMPLE_RATE),
-    decayRate: (int32_t) (100 * MAX_AMPLITUDE/ SAMPLE_RATE),
-    sustainLevel: (int32_t) (0.8 * MAX_AMPLITUDE),
-    releaseRate: (int32_t) (50 * MAX_AMPLITUDE / SAMPLE_RATE),
+    attackRate: 50.0 / SAMPLE_RATE,
+    decayRate: 30.0 / SAMPLE_RATE,
+    sustainLevel: 0.8,
+    releaseRate: 30.0 / SAMPLE_RATE,
 };
 
 void Envelope::noteOn()
 {
-    if (state == ADSR_IDLE)
-    {
-        state = ADSR_ATTACK;
-    }
+    state = ADSR_ATTACK;
 }
 
 void Envelope::noteOff()
 {
-    if (state != ADSR_IDLE)
-    {
-        state = ADSR_RELEASE;
-    }
+    state = ADSR_RELEASE;
 }

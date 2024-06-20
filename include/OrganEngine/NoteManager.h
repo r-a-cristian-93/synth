@@ -2,23 +2,32 @@
 #define NOTE_MANAGER_H
 
 #include <list>
+#include <mutex>
 #include <OrganEngine/Note.h>
-#include <OrganEngine/Envelope.h>
 
-#define MAX_NOTES 128
-
-extern Note notesList[MAX_NOTES];
-
-void note_manager_initialize();
+extern std::list<Note> notesList;
+extern std::mutex notesMutex;
 
 __attribute__((always_inline)) inline
 void note_on(uint8_t midiNote) {
-	notesList[midiNote].envelope.noteOn();
+    const std::lock_guard<std::mutex> lock(notesMutex);
+
+    notesList.emplace_back(Note{midiNote});
 }
 
 __attribute__((always_inline)) inline
 void note_off(uint8_t midiNote) {
-	notesList[midiNote].envelope.noteOff();
+    // Call NoteOff on first occurence
+    const std::lock_guard<std::mutex> lock(notesMutex);
+
+    for (Note &note : notesList)
+    {
+        if (note.midiNote == midiNote && note.envelope.getState() != ADSR_IDLE)
+        {
+            note.envelope.noteOff();
+            break;
+        }
+    }
 }
 
 #endif

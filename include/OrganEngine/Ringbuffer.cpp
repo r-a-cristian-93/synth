@@ -1,7 +1,7 @@
 #include "RingBuffer.h"
 
 RingBuffer::RingBuffer()
-: writeIndex(0), size(0)
+: size(0), writeIndex(0)
 {}
 
 void RingBuffer::resize(int sz)
