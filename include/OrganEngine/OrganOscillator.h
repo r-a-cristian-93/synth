@@ -31,11 +31,14 @@ int16_t organ_oscillator_generate_sample(Note& note)
 {
     int32_t sample = 0;
 
+
     for (int drawbar_index = 0; drawbar_index < DRAWBARS_COUNT; drawbar_index++)
     {
         // 16bit * 16bit = 32bit
         // right shift 16 to bring back in 16bit range
-        sample += (sine_table[(int)(note.phaseAccumulator[drawbar_index] )] * note.envelope.getAmplitude()) >> 16;
+        sample += (((sine_table[(int)(note.phaseAccumulator[drawbar_index])]
+            * drawbarAmplitude[drawbar_index].current_value) >> 16)
+            * note.envelope.getAmplitude()) >> 16;
 
         note.phaseAccumulator[drawbar_index] += notePhaseIncrement[note.midiNote][drawbar_index];
 
