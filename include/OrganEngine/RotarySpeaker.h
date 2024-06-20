@@ -35,7 +35,7 @@ void rotary_speaker_parameters_update();
 __attribute__((always_inline)) inline
 float rotary_speaker_process_sample(float input)
 {
-    float lfoValue = sine_table_lfo[(int)(rotarySpeaker_lfoPhase)];
+    float lfoValue = (float) (sine_table_lfo[(int)(rotarySpeaker_lfoPhase)]) / (MAX_AMPLITUDE);
     int maxDelay = BASE_DELAY_SEC * SAMPLE_RATE;
 
     float delay = lfoValue * rotarySpeaker_depth * maxDelay;
