@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.16.3)
 project(Synth)
+
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0")
@@ -59,3 +60,23 @@ if(WIN32)
 elseif(UNIX AND NOT APPLE)
   target_link_libraries(Synth dl pthread m curses asound)
 endif()
+
+# Add the test executable
+set(SOURCE_TEST
+  test/TestPerformance.cpp
+  src/OrganSynthesizer.cpp
+)
+add_executable(SynthTest ${SOURCE_TEST} ${SOURCE_SYNTH_ENGINE} ${SOURCE_RTMIDI} ${SOURCE_NANOMIDI})
+
+# Include directories for tests
+target_include_directories(SynthTest PRIVATE ${PROJECT_SOURCE_DIR}/include)
+
+if(WIN32)
+  target_link_libraries(SynthTest winmm)
+elseif(UNIX AND NOT APPLE)
+  target_link_libraries(SynthTest dl pthread m curses asound)
+endif()
+
+# Add the test
+enable_testing()
+add_test(NAME SynthTest COMMAND SynthTest)
