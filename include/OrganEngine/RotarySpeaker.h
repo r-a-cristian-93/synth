@@ -27,13 +27,13 @@ void rotary_speaker_set_velocity_slow();
 void rotary_speaker_set_velocity_off();
 
 // inline
-float rotary_speaker_process_sample(float input);
+float rotary_speaker_process_sample(int16_t input);
 void rotary_speaker_lfo_advance();
 void rotary_speaker_parameters_update();
 
 
 __attribute__((always_inline)) inline
-float rotary_speaker_process_sample(float input)
+float rotary_speaker_process_sample(int16_t input)
 {
     float lfoValue = (float) (sine_table_lfo[(int)(rotarySpeaker_lfoPhase)]) / (MAX_AMPLITUDE);
     int maxDelay = BASE_DELAY_SEC * SAMPLE_RATE;
@@ -43,7 +43,7 @@ float rotary_speaker_process_sample(float input)
 
     float output = rotarySpeaker_ringBuffer.getHermiteAt(delay);
 
-    rotarySpeaker_ringBuffer.write_margined(input);
+    rotarySpeaker_ringBuffer.write_margined((float)input / (MAX_AMPLITUDE));
 
     // Tremolo
     output *= (lfoValue / 2.0 + 1.0);
