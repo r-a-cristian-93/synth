@@ -46,7 +46,10 @@ int16_t rotary_speaker_process_sample(int16_t input)
     rotarySpeaker_ringBuffer.write_margined(input);
 
     // Tremolo
-    // output *= (lfoValue / 2.0 + 1.0);
+    // >> 4         bring lfo to range 0x0 - 0x7FF
+    // + 0x7800     bring lfo to range 0x7800 - 0x7FFF
+    // results 6.2% amplitude modulation
+    output = (output * ((sine_table_lfo[(int)(rotarySpeaker_lfoPhase)] >> 4) + 0x7FFF)) >> 15;
 
     rotary_speaker_lfo_advance();
 

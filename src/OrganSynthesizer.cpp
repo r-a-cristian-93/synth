@@ -42,6 +42,7 @@ void generateSamples(ma_device* pDevice, float* pInput, float* pOutput, ma_uint3
     for (int iFrame = 0; iFrame < frameCount; iFrame++)
     {
         sample = ((float)  rotary_speaker_process_sample(*out)) / (MAX_AMPLITUDE);
+
         // sample = (float) (*out) / (MAX_AMPLITUDE);
         *out++ = (sample);
         *out++ = (sample);
