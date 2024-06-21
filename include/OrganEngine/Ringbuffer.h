@@ -1,7 +1,7 @@
 #ifndef __RINGBUFFER_H
 #define __RINGBUFFER_H
 
-#ifdef _MSC_VER  
+#ifdef _MSC_VER
 #define INLINE __forceinline
 #else
 #define INLINE inline
@@ -9,7 +9,7 @@
 
 #include <vector>
 
-// Hermite polynomial interpolation
+// Hermite polynomial interpolation. More points - better response at high frequencies
 __attribute__((always_inline)) inline
 float getSampleHermite4p3o(float x, float *y)
 {
@@ -45,7 +45,7 @@ public:
 
         int iPart = (int)fReadIndex; // integer part of the delay
         float fPart = fReadIndex - iPart; // fractional part of the delay
-        
+
         return getSampleHermite4p3o(fPart, &(buffer[iPart]));
     }
 
