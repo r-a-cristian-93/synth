@@ -19,7 +19,7 @@ void RingBuffer::write(float sample)
 	}
 }
 
-void RingBuffer::write_margined(float sample)
+void RingBuffer::write_margined(int16_t sample)
 {
     buffer[writeIndex] = sample;
 
@@ -34,7 +34,7 @@ void RingBuffer::write_margined(float sample)
     }
 }
 
-float RingBuffer::readWithDelay(int delay){
+int16_t RingBuffer::readWithDelay(int delay){
 	int readIndex = writeIndex - delay;
 	if (readIndex < 0){
 		readIndex += size;
