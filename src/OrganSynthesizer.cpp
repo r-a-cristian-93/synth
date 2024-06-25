@@ -19,7 +19,7 @@ void generateSamples(ma_device* pDevice, float* pInput, float* pOutput, ma_uint3
 
         if (note.envelope.getState() != ADSR_IDLE)
         {
-            float sample = 0;
+            uint16_t sample = 0;
             out = out_initial;
 
             for (int iFrame = 0; iFrame < frameCount; iFrame++)
@@ -37,16 +37,25 @@ void generateSamples(ma_device* pDevice, float* pInput, float* pOutput, ma_uint3
     float sample = 0;
     out = out_initial;
 
-    // apply rotary speaker effect and mix with original
-
     for (int iFrame = 0; iFrame < frameCount; iFrame++)
     {
-        sample = ((float)  rotary_speaker_process_sample(*out)) / (MAX_AMPLITUDE);
+        sample = ((float)  (*out - MAX_AMPLITUDE)) / (MAX_AMPLITUDE);
 
-        // sample = (float) (*out) / (MAX_AMPLITUDE);
         *out++ = (sample);
         *out++ = (sample);
     }
+
+
+    // apply rotary speaker effect and mix with original
+
+    // for (int iFrame = 0; iFrame < frameCount; iFrame++)
+    // {
+    //     sample = ((float)  rotary_speaker_process_sample(*out)) / (MAX_AMPLITUDE);
+
+    //     // sample = (float) (*out) / (MAX_AMPLITUDE);
+    //     *out++ = (sample);
+    //     *out++ = (sample);
+    // }
 
     memcpy(pOutput, out_initial, frameCount * 2 *sizeof(float));
     free(out_initial);

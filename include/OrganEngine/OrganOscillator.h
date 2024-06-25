@@ -13,7 +13,7 @@ void organ_oscillator_initialize();
 void organ_oscillator_set_drawbar_amplitude(uint8_t drawbar, float amplitude);
 
 // Inline
-int16_t organ_oscillator_generate_sample(Note& note);
+uint16_t organ_oscillator_generate_sample(Note& note);
 void organ_oscillator_update();
 
 
@@ -27,17 +27,17 @@ void organ_oscillator_update()
 }
 
  __attribute__((always_inline)) inline
-int16_t organ_oscillator_generate_sample(Note& note)
+uint16_t organ_oscillator_generate_sample(Note& note)
 {
-    int32_t sample = 0;
+    uint32_t sample = 0;
 
 
     for (int drawbar_index = 0; drawbar_index < DRAWBARS_COUNT; drawbar_index++)
     {
         // 16bit * 16bit = 32bit
         // right shift 16 to bring back in 16bit range
-        sample += ((sine_table[(int)(note.phaseAccumulator[drawbar_index])]
-            * drawbarAmplitude[drawbar_index].current_value) >> 16);
+        sample += ((sine_table[(int)(note.phaseAccumulator[drawbar_index])]));
+            // * drawbarAmplitude[drawbar_index].current_value) >> 16);
 
         note.phaseAccumulator[drawbar_index] += notePhaseIncrement[note.midiNote][drawbar_index];
 
@@ -49,11 +49,11 @@ int16_t organ_oscillator_generate_sample(Note& note)
     }
 
     // right shift for the 9 drawbars
-    sample = sample >> 3;
+    sample = sample >> 4;
 
-    sample = (sample * note.envelope.getAmplitude()) >> 16;
+    // sample = (sample * note.envelope.getAmplitude()) >> 16;
 
-    return (int16_t) sample;
+    return (uint16_t) sample;
 }
 
 #endif
