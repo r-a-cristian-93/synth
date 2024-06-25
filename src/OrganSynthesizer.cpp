@@ -19,7 +19,7 @@ void generateSamples(ma_device* pDevice, float* pInput, float* pOutput, ma_uint3
 
         if (note.envelope.getState() != ADSR_IDLE)
         {
-            uint16_t sample = 0;
+            uint32_t sample = 0;
             out = out_initial;
 
             for (int iFrame = 0; iFrame < frameCount; iFrame++)
@@ -39,7 +39,7 @@ void generateSamples(ma_device* pDevice, float* pInput, float* pOutput, ma_uint3
 
     for (int iFrame = 0; iFrame < frameCount; iFrame++)
     {
-        sample = ((float)  (*out - MAX_AMPLITUDE)) / (MAX_AMPLITUDE);
+        sample = ((float)  (*out) - 0x7FFF) / (0x7FFF);
 
         *out++ = (sample);
         *out++ = (sample);

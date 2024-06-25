@@ -10,7 +10,7 @@ void generate_sine_table()
 {
     for (int i = 0; i < LUT_SIZE; i++)
     {
-        sine_table[i] = sin(M_2PI * i / LUT_SIZE) * MAX_AMPLITUDE + MAX_AMPLITUDE;
+        sine_table[i] = sin(M_2PI * i / LUT_SIZE) * 0x7FFF + 0x7FFF;
         std::cout << sine_table[i] <<  "  ";
     }
 }
