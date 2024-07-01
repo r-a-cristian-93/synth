@@ -9,12 +9,21 @@
 extern float notePhaseIncrement[MIDI_NOTES_COUNT][DRAWBARS_COUNT];
 extern Parameter drawbarAmplitude[DRAWBARS_COUNT];
 
+extern float tonewheelPhaseIncrement[TONEWHEELS];
+extern float tonewheelPhase[TONEWHEELS];
+extern uint8_t tonewheelMap[61][9];
+
 void organ_oscillator_initialize();
 void organ_oscillator_set_drawbar_amplitude(uint8_t drawbar, float amplitude);
+
+void map_keys_to_tonewheel();
+int foldback(uint8_t tonewheel);
+int getTonewheelIndex(int key, int drawbar);
 
 // Inline
 int16_t organ_oscillator_generate_sample(Note& note);
 void organ_oscillator_update();
+void organ_oscillator_increment_phase();
 
 
  __attribute__((always_inline)) inline
@@ -24,6 +33,23 @@ void organ_oscillator_update()
     {
         drawbarAmplitude[drawbar_index].update();
     }
+
+    organ_oscillator_increment_phase();
+}
+
+ __attribute__((always_inline)) inline
+void organ_oscillator_increment_phase()
+{
+    for (uint8_t tonewheelIndex = 0; tonewheelIndex < TONEWHEELS; tonewheelIndex++)
+    {
+        tonewheelPhase[tonewheelIndex] += tonewheelPhaseIncrement[tonewheelIndex];
+
+        while (tonewheelPhase[tonewheelIndex]  >= LUT_SIZE)
+            tonewheelPhase[tonewheelIndex]  -= LUT_SIZE;
+
+        while (tonewheelPhase[tonewheelIndex]  < 0)
+            tonewheelPhase[tonewheelIndex]  += LUT_SIZE;
+    }
 }
 
  __attribute__((always_inline)) inline
@@ -31,21 +57,23 @@ int16_t organ_oscillator_generate_sample(Note& note)
 {
     int32_t sample = 0;
 
-
     for (int drawbar_index = 0; drawbar_index < DRAWBARS_COUNT; drawbar_index++)
     {
+        uint8_t tonewheel = tonewheelMap[note.midiNote - MANUL_KEY_0][drawbar_index];
+        float phase = tonewheelPhase[tonewheel];
+
         // 16bit * 16bit = 32bit
         // right shift 16 to bring back in 16bit range
-        sample += ((sine_table[(int)(note.phaseAccumulator[drawbar_index])]
+        sample += ((sine_table[(int)(phase)]
             * drawbarAmplitude[drawbar_index].current_value) >> 16);
 
-        note.phaseAccumulator[drawbar_index] += notePhaseIncrement[note.midiNote][drawbar_index];
+        // note.phaseAccumulator[drawbar_index] += notePhaseIncrement[note.midiNote][drawbar_index];
 
-        if (note.phaseAccumulator[drawbar_index]  >= LUT_SIZE)
-            note.phaseAccumulator[drawbar_index]  -= LUT_SIZE;
+        // if (note.phaseAccumulator[drawbar_index]  >= LUT_SIZE)
+        //     note.phaseAccumulator[drawbar_index]  -= LUT_SIZE;
 
-        if (note.phaseAccumulator[drawbar_index]  < 0)
-            note.phaseAccumulator[drawbar_index]  += LUT_SIZE;
+        // if (note.phaseAccumulator[drawbar_index]  < 0)
+        //     note.phaseAccumulator[drawbar_index]  += LUT_SIZE;
     }
 
     // right shift for the 9 drawbars

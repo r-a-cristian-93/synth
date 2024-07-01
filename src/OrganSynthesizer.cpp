@@ -6,32 +6,52 @@
 
 void generateSamples(ma_device* pDevice, float* pInput, float* pOutput, ma_uint32 frameCount)
 {
-    organ_oscillator_update();
     rotary_speaker_parameters_update();
 
     Note note;
     float* out = (float*) calloc(frameCount * 2, sizeof(float));
     float* const out_initial = out;
 
-    for (int noteIndex = 0; noteIndex < MAX_NOTES; noteIndex++)
+    // for (int noteIndex = 0; noteIndex < MAX_NOTES; noteIndex++)
+    // {
+    //     note = notesList[noteIndex];
+
+    //     if (note.envelope.getState() != ADSR_IDLE)
+    //     {
+    //         float sample = 0;
+    //         out = out_initial;
+
+    //         for (int iFrame = 0; iFrame < frameCount; iFrame++)
+    //         {
+    //             // Scale to float -1 to 1. Platform dependent
+    //             sample = organ_oscillator_generate_sample(note);
+    //             *out++ += sample;
+    //             *out++ += sample;
+    //         }
+
+    //         notesList[noteIndex] = note;
+    //     }
+    // }
+
+    for (int iFrame = 0; iFrame < frameCount; iFrame++)
     {
-        note = notesList[noteIndex];
+        organ_oscillator_update();
+        float sample = 0;
 
-        if (note.envelope.getState() != ADSR_IDLE)
+        for (int noteIndex = 0; noteIndex < MAX_NOTES; noteIndex++)
         {
-            float sample = 0;
-            out = out_initial;
+            note = notesList[noteIndex];
 
-            for (int iFrame = 0; iFrame < frameCount; iFrame++)
+            if (note.envelope.getState() != ADSR_IDLE)
             {
-                // Scale to float -1 to 1. Platform dependent
-                sample = organ_oscillator_generate_sample(note);
-                *out++ += sample;
-                *out++ += sample;
-            }
+                sample += organ_oscillator_generate_sample(note);
 
-            notesList[noteIndex] = note;
+                notesList[noteIndex] = note;
+            }
         }
+
+        *out++ = sample;
+        *out++ = sample;
     }
 
     float sample = 0;
