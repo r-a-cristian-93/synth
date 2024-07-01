@@ -15,7 +15,6 @@ void generateSamples(ma_device* pDevice, float* pInput, float* pOutput, ma_uint3
 
     for (int iFrame = 0; iFrame < frameCount; iFrame++)
     {
-        organ_oscillator_update();
         sample = organ_oscillator_generate_sample();
 
         sample = ((float)  rotary_speaker_process_sample(sample)) / (MAX_AMPLITUDE);

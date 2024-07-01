@@ -22,36 +22,7 @@ int foldback(uint8_t tonewheel);
 int getTonewheelIndex(int key, int drawbar);
 
 // Inline
-int16_t organ_oscillator_generate_sample(Note& note);
-void organ_oscillator_update();
-void organ_oscillator_increment_phase();
-
-
- __attribute__((always_inline)) inline
-void organ_oscillator_update()
-{
-    // for (int drawbar_index = 0; drawbar_index < DRAWBARS_COUNT; drawbar_index++)
-    // {
-    //     drawbarAmplitude[drawbar_index].update();
-    // }
-
-    // organ_oscillator_increment_phase();
-}
-
- __attribute__((always_inline)) inline
-void organ_oscillator_increment_phase()
-{
-    // for (uint8_t tonewheelIndex = 0; tonewheelIndex < TONEWHEELS; tonewheelIndex++)
-    // {
-    //     tonewheelPhase[tonewheelIndex] += tonewheelPhaseIncrement[tonewheelIndex];
-
-    //     while (tonewheelPhase[tonewheelIndex]  >= LUT_SIZE)
-    //         tonewheelPhase[tonewheelIndex]  -= LUT_SIZE;
-
-    //     while (tonewheelPhase[tonewheelIndex]  < 0)
-    //         tonewheelPhase[tonewheelIndex]  += LUT_SIZE;
-    // }
-}
+int16_t organ_oscillator_generate_sample();
 
  __attribute__((always_inline)) inline
 int16_t organ_oscillator_generate_sample()
@@ -61,6 +32,7 @@ int16_t organ_oscillator_generate_sample()
     for (int tonewheelIndex = 0; tonewheelIndex < TONEWHEELS; tonewheelIndex++)
     {
         sample += ((sine_table[(int)(tonewheelPhase[tonewheelIndex])] * tonewheelAmplitude[tonewheelIndex]) >> 16);
+
         tonewheelPhase[tonewheelIndex] += tonewheelPhaseIncrement[tonewheelIndex];
 
         while (tonewheelPhase[tonewheelIndex]  >= LUT_SIZE)

@@ -25,7 +25,10 @@ int main()
     const ma_uint32 frameCount = 10000000;
     float* buffer = (float*) calloc(frameCount * 2, sizeof(float));
 
-    note_on(64);
+    for (int i = 13; i < 13+61; i++)
+    {
+        note_on(i);
+    }
 
     using clock = std::chrono::high_resolution_clock;
     auto start = clock::now();
