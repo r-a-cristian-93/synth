@@ -9,7 +9,7 @@ Parameter drawbarAmplitude[DRAWBARS_COUNT];
 
 float tonewheelPhaseIncrement[TONEWHEELS] = {0};
 float tonewheelPhase[TONEWHEELS] = {0};
-uint16_t tonewheelVolumes[TONEWHEELS];
+uint16_t tonewheelAmplitude[TONEWHEELS] = {0};
 uint8_t tonewheelMap[61][9] = {{0}};
 
 void generate_phase_increment() {
