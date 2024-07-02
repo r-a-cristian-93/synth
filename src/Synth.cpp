@@ -12,7 +12,6 @@ int main()
     waveforms_initialize();
     organ_oscillator_initialize();
     rotary_speaker_initialize();
-    note_manager_initialize();
 
     midi_init();
     audio_driver_init();

@@ -8,19 +8,11 @@
 #include "Profiler.h"
 #include <chrono>
 
-
-void testFunction() {
-
-}
-
 int main()
 {
-
     waveforms_initialize();
     organ_oscillator_initialize();
     rotary_speaker_initialize();
-    note_manager_initialize();
-
 
     const ma_uint32 frameCount = 10000000;
     float* buffer = (float*) calloc(frameCount * 2, sizeof(float));
@@ -40,8 +32,6 @@ int main()
     std::cout << "Execution time: " << duration.count() << " seconds" << std::endl;
 
     free(buffer);
-
-
 
     return 0;
 }

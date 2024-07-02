@@ -1,7 +1,6 @@
 #ifndef ORGAN_OSCILATOR_H
 #define ORGAN_OSCILATOR_H
 
-#include <OrganEngine/Note.h>
 #include <OrganEngine/NoteManager.h>
 #include <OrganEngine/Parameter.h>
 #include <OrganEngine/WaveTables.h>
