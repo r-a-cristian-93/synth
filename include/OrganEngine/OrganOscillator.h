@@ -2,6 +2,7 @@
 #define ORGAN_OSCILATOR_H
 
 #include <OrganEngine/Note.h>
+#include <OrganEngine/NoteManager.h>
 #include <OrganEngine/Parameter.h>
 #include <OrganEngine/WaveTables.h>
 #include <iostream>
@@ -12,21 +13,30 @@ extern Parameter drawbarAmplitude[DRAWBARS_COUNT];
 extern float tonewheelPhaseIncrement[TONEWHEELS];
 extern float tonewheelPhase[TONEWHEELS];
 extern uint16_t tonewheelAmplitude[TONEWHEELS];
-extern uint8_t tonewheelMap[61][9];
+extern uint8_t tonewheelMap[MANUAL_KEYS][DRAWBARS_COUNT];
 
 void organ_oscillator_initialize();
-void organ_oscillator_set_drawbar_amplitude(uint8_t drawbar, float amplitude);
+void organ_oscillator_set_drawbar_amplitude(uint8_t controller, uint8_t midiValue);
+
+void drawbar_amplitude_update();
+
 
 void map_keys_to_tonewheel();
 int foldback(uint8_t tonewheel);
 int getTonewheelIndex(int key, int drawbar);
 
 // Inline
+void reset_tonewheel_amplitude();
+void set_tonewheels_amplitude();
 int16_t organ_oscillator_generate_sample();
+
+
 
  __attribute__((always_inline)) inline
 int16_t organ_oscillator_generate_sample()
 {
+    drawbar_amplitude_update();
+
     int32_t sample = 0;
 
     for (int tonewheelIndex = 0; tonewheelIndex < TONEWHEELS; tonewheelIndex++)

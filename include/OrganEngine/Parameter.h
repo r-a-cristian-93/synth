@@ -5,8 +5,8 @@
 
 struct Parameter
 {
-    int16_t current_value = MAX_AMPLITUDE;
-    int16_t target_value = MAX_AMPLITUDE;
+    int32_t current_value = MAX_AMPLITUDE;
+    int32_t target_value = MAX_AMPLITUDE;
 
     const int16_t increment_value = (int16_t) (0.1 * MAX_AMPLITUDE);
     const int16_t max_value = MAX_AMPLITUDE;

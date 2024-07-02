@@ -38,10 +38,10 @@ void decode_message(double deltatime, std::vector<unsigned char> *buffer, void *
         uint8_t controller = message->data.control_change.controller;
         uint8_t value = message->data.control_change.value;
 
-        std::cout << "Controller: " << (int)controller << " Value: " << (int)value << std::endl;
+        std::cout << "Controller: " << (int)controller << " Value: " << (int)value << " " << std::endl;
 
         if (is_drawbar_controller(controller))
-            organ_oscillator_set_drawbar_amplitude(controller, value / 127.0f);
+            organ_oscillator_set_drawbar_amplitude(controller, value);
 
         // if (controller == MIDI_CC_VIBRATO_FAST)
         //     organ_oscillator_set_vibrato_fast();

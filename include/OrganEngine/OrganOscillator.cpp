@@ -10,7 +10,41 @@ Parameter drawbarAmplitude[DRAWBARS_COUNT];
 float tonewheelPhaseIncrement[TONEWHEELS] = {0};
 float tonewheelPhase[TONEWHEELS] = {0};
 uint16_t tonewheelAmplitude[TONEWHEELS] = {0};
-uint8_t tonewheelMap[61][9] = {{0}};
+uint8_t tonewheelMap[MANUAL_KEYS][DRAWBARS_COUNT] = {{0}};
+
+void drawbar_amplitude_update()
+{
+    for (uint8_t drawbarIndex = 0; drawbarIndex < DRAWBARS_COUNT; drawbarIndex++)
+
+    drawbarAmplitude[drawbarIndex].update();
+}
+
+//  __attribute__((always_inline)) inline
+void reset_tonewheel_amplitude() {
+    for (uint8_t tonewheelIndex = 0; tonewheelIndex < TONEWHEELS; tonewheelIndex++)
+    {
+        tonewheelAmplitude[tonewheelIndex] = 0;
+    }
+}
+
+//  __attribute__((always_inline)) inline
+void set_tonewheels_amplitude()
+{
+    for (uint8_t drawbarIndex = 0; drawbarIndex < DRAWBARS_COUNT; drawbarIndex++)
+    {
+        int16_t dAmplitude = drawbarAmplitude[drawbarIndex].current_value;
+
+        for (uint8_t keyIndex = 0; keyIndex < MANUAL_KEYS; keyIndex++)
+        {
+            if (keysList[keyIndex] == KEY_STATE_ON)
+            {
+                uint8_t tonewheelIndex = tonewheelMap[keyIndex][drawbarIndex];
+
+                tonewheelAmplitude[tonewheelIndex] += (dAmplitude >> 5);
+            }
+        }
+    }
+}
 
 void generate_phase_increment() {
     for (int midiNote = 0; midiNote < MIDI_NOTES_COUNT; midiNote++) {
@@ -31,13 +65,13 @@ void organ_oscillator_initialize()
     map_keys_to_tonewheel();
 }
 
-void organ_oscillator_set_drawbar_amplitude(uint8_t controller, float amplitude) {
-    drawbarAmplitude[get_drawbar_id(controller)].target_value = amplitude;
+void organ_oscillator_set_drawbar_amplitude(uint8_t controller, uint8_t midiValue) {
+    drawbarAmplitude[get_drawbar_id(controller)].target_value = midiValue * INT8_TO_INT16_SCALE_FACTOR;
 }
 
 
 void map_keys_to_tonewheel() {
-    for (uint8_t keyIndex = 0; keyIndex < 61; keyIndex++)
+    for (uint8_t keyIndex = 0; keyIndex < MANUAL_KEYS; keyIndex++)
     {
         for (uint8_t drawbarIndex = 0; drawbarIndex < 9; drawbarIndex++)
         {
