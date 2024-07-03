@@ -88,7 +88,7 @@ int foldback(uint8_t tonewheel) {
     while (tonewheel < 12) {
         tonewheel += 12;
     }
-    while (tonewheel > 91) {
+    while (tonewheel >= 91) {
         tonewheel -= 12;
     }
     return tonewheel;
