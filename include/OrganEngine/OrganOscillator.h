@@ -13,6 +13,7 @@ extern float tonewheelPhaseIncrement[TONEWHEELS];
 extern float tonewheelPhase[TONEWHEELS];
 extern uint16_t tonewheelAmplitude[TONEWHEELS];
 extern uint8_t tonewheelMap[MANUAL_KEYS][DRAWBARS_COUNT];
+extern int16_t* tonewheelWaveform;
 
 void organ_oscillator_initialize();
 void organ_oscillator_set_drawbar_amplitude(uint8_t controller, uint8_t midiValue);
@@ -31,6 +32,7 @@ int16_t organ_oscillator_generate_sample();
 
 
 
+
  __attribute__((always_inline)) inline
 int16_t organ_oscillator_generate_sample()
 {
@@ -40,7 +42,7 @@ int16_t organ_oscillator_generate_sample()
 
     for (int tonewheelIndex = 0; tonewheelIndex < TONEWHEELS; tonewheelIndex++)
     {
-        sample += ((sine_table[(int)(tonewheelPhase[tonewheelIndex])] * tonewheelAmplitude[tonewheelIndex]) >> 16);
+        sample += ((tonewheelWaveform[(int)(tonewheelPhase[tonewheelIndex])] * tonewheelAmplitude[tonewheelIndex]) >> 16);
 
         tonewheelPhase[tonewheelIndex] += tonewheelPhaseIncrement[tonewheelIndex];
 
@@ -51,6 +53,26 @@ int16_t organ_oscillator_generate_sample()
             tonewheelPhase[tonewheelIndex]  += LUT_SIZE;
     }
     return (int16_t) sample;
+}
+
+ __attribute__((always_inline)) inline
+void set_next_waveform() {
+    if (tonewheelWaveform == sine_table)
+    {
+        tonewheelWaveform = smooth_triangle_table;
+    }
+    else if (tonewheelWaveform == smooth_triangle_table)
+    {
+        tonewheelWaveform = smooth_square_table;
+    }
+    else if (tonewheelWaveform == smooth_square_table)
+    {
+        tonewheelWaveform = smooth_sawtooth_table;
+    }
+    else if (tonewheelWaveform == smooth_sawtooth_table)
+    {
+        tonewheelWaveform = sine_table;
+    }
 }
 
 #endif
