@@ -116,7 +116,6 @@ int fm_synth_generate_sample() {
 //properties of each note played
 extern uint8_t         iADSR[nch];
 extern unsigned int envADSR[nch];
-extern uint8_t         amp_base[nch];
 extern float inc_base[nch];
 extern unsigned int FMa0[nch];
 extern int          FMda[nch];
@@ -148,7 +147,6 @@ void fm_synth_note_on(uint8_t keypressed, uint8_t velocity) {
   const uint8_t nextch = keypressed - MANUAL_KEY_FIRST;
 
   phase[nextch]=0;
-  amp_base[nextch] = currentInstrument->amplitude * velocity / 100; // / 127
   iADSR[nextch] = ADSR_STEP_ATACK;
   FMphase[nextch]=0;
   FMinc_base[nextch] = ((float)phaseIncrement[nextch]*currentInstrument->FM_inc)/LUT_SIZE;
@@ -206,7 +204,7 @@ void updateParameters()
 
   //update the tone for channel 0
   for (uint8_t ich = 0; ich < nch; ich++) {
-    amp[ich] = (amp_base[ich] * (envADSR[ich] >> 8)) >> 8;
+    amp[ich] = (currentInstrument->amplitude * (envADSR[ich] >> 8)) >> 8;
     FMamp[ich] = FMa0[ich] + ((long)FMda[ich] * FMexp[ich]>>16);
     FMinc[ich] = FMinc_base[ich];
   }

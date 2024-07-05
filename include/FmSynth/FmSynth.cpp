@@ -59,7 +59,6 @@ unsigned int FMamp[nch]  = {0};
 
 uint8_t         iADSR[nch]     = {0};
 unsigned int envADSR[nch]   = {0};
-uint8_t         amp_base[nch]  = {0};
 unsigned int FMa0[nch]      = {0};
 int          FMda[nch]      = {0};
 float FMinc_base[nch]= {0};
