@@ -110,7 +110,7 @@ int fm_synth_generate_sample() {
 
     updateParameters();
 
-    return sample >> 2;
+    return sample;
 }
 
 //properties of each note played

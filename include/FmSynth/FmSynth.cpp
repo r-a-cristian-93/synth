@@ -38,7 +38,7 @@ void generate_sineTable()
 void generate_phaseIncrement()
 {
     for (int i = 0; i < 61; i++) {
-        frequency[i] = 110.0 * pow(2.0, ( (i-21) / 12.0));
+        frequency[i] = 440.0 * pow(2.0, ( (i-21) / 12.0));
 
         phaseIncrement[i] = frequency[i] * (LUT_SIZE / 44100.0);
     }
