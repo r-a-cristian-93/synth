@@ -40,7 +40,7 @@ void generateFmSynthSamples(ma_device* pDevice, float* pInput, float* pOutput, m
 
     for (int iFrame = 0; iFrame < frameCount; iFrame++)
     {
-        sample = (float) (fm_synth_generate_sample()) / (MAX_AMPLITUDE);
+        sample = ((float) (fm_synth_generate_sample())) / (MAX_AMPLITUDE);
 
         *out++ = sample;
         *out++ = sample;

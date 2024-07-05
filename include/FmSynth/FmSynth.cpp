@@ -24,7 +24,7 @@ Instrument* currentInstrument = &instruments[0];
 
 
 
-char sineTable[LUT_SIZE] = {0};
+int16_t sineTable[LUT_SIZE] = {0};
 float phaseIncrement[nch] = {0};
 float FMinc[nch]  = {0};
 float frequency[nch] = {0};
@@ -33,7 +33,7 @@ void generate_sineTable()
 {
     for (int i = 0; i < LUT_SIZE; i++)
     {
-        sineTable[i] = (sin(2 * 3.14159265 * (i + 0.5) / LUT_SIZE)) * 128;
+        sineTable[i] = sin(2.0 * 3.14159265 * (i + 0.5) / LUT_SIZE) * 0x7FFF;
     }
 }
 

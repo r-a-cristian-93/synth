@@ -49,7 +49,7 @@ struct Instrument
 };
 
 extern Instrument instruments[ninstr];
-extern char sineTable[LUT_SIZE];
+extern int16_t sineTable[LUT_SIZE];
 extern float phaseIncrement[nch];
 extern float FMinc[nch];
 
@@ -60,31 +60,31 @@ extern float FMphase[nch];
 extern unsigned int FMamp[nch];
 
 // main function (forced inline) to update the pulse length
-int fm_synth_generate_sample();
+int32_t fm_synth_generate_sample();
 void updateParameters();
 
 __attribute__((always_inline)) inline
-int fm_synth_generate_sample() {
-    int sample = 0;
+int32_t fm_synth_generate_sample() {
+    int32_t sample = 0;
 
     for (uint8_t ich = 0; ich < nch; ich++)
     {
         // sample += sineTable[((int)phase[ich]+sineTable[(int)FMphase[ich]>>8]*FMamp[ich]) >> 8] * amp[ich];
-        int phase_shift = (int)(sineTable[(int)FMphase[ich]] * ((float) FMamp[ich]) / 32);
-        float ph = phase[ich] + phase_shift;
+        // int phase_shift = (int)(sineTable[(int)FMphase[ich]] * ((float) FMamp[ich]) / 32);
+        // float ph = phase[ich] + phase_shift;
 
-        while (ph >= LUT_SIZE) {
-            ph -= LUT_SIZE;
-        }
+        // while (ph >= LUT_SIZE) {
+        //     ph -= LUT_SIZE;
+        // }
 
-        while (ph < 0) {
-            ph += LUT_SIZE;
-        }
+        // while (ph < 0) {
+        //     ph += LUT_SIZE;
+        // }
 
-        sample += sineTable[(int)ph] * amp[ich];
+        // sample += sineTable[(int)ph] * amp[ich];
 
         // simple sine - ok
-        // sample += sineTable[((int)phase[ich])] * amp[ich];
+        sample += (sineTable[((int)phase[ich])] * amp[ich]);
 
 
         FMphase[ich] += FMinc[ich];
@@ -109,7 +109,7 @@ int fm_synth_generate_sample() {
 
     updateParameters();
 
-    return sample;
+    return sample >> 8;
 }
 
 //properties of each note played
