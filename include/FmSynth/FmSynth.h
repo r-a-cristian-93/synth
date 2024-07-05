@@ -122,35 +122,39 @@ extern unsigned int FMval[nch];
 extern Instrument* currentInstrument;
 extern uint8_t instr;
 
+
+
+void fm_synth_init();
+void init_instrument();
+
 __attribute__((always_inline)) inline
-void changeInstrument()
+void fm_synth_next_instrument()
 {
   currentInstrument++;
 
   if (currentInstrument >= &instruments[ninstr])
     currentInstrument = &instruments[0];
+
+  init_instrument();
 }
 
-void fm_synth_init();
-
 __attribute__((always_inline)) inline
-void fm_synth_note_on(uint8_t keypressed, uint8_t velocity) {
-	if (keypressed < MANUAL_KEY_FIRST || keypressed >= MANUAL_KEY_LAST)
+void fm_synth_note_on(uint8_t midiNote, uint8_t velocity) {
+	if (midiNote < MANUAL_KEY_FIRST || midiNote >= MANUAL_KEY_LAST)
 		return;
 
-  const uint8_t nextch = keypressed - MANUAL_KEY_FIRST;
+  const uint8_t note = midiNote - MANUAL_KEY_FIRST;
 
-  iADSR[nextch] = ADSR_STEP_ATACK;
-  FMda[nextch] = currentInstrument->FM_ampl_start-currentInstrument->FM_ampl_end;
-  FMexp[nextch]=0xFFFF;
+  iADSR[note] = ADSR_STEP_ATACK;
+  FMexp[note]=0xFFFF;
 }
 
 __attribute__((always_inline)) inline
-void fm_synth_note_off(uint8_t keyreleased) {
-  if (keyreleased < MANUAL_KEY_FIRST || keyreleased >= MANUAL_KEY_LAST)
+void fm_synth_note_off(uint8_t midiNote) {
+  if (midiNote < MANUAL_KEY_FIRST || midiNote >= MANUAL_KEY_LAST)
     return;
 
-  iADSR[keyreleased - MANUAL_KEY_FIRST] = ADSR_STEP_RELEASE;
+  iADSR[midiNote - MANUAL_KEY_FIRST] = ADSR_STEP_RELEASE;
 }
 
 __attribute__((always_inline)) inline

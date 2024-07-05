@@ -46,25 +46,25 @@ void generate_phaseIncrement()
     }
 }
 
-void set_fm_increment() {
+void init_instrument() {
     for (int i = 0; i < 61; i++)
     {
         FMinc[i] = phaseIncrement[i] * ((float) currentInstrument->FM_inc / LUT_SIZE);
+        FMda[i] = currentInstrument->FM_ampl_start-currentInstrument->FM_ampl_end;
     }
 }
-
 
 void fm_synth_set_instrument(uint8_t index) {
     currentInstrument = &instruments[index];
 
-    set_fm_increment();
+    init_instrument();
 }
 
 void fm_synth_init() {
     generate_sineTable();
     generate_phaseIncrement();
 
-    fm_synth_set_instrument(1);
+    fm_synth_set_instrument(0);
 }
 
 float phase[nch]  = {0};

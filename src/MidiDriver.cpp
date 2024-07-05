@@ -47,7 +47,10 @@ void decode_message(double deltatime, std::vector<unsigned char> *buffer, void *
             organ_oscillator_set_drawbar_amplitude(controller, value);
 
         if (controller == MIDI_CC_BANK_MSB)
+        {
             set_next_waveform();
+            fm_synth_next_instrument();
+        }
 
         // if (controller == MIDI_CC_VIBRATO_FAST)
         //     organ_oscillator_set_vibrato_fast();
