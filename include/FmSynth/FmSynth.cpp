@@ -22,9 +22,12 @@ Instrument instruments[ninstr] = {
 
 Instrument* currentInstrument = &instruments[0];
 
+
+
 char sineTable[LUT_SIZE] = {0};
-float phaseIncrement[61] = {0};
-float frequency[61] = {0};
+float phaseIncrement[nch] = {0};
+float FMinc[nch]  = {0};
+float frequency[nch] = {0};
 
 void generate_sineTable()
 {
@@ -67,7 +70,6 @@ void fm_synth_init() {
 float phase[nch]  = {0};
 uint8_t amp[nch]    = {0};
 float FMphase[nch]= {0};
-float FMinc[nch]  = {0};
 unsigned int FMamp[nch]  = {0};
 
 
@@ -78,5 +80,4 @@ int          FMda[nch]      = {0};
 unsigned int FMdec[nch]     = {0};
 unsigned int FMexp[nch]     = {0};
 unsigned int FMval[nch]     = {0};
-uint8_t         keych[nch]     = {0};
 

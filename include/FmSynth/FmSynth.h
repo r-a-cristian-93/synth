@@ -50,14 +50,13 @@ struct Instrument
 
 extern Instrument instruments[ninstr];
 extern char sineTable[LUT_SIZE];
-extern float phaseIncrement[61];
-
+extern float phaseIncrement[nch];
+extern float FMinc[nch];
 
 //initialize the main parameters of the pulse length setting
 extern uint8_t amp[nch];
 extern float phase[nch];
 extern float FMphase[nch];
-extern float FMinc[nch];
 extern unsigned int FMamp[nch];
 
 // main function (forced inline) to update the pulse length
@@ -122,8 +121,6 @@ extern int          FMda[nch];
 extern unsigned int FMdec[nch];
 extern unsigned int FMexp[nch];
 extern unsigned int FMval[nch];
-extern uint8_t         keych[nch];
-
 extern Instrument* currentInstrument;
 extern uint8_t instr;
 
@@ -145,15 +142,11 @@ void fm_synth_note_on(uint8_t keypressed, uint8_t velocity) {
 
   const uint8_t nextch = keypressed - MANUAL_KEY_FIRST;
 
-  phase[nextch]=0;
   iADSR[nextch] = ADSR_STEP_ATACK;
-  FMphase[nextch]=0;
   FMa0[nextch] = currentInstrument->FM_ampl_end;
   FMda[nextch] = currentInstrument->FM_ampl_start-currentInstrument->FM_ampl_end;
   FMexp[nextch]=0xFFFF;
   FMdec[nextch]=currentInstrument->FM_dec;
-  keych[nextch] = keypressed;
-//   tch[nextch] = 0;
 }
 
 __attribute__((always_inline)) inline
