@@ -7,18 +7,21 @@ Instrument instruments[ninstr] = {
 // amp   pitch         A        D         S        R    FM_inc     FM_as     FM_ae     FM_dec
   { 36,      0,     8192,       0,   0xFFFF,    2048,      768,       64,       64,        0},   // Organ
   { 64,      0,     8192,    2048,   0x8888,    2048,      768,       64,       64,        0},   // Percussion_Organ
-  { 64,      0,     4096,      10,        0,      64,      256,      128,       64,       64},   // E-Piano
+  { 64,      0,     4096,    2048,        0,      64,      256,      128,       64,       64},   // E-Piano
   { 64,      0,     8192,      16,        0,      32,      768,      512,      128,      128},   // Guitar
   { 64,      0,     8192,      16,        0,      32,      400,     1024,      128,      128},   // Cymbal
   { 64,      0,     4096,       8,        0,      16,      200,      512,      128,       32},   // Bell
   { 64,      0,      512,      16,        0,      32,       96,        0,      512,      128},   // Funky
   { 64,      0,      512,      16,        0,      32,      528,     1024,      768,      128},   // Vibraphone
-  { 64,      0,       64,       8,        0,      32,      244,     2048,      512,      128},   // Metal
+  { 64,      0,       64,       8,        0,      32,      244,     1024,      512,      128},   // Metal
   { 64,     12,      128,      16,   0xFF00,      32,      256,      256,      128,      128},   // Violin
   { 64,      0,      128,      16,   0xFF00,      32,      128,      256,      128,      128},   // Bass
   { 64,      0,      256,      64,   0xC000,      64,       64,      384,      256,       64},   // Trumpet
   { 64,     12,      256,      32,   0xC000,      64,      160,      256,      128,       64}    // Harmonica
 };
+
+Instrument* currentInstrument = &instruments[1];
+uint8_t instr=0;
 
 char sineTable[LUT_SIZE] = {0};
 float phaseIncrement[61] = {0};
@@ -71,5 +74,3 @@ unsigned int FMexp[nch]     = {0};
 unsigned int FMval[nch]     = {0};
 uint8_t         keych[nch]     = {0};
 
-Instrument* currentInstrument = &instruments[0];
-uint8_t instr=0;

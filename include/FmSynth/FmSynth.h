@@ -72,8 +72,8 @@ int fm_synth_generate_sample() {
     for (uint8_t ich = 0; ich < nch; ich++)
     {
         // sample += sineTable[((int)phase[ich]+sineTable[(int)FMphase[ich]>>8]*FMamp[ich]) >> 8] * amp[ich];
-        int phase_shift = sineTable[(int)FMphase[ich]];
-        int ph = (int)phase[ich] + phase_shift;
+        int phase_shift = (int)(sineTable[(int)FMphase[ich]] * ((float) FMamp[ich]) / 32);
+        float ph = phase[ich] + phase_shift;
 
         while (ph >= LUT_SIZE) {
             ph -= LUT_SIZE;
@@ -83,7 +83,7 @@ int fm_synth_generate_sample() {
             ph += LUT_SIZE;
         }
 
-        sample += sineTable[ph] * amp[ich];
+        sample += sineTable[(int)ph] * amp[ich];
 
         // simple sine - ok
         // sample += sineTable[((int)phase[ich])] * amp[ich];
