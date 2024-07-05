@@ -119,7 +119,6 @@ extern unsigned int envADSR[nch];
 extern float inc_base[nch];
 extern unsigned int FMa0[nch];
 extern int          FMda[nch];
-extern float FMinc_base[nch];
 extern unsigned int FMdec[nch];
 extern unsigned int FMexp[nch];
 extern unsigned int FMval[nch];
@@ -149,7 +148,6 @@ void fm_synth_note_on(uint8_t keypressed, uint8_t velocity) {
   phase[nextch]=0;
   iADSR[nextch] = ADSR_STEP_ATACK;
   FMphase[nextch]=0;
-  FMinc_base[nextch] = ((float)phaseIncrement[nextch]*currentInstrument->FM_inc)/LUT_SIZE;
   FMa0[nextch] = currentInstrument->FM_ampl_end;
   FMda[nextch] = currentInstrument->FM_ampl_start-currentInstrument->FM_ampl_end;
   FMexp[nextch]=0xFFFF;
@@ -206,7 +204,6 @@ void updateParameters()
   for (uint8_t ich = 0; ich < nch; ich++) {
     amp[ich] = (currentInstrument->amplitude * (envADSR[ich] >> 8)) >> 8;
     FMamp[ich] = FMa0[ich] + ((long)FMda[ich] * FMexp[ich]>>16);
-    FMinc[ich] = FMinc_base[ich];
   }
 }
 

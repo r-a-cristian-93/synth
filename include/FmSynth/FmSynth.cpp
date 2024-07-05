@@ -20,8 +20,7 @@ Instrument instruments[ninstr] = {
   { 64,     12,      256,      32,   0xC000,      64,      160,      256,      128,       64}    // Harmonica
 };
 
-Instrument* currentInstrument = &instruments[1];
-uint8_t instr=0;
+Instrument* currentInstrument = &instruments[0];
 
 char sineTable[LUT_SIZE] = {0};
 float phaseIncrement[61] = {0};
@@ -37,18 +36,33 @@ void generate_sineTable()
 
 void generate_phaseIncrement()
 {
-    for (int i = 0; i < 61; i++) {
+    for (int i = 0; i < 61; i++)
+    {
         frequency[i] = 440.0 * pow(2.0, ( (i-21) / 12.0));
-
         phaseIncrement[i] = frequency[i] * (LUT_SIZE / 44100.0);
     }
+}
+
+void set_fm_increment() {
+    for (int i = 0; i < 61; i++)
+    {
+        FMinc[i] = phaseIncrement[i] * ((float) currentInstrument->FM_inc / LUT_SIZE);
+    }
+}
+
+
+void fm_synth_set_instrument(uint8_t index) {
+    currentInstrument = &instruments[index];
+
+    set_fm_increment();
 }
 
 void fm_synth_init() {
     generate_sineTable();
     generate_phaseIncrement();
-}
 
+    fm_synth_set_instrument(0);
+}
 
 float phase[nch]  = {0};
 uint8_t amp[nch]    = {0};
@@ -61,7 +75,6 @@ uint8_t         iADSR[nch]     = {0};
 unsigned int envADSR[nch]   = {0};
 unsigned int FMa0[nch]      = {0};
 int          FMda[nch]      = {0};
-float FMinc_base[nch]= {0};
 unsigned int FMdec[nch]     = {0};
 unsigned int FMexp[nch]     = {0};
 unsigned int FMval[nch]     = {0};
