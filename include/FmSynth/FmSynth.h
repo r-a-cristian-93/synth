@@ -54,9 +54,8 @@ extern float phaseIncrement[61];
 
 
 //initialize the main parameters of the pulse length setting
+extern uint8_t amp[nch];
 extern float phase[nch];
-extern float          inc[nch];
-extern uint8_t      amp[nch];
 extern float FMphase[nch];
 extern float FMinc[nch];
 extern unsigned int FMamp[nch];
@@ -90,7 +89,7 @@ int fm_synth_generate_sample() {
 
 
         FMphase[ich] += FMinc[ich];
-        phase[ich] += inc[ich];
+        phase[ich] += phaseIncrement[ich];
 
         while (FMphase[ich] >= LUT_SIZE) {
             FMphase[ich] -= LUT_SIZE;
@@ -117,10 +116,6 @@ int fm_synth_generate_sample() {
 //properties of each note played
 extern uint8_t         iADSR[nch];
 extern unsigned int envADSR[nch];
-extern unsigned int ADSRa[nch];
-extern unsigned int ADSRd[nch];
-extern unsigned int ADSRs[nch];
-extern unsigned int ADSRr[nch];
 extern uint8_t         amp_base[nch];
 extern float inc_base[nch];
 extern unsigned int FMa0[nch];
@@ -145,30 +140,6 @@ void changeInstrument()
 
 void fm_synth_init();
 
-// main loop. Duration of loop is determined by number of setPWM calls
-// Each setPWMcall corresponds to 512 cylcles=32mus
-// Tloop= 32mus * #setPWM. #setPWM=9 gives Tloop=0.288ms
-
-// inline void fineNextChanel() {
-//   //find the best channel to start a new note
-//   nextch = 255;
-
-//   //then check for an empty channel
-//   if (nextch == 255) {
-//     if (iADSR[0] == ADSR_STEP_NONE)nextch = 0;
-//     if (iADSR[1] == ADSR_STEP_NONE)nextch = 1;
-//     if (iADSR[2] == ADSR_STEP_NONE)nextch = 2;
-//     if (iADSR[3] == ADSR_STEP_NONE)nextch = 3;
-
-//     //otherwise use the channel with the longest playing note
-//     nextch = 0;
-//     if (tch[0] > tch[nextch])nextch = 0;
-//     if (tch[1] > tch[nextch])nextch = 1;
-//     if (tch[2] > tch[nextch])nextch = 2;
-//     if (tch[3] > tch[nextch])nextch = 3;
-//   }
-// }
-
 __attribute__((always_inline)) inline
 void fm_synth_note_on(uint8_t keypressed, uint8_t velocity) {
 	if (keypressed < MANUAL_KEY_FIRST || keypressed >= MANUAL_KEY_LAST)
@@ -178,14 +149,9 @@ void fm_synth_note_on(uint8_t keypressed, uint8_t velocity) {
 
   phase[nextch]=0;
   amp_base[nextch] = currentInstrument->amplitude * velocity / 100; // / 127
-  inc_base[nextch] = phaseIncrement[currentInstrument->pitch+keypressed];
-  ADSRa[nextch]=currentInstrument->ADSR_a;
-  ADSRd[nextch]=currentInstrument->ADSR_d;
-  ADSRs[nextch]=currentInstrument->ADSR_s;
-  ADSRr[nextch]=currentInstrument->ADSR_r;
   iADSR[nextch] = ADSR_STEP_ATACK;
   FMphase[nextch]=0;
-  FMinc_base[nextch] = ((float)inc_base[nextch]*currentInstrument->FM_inc)/LUT_SIZE;
+  FMinc_base[nextch] = ((float)phaseIncrement[nextch]*currentInstrument->FM_inc)/LUT_SIZE;
   FMa0[nextch] = currentInstrument->FM_ampl_end;
   FMda[nextch] = currentInstrument->FM_ampl_start-currentInstrument->FM_ampl_end;
   FMexp[nextch]=0xFFFF;
@@ -214,34 +180,33 @@ void updateParameters()
   for (uint8_t ich = 0; ich < nch; ich++) {
     // RELEASE
     if (iADSR[ich] == ADSR_STEP_RELEASE) {
-      if (envADSR[ich] <= ADSRr[ich]) {
+      if (envADSR[ich] <= currentInstrument->ADSR_r) {
         envADSR[ich] = 0;
         iADSR[ich] = ADSR_STEP_NONE;
       }
-      else envADSR[ich] -= ADSRr[ich];
+      else envADSR[ich] -= currentInstrument->ADSR_r;
     }
     // DECAY
     if (iADSR[ich] == ADSR_STEP_DECAY) {
-      if (envADSR[ich] <= (ADSRs[ich] + ADSRd[ich])) {
-        envADSR[ich] = ADSRs[ich];
+      if (envADSR[ich] <= (currentInstrument->ADSR_s + currentInstrument->ADSR_d)) {
+        envADSR[ich] = currentInstrument->ADSR_s;
         iADSR[ich] = ADSR_STEP_SUSTAIN;
       }
-      else envADSR[ich] -= ADSRd[ich];
+      else envADSR[ich] -= currentInstrument->ADSR_d;
     }
     // ATTACK
     if (iADSR[ich] == ADSR_STEP_ATACK) {
-      if ((0xFFFF - envADSR[ich]) <= ADSRa[ich]) {
+      if ((0xFFFF - envADSR[ich]) <= currentInstrument->ADSR_a) {
         envADSR[ich] = 0xFFFF;
         iADSR[ich] = ADSR_STEP_DECAY;
       }
-      else envADSR[ich] += ADSRa[ich];
+      else envADSR[ich] += currentInstrument->ADSR_a;
     }
   }
 
   //update the tone for channel 0
   for (uint8_t ich = 0; ich < nch; ich++) {
     amp[ich] = (amp_base[ich] * (envADSR[ich] >> 8)) >> 8;
-    inc[ich] = inc_base[ich];
     FMamp[ich] = FMa0[ich] + ((long)FMda[ich] * FMexp[ich]>>16);
     FMinc[ich] = FMinc_base[ich];
   }

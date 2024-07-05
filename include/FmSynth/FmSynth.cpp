@@ -51,8 +51,7 @@ void fm_synth_init() {
 
 
 float phase[nch]  = {0};
-float          inc[nch]    = {0};
-uint8_t         amp[nch]    = {0};
+uint8_t amp[nch]    = {0};
 float FMphase[nch]= {0};
 float FMinc[nch]  = {0};
 unsigned int FMamp[nch]  = {0};
@@ -60,12 +59,7 @@ unsigned int FMamp[nch]  = {0};
 
 uint8_t         iADSR[nch]     = {0};
 unsigned int envADSR[nch]   = {0};
-unsigned int ADSRa[nch]     = {0};
-unsigned int ADSRd[nch]     = {0};
-unsigned int ADSRs[nch]     = {0};
-unsigned int ADSRr[nch]     = {0};
 uint8_t         amp_base[nch]  = {0};
-float inc_base[nch]  = {0};
 unsigned int FMa0[nch]      = {0};
 int          FMda[nch]      = {0};
 float FMinc_base[nch]= {0};
