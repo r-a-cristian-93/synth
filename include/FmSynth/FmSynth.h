@@ -118,7 +118,6 @@ extern unsigned int envADSR[nch];
 extern float inc_base[nch];
 extern unsigned int FMa0[nch];
 extern int          FMda[nch];
-extern unsigned int FMdec[nch];
 extern unsigned int FMexp[nch];
 extern unsigned int FMval[nch];
 extern Instrument* currentInstrument;
@@ -146,7 +145,6 @@ void fm_synth_note_on(uint8_t keypressed, uint8_t velocity) {
   FMa0[nextch] = currentInstrument->FM_ampl_end;
   FMda[nextch] = currentInstrument->FM_ampl_start-currentInstrument->FM_ampl_end;
   FMexp[nextch]=0xFFFF;
-  FMdec[nextch]=currentInstrument->FM_dec;
 }
 
 __attribute__((always_inline)) inline
@@ -162,7 +160,7 @@ void updateParameters()
 {
   //update FM decay exponential
   for (uint8_t ich = 0; ich < nch; ich++) {
-    FMexp[ich]-=(long)FMexp[ich]*FMdec[ich]>>16;
+    FMexp[ich]-=(long)FMexp[ich]*currentInstrument->FM_dec>>16;
   }
 
   //adjust the ADSR envelopes

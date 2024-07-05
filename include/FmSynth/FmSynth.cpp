@@ -5,9 +5,9 @@
 
 Instrument instruments[ninstr] = {
 // amp   pitch         A        D         S        R    FM_inc     FM_as     FM_ae     FM_dec
-  { 36,      0,     8192,       0,   0xFFFF,    2048,      768,       64,       64,        0},   // Organ
-  { 64,      0,     8192,    2048,   0x8888,    2048,      768,       64,       64,        0},   // Percussion_Organ
-  { 64,      0,     4096,    2048,        0,      64,      256,      128,       64,       64},   // E-Piano
+  { 36,      0,      256,       0,   0xFFFF,     512,      768,       64,       64,        0},   // Organ
+  { 64,      0,      256,      32,   0x8888,     512,      768,       64,       64,        0},   // Percussion_Organ
+  { 64,      0,     4096,       2,        0,      64,      256,      128,       64,       64},   // E-Piano
   { 64,      0,     8192,      16,        0,      32,      768,      512,      128,      128},   // Guitar
   { 64,      0,     8192,      16,        0,      32,      400,     1024,      128,      128},   // Cymbal
   { 64,      0,     4096,       8,        0,      16,      200,      512,      128,       32},   // Bell
@@ -64,7 +64,7 @@ void fm_synth_init() {
     generate_sineTable();
     generate_phaseIncrement();
 
-    fm_synth_set_instrument(0);
+    fm_synth_set_instrument(1);
 }
 
 float phase[nch]  = {0};
@@ -77,7 +77,6 @@ uint8_t         iADSR[nch]     = {0};
 unsigned int envADSR[nch]   = {0};
 unsigned int FMa0[nch]      = {0};
 int          FMda[nch]      = {0};
-unsigned int FMdec[nch]     = {0};
 unsigned int FMexp[nch]     = {0};
 unsigned int FMval[nch]     = {0};
 
