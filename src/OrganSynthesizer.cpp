@@ -3,6 +3,7 @@
 #include <OrganEngine/RotarySpeaker.h>
 #include <OrganEngine/NoteManager.h>
 #include "OrganSynthesizer.h"
+#include <FmSynth/FmSynth.h>
 
 void generateSamples(ma_device* pDevice, float* pInput, float* pOutput, ma_uint32 frameCount)
 {
@@ -30,7 +31,28 @@ void generateSamples(ma_device* pDevice, float* pInput, float* pOutput, ma_uint3
     free(out_initial);
 }
 
+void generateFmSynthSamples(ma_device* pDevice, float* pInput, float* pOutput, ma_uint32 frameCount)
+{
+    float* out = (float*) calloc(frameCount * 2, sizeof(float));
+    float* const out_initial = out;
+
+    float sample = 0;
+
+    for (int iFrame = 0; iFrame < frameCount; iFrame++)
+    {
+        sample = (((float)  ((fm_synth_generate_sample() - 128) << 3)) / (MAX_AMPLITUDE));
+
+        *out++ = sample;
+        *out++ = sample;
+    }
+
+
+    memcpy(pOutput, out_initial, frameCount * 2 *sizeof(float));
+    free(out_initial);
+}
+
 void dataCallback(ma_device *pDevice, void *pOutput, const void *pInput, ma_uint32 frameCount)
 {
-    generateSamples(pDevice, (float *)pInput, (float *)pOutput, frameCount);
+    // generateSamples(pDevice, (float *)pInput, (float *)pOutput, frameCount);
+    generateFmSynthSamples(pDevice, (float *)pInput, (float *)pOutput, frameCount);
 }

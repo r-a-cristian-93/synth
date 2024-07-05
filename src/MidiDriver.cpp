@@ -7,6 +7,7 @@
 #include <OrganEngine/NoteManager.h>
 #include <OrganEngine/OrganOscillator.h>
 #include <OrganEngine/MidiManager.h>
+#include <FmSynth/FmSynth.h>
 
 RtMidiIn *midiDevice = 0;
 
@@ -25,12 +26,14 @@ void decode_message(double deltatime, std::vector<unsigned char> *buffer, void *
     case MIDI_TYPE_NOTE_ON:
     {
         note_on(message->data.note_on.note);
+        fm_synth_note_on(message->data.note_on.note, message->data.note_on.velocity);
     }
     break;
 
     case MIDI_TYPE_NOTE_OFF:
     {
         note_off(message->data.note_off.note);
+        fm_synth_note_off(message->data.note_off.note);
     }
     break;
 
