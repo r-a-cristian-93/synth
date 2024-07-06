@@ -129,7 +129,7 @@ __attribute__((always_inline)) inline void fm_synth_note_off(uint8_t midiNote)
 
 	iADSR[midiNote - MANUAL_KEY_FIRST] = ADSR_STEP_RELEASE;
 }
-
+#include <math.h>
 __attribute__((always_inline)) inline void updateParameters()
 {
 	// update FM decay exponential
@@ -155,13 +155,18 @@ __attribute__((always_inline)) inline void updateParameters()
 		// DECAY
 		if (iADSR[ich] == ADSR_STEP_DECAY)
 		{
-			if (envADSR[ich] <= (currentInstrument->ADSR_s + currentInstrument->ADSR_d))
+			// float d = currentInstrument->ADSR_d * 0.25 + ((int)envADSR[ich] >> 14);
+			// float d = (envADSR[ich] + (currentInstrument->ADSR_d - envADSR[ich])) * currentInstrument->ADSR_d;
+			// envADSR[ich] -= d;
+			// float coeff = 1.0f + (log(0.0001) - log(0xFFFF)) / (10 * 44100);
+
+			envADSR[ich] *= currentInstrument->ADSR_d;
+
+			if (envADSR[ich] <= currentInstrument->ADSR_s)
 			{
 				envADSR[ich] = currentInstrument->ADSR_s;
 				iADSR[ich] = ADSR_STEP_SUSTAIN;
 			}
-			else
-				envADSR[ich] -= currentInstrument->ADSR_d;
 		}
 		// ATTACK
 		if (iADSR[ich] == ADSR_STEP_ATACK)
