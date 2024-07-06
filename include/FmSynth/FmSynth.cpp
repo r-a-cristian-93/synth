@@ -59,10 +59,11 @@ void generate_phaseIncrement()
 
 void init_instrument()
 {
-	for (int i = 0; i < 61; i++)
+	FMda = currentInstrument->FM_ampl_start - currentInstrument->FM_ampl_end;
+
+	for (int ich = 0; ich < 61; ich++)
 	{
-		FMinc[i] = ((long)phaseIncrement[i + currentInstrument->pitch_shift] * currentInstrument->FM_inc) / TABLE_SIZE;
-		FMda = currentInstrument->FM_ampl_start - currentInstrument->FM_ampl_end;
+		FMinc[ich] = ((long)phaseIncrement[ich + currentInstrument->pitch_shift] * currentInstrument->FM_inc) / TABLE_SIZE;
 	}
 }
 
