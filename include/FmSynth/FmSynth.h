@@ -28,24 +28,31 @@
 #define TABLE_SIZE (256)
 #endif
 
+#ifndef SAMPLE_RATE
+#define SAMPLE_RATE (44100.0)
+#endif
+
 #define ADSR_STEP_NONE 0
 #define ADSR_STEP_ATACK 1
 #define ADSR_STEP_DECAY 2
 #define ADSR_STEP_SUSTAIN 3
 #define ADSR_STEP_RELEASE 4
 
+// ADSR_RATE_FACTOR
+#define ARF (0xFFFF / SAMPLE_RATE * 1000)
+
 struct Instrument
 {
-	unsigned int amplitude;
-	unsigned int pitch_shift;
-	unsigned int ADSR_a;
-	unsigned int ADSR_d;
-	unsigned int ADSR_s;
-	unsigned int ADSR_r;
-	unsigned int FM_inc;
-	unsigned int FM_ampl_start;
-	unsigned int FM_ampl_end;
-	unsigned int FM_dec;
+	uint32_t amplitude;
+	uint32_t pitch_shift;
+	float ADSR_a;
+	float ADSR_d;
+	uint32_t ADSR_s;
+	float ADSR_r;
+	uint32_t FM_inc;
+	uint32_t FM_ampl_start;
+	uint32_t FM_ampl_end;
+	uint32_t FM_dec;
 };
 
 extern Instrument instruments[ninstr];
@@ -62,7 +69,7 @@ extern uint32_t FMamp[nch];
 
 // properties of each note played
 extern uint8_t iADSR[nch];
-extern uint32_t envADSR[nch];
+extern float envADSR[nch];
 extern int32_t FMda;
 extern uint32_t FMexp[nch];
 extern uint32_t FMval[nch];
@@ -159,20 +166,20 @@ __attribute__((always_inline)) inline void updateParameters()
 		// ATTACK
 		if (iADSR[ich] == ADSR_STEP_ATACK)
 		{
-			if ((0xFFFF - envADSR[ich]) <= currentInstrument->ADSR_a)
+			envADSR[ich] += currentInstrument->ADSR_a;
+
+			if (envADSR[ich] >= 0xFFFF)
 			{
 				envADSR[ich] = 0xFFFF;
 				iADSR[ich] = ADSR_STEP_DECAY;
 			}
-			else
-				envADSR[ich] += currentInstrument->ADSR_a;
 		}
 	}
 
 	// update the tone for channel 0
 	for (uint8_t ich = 0; ich < nch; ich++)
 	{
-		amp[ich] = (currentInstrument->amplitude * (envADSR[ich] >> 8)) >> 8;
+		amp[ich] = (currentInstrument->amplitude * ((uint16_t)envADSR[ich] >> 8)) >> 8;
 		FMamp[ich] = currentInstrument->FM_ampl_end + ((long)FMda * FMexp[ich] >> 16);
 	}
 }
