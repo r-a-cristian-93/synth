@@ -20,62 +20,61 @@ Instrument instruments[ninstr] = {
   { 64,     12,      256,       6,   0xC000,      64,      160,      256,      128,       64}    // Harmonica
 };
 
-Instrument* currentInstrument = &instruments[0];
+Instrument *currentInstrument = &instruments[0];
 
+int8_t sineTable[TABLE_SIZE] = {0};
+uint16_t phaseIncrement[nch] = {0};
+uint16_t FMinc[nch] = {0};
+uint32_t frequency[nch] = {0};
 
+uint8_t amp[nch] = {0};
+uint16_t phase[nch] = {0};
+uint16_t FMphase[nch] = {0};
+uint32_t FMamp[nch] = {0};
 
-int16_t sineTable[LUT_SIZE] = {0};
-float phaseIncrement[nch] = {0};
-float FMinc[nch]  = {0};
-float frequency[nch] = {0};
+uint8_t iADSR[nch] = {0};
+uint32_t envADSR[nch] = {0};
+int32_t FMda[nch] = {0};
+uint32_t FMexp[nch] = {0};
+uint32_t FMval[nch] = {0};
 
 void generate_sineTable()
 {
-    for (int i = 0; i < LUT_SIZE; i++)
-    {
-        sineTable[i] = sin(2.0 * 3.14159265 * (i + 0.5) / LUT_SIZE) * 0x7FFF;
-    }
+	for (int i = 0; i < TABLE_SIZE; i++)
+	{
+		sineTable[i] = (sin(2 * 3.14159265 * (i + 0.5) / TABLE_SIZE)) * (TABLE_SIZE / 2);
+	}
 }
 
 void generate_phaseIncrement()
 {
-    for (int i = 0; i < 61; i++)
-    {
-        frequency[i] = 440.0 * pow(2.0, ( (i-21) / 12.0));
-        phaseIncrement[i] = frequency[i] * (LUT_SIZE / 44100.0);
-    }
+	for (int i = 0; i < 61; i++)
+	{
+		frequency[i] = 440.0 * pow(2.0, ((i - 21) / 12.0));
+		phaseIncrement[i] = frequency[i] * 65536.0 / 44100.0 + 0.5;
+	}
 }
 
-void init_instrument() {
-    for (int i = 0; i < 61; i++)
-    {
-        FMinc[i] = phaseIncrement[i] * ((float) currentInstrument->FM_inc / LUT_SIZE);
-        FMda[i] = currentInstrument->FM_ampl_start-currentInstrument->FM_ampl_end;
-    }
+void init_instrument()
+{
+	for (int i = 0; i < 61; i++)
+	{
+		FMinc[i] = ((long)phaseIncrement[i] * currentInstrument->FM_inc) / TABLE_SIZE;
+		FMda[i] = currentInstrument->FM_ampl_start - currentInstrument->FM_ampl_end;
+	}
 }
 
-void fm_synth_set_instrument(uint8_t index) {
-    currentInstrument = &instruments[index];
+void fm_synth_set_instrument(uint8_t index)
+{
+	currentInstrument = &instruments[index];
 
-    init_instrument();
+	init_instrument();
 }
 
-void fm_synth_init() {
-    generate_sineTable();
-    generate_phaseIncrement();
+void fm_synth_init()
+{
+	generate_sineTable();
+	generate_phaseIncrement();
 
-    fm_synth_set_instrument(0);
+	fm_synth_set_instrument(0);
 }
-
-float phase[nch]  = {0};
-uint8_t amp[nch]    = {0};
-float FMphase[nch]= {0};
-unsigned int FMamp[nch]  = {0};
-
-
-uint8_t         iADSR[nch]     = {0};
-unsigned int envADSR[nch]   = {0};
-int          FMda[nch]      = {0};
-unsigned int FMexp[nch]     = {0};
-unsigned int FMval[nch]     = {0};
-
