@@ -63,7 +63,7 @@ extern uint32_t FMamp[nch];
 // properties of each note played
 extern uint8_t iADSR[nch];
 extern uint32_t envADSR[nch];
-extern int32_t FMda[nch];
+extern int32_t FMda;
 extern uint32_t FMexp[nch];
 extern uint32_t FMval[nch];
 
@@ -211,7 +211,7 @@ __attribute__((always_inline)) inline void updateParameters()
 	for (uint8_t ich = 0; ich < nch; ich++)
 	{
 		amp[ich] = (currentInstrument->amplitude * (envADSR[ich] >> 8)) >> 8;
-		FMamp[ich] = currentInstrument->FM_ampl_end + ((long)FMda[ich] * FMexp[ich] >> 16);
+		FMamp[ich] = currentInstrument->FM_ampl_end + ((long)FMda * FMexp[ich] >> 16);
 	}
 }
 

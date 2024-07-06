@@ -34,7 +34,7 @@ uint32_t FMamp[nch] = {0};
 
 uint8_t iADSR[nch] = {0};
 uint32_t envADSR[nch] = {0};
-int32_t FMda[nch] = {0};
+int32_t FMda = 0;
 uint32_t FMexp[nch] = {0};
 uint32_t FMval[nch] = {0};
 
@@ -60,7 +60,7 @@ void init_instrument()
 	for (int i = 0; i < 61; i++)
 	{
 		FMinc[i] = ((long)phaseIncrement[i] * currentInstrument->FM_inc) / TABLE_SIZE;
-		FMda[i] = currentInstrument->FM_ampl_start - currentInstrument->FM_ampl_end;
+		FMda = currentInstrument->FM_ampl_start - currentInstrument->FM_ampl_end;
 	}
 }
 
