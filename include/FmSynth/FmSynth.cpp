@@ -42,7 +42,7 @@ void generate_sineTable()
 {
 	for (int i = 0; i < TABLE_SIZE; i++)
 	{
-		sineTable[i] = (sin(2 * 3.14159265 * (i + 0.5) / TABLE_SIZE)) * (TABLE_SIZE / 2);
+		sineTable[i] = (sin(2 * 3.14159265 * (i + 0.5) / TABLE_SIZE)) * 128;
 	}
 }
 
@@ -50,7 +50,7 @@ void generate_phaseIncrement()
 {
 	for (int i = 0; i < 61; i++)
 	{
-		frequency[i] = 440.0 * pow(2.0, ((i - 21) / 12.0));
+		frequency[i] = 110.0 * pow(2.0, ((i - 21) / 12.0));
 		phaseIncrement[i] = frequency[i] * 65536.0 / 44100.0 + 0.5;
 	}
 }

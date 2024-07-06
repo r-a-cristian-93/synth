@@ -79,53 +79,15 @@ __attribute__((always_inline)) inline int32_t fm_synth_generate_sample()
 
 	for (uint8_t ich = 0; ich < nch; ich++)
 	{
-		// sample += sineTable[((int)phase[ich]+sineTable[(int)FMphase[ich]>>8]*FMamp[ich]) >> 8] * amp[ich];
-		// int phase_shift = (int)(sineTable[(int)FMphase[ich]] * ((float) FMamp[ich])) >> 8;
-		// int phase_shift = (int)(sineTable[(int)FMphase[ich]]) >> 16;
-
-		// original val += sine[(phase[3]+sine[FMphase[3]>>8]*FMamp[3]) >> 8] * amp[3];
-		// uint32_t phase_shift = sineTable[(int)FMphase[ich]] * FMamp[ich];
-
-		// uint32_t ph = ((uint32_t) phase[ich] + phase_shift);
-
-		// while (ph >= TABLE_SIZE) {
-		//     ph -= TABLE_SIZE;
-		// }
-
-		// while (ph < 0) {
-		//     ph += TABLE_SIZE;
-		// }
-
-		// sample += sineTable[(int)ph] * amp[ich];
-
-		// simple sine - ok
-		// sample += (sineTable[((int)phase[ich])] * amp[ich]);
-
-		// use on;y first 8 bits of the phase increment
-		sample += sineTable[(phase[ich] + sineTable[FMphase[ich]] >> 8 * FMamp[ich]) >> 8] * amp[ich];
+		// use only first 8 bits of the phase increment
+		sample += sineTable[(phase[ich] + sineTable[FMphase[ich] >> 8] * FMamp[ich]) >> 8] * amp[ich];
 
 		FMphase[ich] += FMinc[ich];
 		phase[ich] += phaseIncrement[ich];
-
-		// while (FMphase[ich] >= TABLE_SIZE) {
-		//     FMphase[ich] -= TABLE_SIZE;
-		// }
-
-		// while (FMphase[ich] < 0) {
-		//     FMphase[ich] += TABLE_SIZE;
-		// }
-
-		// while (phase[ich] >= TABLE_SIZE) {
-		//     phase[ich] -= TABLE_SIZE;
-		// }
-
-		// while (phase[ich] < 0) {
-		//     phase[ich] += TABLE_SIZE;
-		// }
 	}
 
 	updateParameters();
-	// std::cout  << sample << ", ";
+
 	return sample;
 }
 

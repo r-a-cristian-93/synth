@@ -16,7 +16,6 @@ void generateSamples(ma_device* pDevice, float* pInput, float* pOutput, ma_uint3
 
     float sample = 0;
 
-
     for (int iFrame = 0; iFrame < frameCount; iFrame++)
     {
         sample = organ_oscillator_generate_sample();
@@ -41,7 +40,7 @@ void generateFmSynthSamples(ma_device* pDevice, float* pInput, float* pOutput, m
     for (int iFrame = 0; iFrame < frameCount; iFrame++)
     {
         // sample = ((float) (fm_synth_generate_sample())) / (MAX_AMPLITUDE);
-        sample = ((float) (fm_synth_generate_sample()) ) / (0x4000);
+        sample = ((float) (fm_synth_generate_sample()) ) / (0xFFFF);
 
         *out++ = sample;
         *out++ = sample;
