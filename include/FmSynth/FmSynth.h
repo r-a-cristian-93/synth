@@ -2,6 +2,7 @@
 #define FM_SYNTH_H
 
 #include <cstdint>
+#include <iostream>
 
 // Arduino polyphonic FM sound
 // * 31250 Hz sampling rate
@@ -124,7 +125,7 @@ __attribute__((always_inline)) inline int32_t fm_synth_generate_sample()
 	}
 
 	updateParameters();
-
+	// std::cout  << sample << ", ";
 	return sample;
 }
 
