@@ -4,7 +4,9 @@
 #include <iostream>
 
 Instrument instruments[ninstr] = {
-// amp   pitch         A        D         S        R    FM_inc     FM_as     FM_ae     FM_dec
+
+// amp    pitch        A        D         S        R    FM_inc     FM_as     FM_ae     FM_dec
+// 0-64   0-64     0-512     0-64  0-0xFFFF    0-512
   { 36,      0,      256,       0,   0xFFFF,     512,      768,       64,       64,        0},   // Organ
   { 64,      0,      256,      32,   0x8888,     512,      768,       64,       64,        0},   // Percussion_Organ
   { 64,      0,     4096,       2,        0,      64,      256,      128,       64,       64},   // E-Piano
@@ -23,9 +25,9 @@ Instrument instruments[ninstr] = {
 Instrument *currentInstrument = &instruments[0];
 
 int8_t sineTable[TABLE_SIZE] = {0};
-uint16_t phaseIncrement[nch] = {0};
+uint16_t phaseIncrement[128] = {0};
 uint16_t FMinc[nch] = {0};
-uint32_t frequency[nch] = {0};
+uint32_t frequency[128] = {0};
 
 uint8_t amp[nch] = {0};
 uint16_t phase[nch] = {0};
@@ -48,7 +50,7 @@ void generate_sineTable()
 
 void generate_phaseIncrement()
 {
-	for (int i = 0; i < 61; i++)
+	for (int i = 0; i < 128; i++)
 	{
 		frequency[i] = 110.0 * pow(2.0, ((i - 21) / 12.0));
 		phaseIncrement[i] = frequency[i] * 65536.0 / 44100.0 + 0.5;
@@ -59,7 +61,7 @@ void init_instrument()
 {
 	for (int i = 0; i < 61; i++)
 	{
-		FMinc[i] = ((long)phaseIncrement[i] * currentInstrument->FM_inc) / TABLE_SIZE;
+		FMinc[i] = ((long)phaseIncrement[i + currentInstrument->pitch_shift] * currentInstrument->FM_inc) / TABLE_SIZE;
 		FMda = currentInstrument->FM_ampl_start - currentInstrument->FM_ampl_end;
 	}
 }

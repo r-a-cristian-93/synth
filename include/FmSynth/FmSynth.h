@@ -37,7 +37,7 @@
 struct Instrument
 {
 	unsigned int amplitude;
-	unsigned int pitch;
+	unsigned int pitch_shift;
 	unsigned int ADSR_a;
 	unsigned int ADSR_d;
 	unsigned int ADSR_s;
@@ -51,7 +51,7 @@ struct Instrument
 extern Instrument instruments[ninstr];
 
 extern int8_t sineTable[TABLE_SIZE];
-extern uint16_t phaseIncrement[nch];
+extern uint16_t phaseIncrement[128];
 extern uint16_t FMinc[nch];
 
 // initialize the main parameters of the pulse length setting
@@ -83,7 +83,7 @@ __attribute__((always_inline)) inline int32_t fm_synth_generate_sample()
 		sample += sineTable[(phase[ich] + sineTable[FMphase[ich] >> 8] * FMamp[ich]) >> 8] * amp[ich];
 
 		FMphase[ich] += FMinc[ich];
-		phase[ich] += phaseIncrement[ich];
+		phase[ich] += phaseIncrement[ich + currentInstrument->pitch_shift];
 	}
 
 	updateParameters();
