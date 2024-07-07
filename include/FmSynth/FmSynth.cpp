@@ -33,7 +33,7 @@ Instrument instruments[ninstr] = {
   { 64,      0,      512,     CF(10),        0,         32,       96,        0,      512,      128},   // Funky
   { 64,      0,      512,     CF(10),        0,         32,      528,     1024,      768,      128},   // Vibraphone
   { 64,      0,       64,     CF(10),        0,         32,      244,     1024,      512,      128},   // Metal
-  { 64,     12,      128,     CF(10),   0xFF00,         32,      256,      256,      128,      128},   // Violin
+  { 64,     12,        2,     CF(10),   0xFF00,          2,      256,      256,      128,        1},   // Slow strings
 
 };
 
@@ -85,6 +85,9 @@ void init_instrument()
 	for (int ich = 0; ich < 61; ich++)
 	{
 		FMinc[ich] = ((long)phaseIncrement[ich + currentInstrument->pitch_shift] * currentInstrument->FM_inc) / TABLE_SIZE;
+
+		phase[ich] = 0;
+		FMphase[ich] = 0;
 	}
 }
 
@@ -100,5 +103,5 @@ void fm_synth_init()
 	generate_sineTable();
 	generate_phaseIncrement();
 
-	fm_synth_set_instrument(6);
+	fm_synth_set_instrument(12);
 }
