@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <iostream>
+#include <array>
 
 // Arduino polyphonic FM sound
 // * 31250 Hz sampling rate
@@ -17,9 +18,10 @@
 // by Arduino polyphonic FM sound Rolf Oldeman Feb 2019
 // Licence CC BY-NC-SA 2.5 https://creativecommons.org/licenses/by-nc-sa/2.5/
 
-#define ninstr 13
 #define nokey 255
-#define nch 61
+#define nkeys (61)
+#define MIDI_CHANNELS (16)
+
 #define MANUAL_KEYS (61)
 #define MANUAL_KEY_FIRST (36)
 #define MANUAL_KEY_LAST (MANUAL_KEY_FIRST + MANUAL_KEYS)
@@ -32,7 +34,7 @@
 #define SAMPLE_RATE (44100.0)
 #endif
 
-#define ADSR_STEP_NONE 0
+#define ADSR_STEP_IDLE 0
 #define ADSR_STEP_ATACK 1
 #define ADSR_STEP_DECAY 2
 #define ADSR_STEP_SUSTAIN 3
@@ -55,132 +57,130 @@ struct Instrument
 	uint32_t FM_dec;
 };
 
-extern Instrument instruments[ninstr];
+struct InstrumentComputedProperites {
+	int32_t FMda = 0;
+	uint16_t FMinc[nkeys] = {0};
+};
+
+
+struct Note
+{
+	uint16_t phase = 0;
+	uint16_t FMphase = 0;
+
+	uint32_t FMamp = 0;
+	uint32_t FMexp = 0;
+	uint32_t FMval = 0;
+
+	uint8_t iADSR = ADSR_STEP_IDLE;
+	float envADSR = 0;
+
+	uint8_t amp = 0;
+};
+
+extern Instrument instruments[MIDI_CHANNELS];
+extern InstrumentComputedProperites instrComp[MIDI_CHANNELS];
+extern Note notes[MIDI_CHANNELS][nkeys];
 
 extern int8_t sineTable[TABLE_SIZE];
 extern uint16_t phaseIncrement[128];
-extern uint16_t FMinc[nch];
 
-// initialize the main parameters of the pulse length setting
-extern uint8_t amp[nch];
-extern uint16_t phase[nch];
-extern uint16_t FMphase[nch];
-extern uint32_t FMamp[nch];
-
-// properties of each note played
-extern uint8_t iADSR[nch];
-extern float envADSR[nch];
-extern int32_t FMda;
-extern uint32_t FMexp[nch];
-extern uint32_t FMval[nch];
-
-extern Instrument *currentInstrument;
 
 int32_t fm_synth_generate_sample();
-void updateParameters();
+void updateParameters(uint8_t instrIndex, uint8_t keyIndex);
 
 __attribute__((always_inline)) inline int32_t fm_synth_generate_sample()
 {
 	int32_t sample = 0;
 
-	for (uint8_t ich = 0; ich < nch; ich++)
+	for (uint8_t iInstr = 0; iInstr < MIDI_CHANNELS; iInstr++)
 	{
-		// use only first 8 bits of the phase increment
-		sample += sineTable[(phase[ich] + sineTable[FMphase[ich] >> 8] * FMamp[ich]) >> 8] * amp[ich];
+		for (uint8_t iKey = 0; iKey < nkeys; iKey++)
+		{
+			if (notes[iInstr][iKey].iADSR == ADSR_STEP_IDLE)
+				continue;
 
-		FMphase[ich] += FMinc[ich];
-		phase[ich] += phaseIncrement[ich + currentInstrument->pitch_shift];
+			Note& note = notes[iInstr][iKey];
+
+			// use only first 8 bits of the phase increment
+			sample += sineTable[(note.phase + sineTable[note.FMphase >> 8] * note.FMamp) >> 8] * note.amp;
+
+			note.FMphase += instrComp[iInstr].FMinc[iKey];
+			note.phase += phaseIncrement[iKey + instruments[iInstr].pitch_shift];
+
+			updateParameters(iInstr, iKey);
+		}
 	}
-
-	updateParameters();
 
 	return sample;
 }
 
 void fm_synth_init();
-void init_instrument();
 
-__attribute__((always_inline)) inline void fm_synth_next_instrument()
-{
-	currentInstrument++;
-
-	if (currentInstrument >= &instruments[ninstr])
-		currentInstrument = &instruments[0];
-
-	init_instrument();
-}
-
-__attribute__((always_inline)) inline void fm_synth_note_on(uint8_t midiNote, uint8_t velocity)
+__attribute__((always_inline)) inline void fm_synth_note_on(uint8_t midiNote, uint8_t instrumentIndex)
 {
 	if (midiNote < MANUAL_KEY_FIRST || midiNote >= MANUAL_KEY_LAST)
 		return;
 
 	const uint8_t note = midiNote - MANUAL_KEY_FIRST;
 
-	iADSR[note] = ADSR_STEP_ATACK;
-	FMexp[note] = 0xFFFF;
+	notes[instrumentIndex][note].iADSR = ADSR_STEP_ATACK;
+	notes[instrumentIndex][note].FMexp = 0xFFFF;
 }
 
-__attribute__((always_inline)) inline void fm_synth_note_off(uint8_t midiNote)
+__attribute__((always_inline)) inline void fm_synth_note_off(uint8_t midiNote, uint8_t instrumentIndex)
 {
 	if (midiNote < MANUAL_KEY_FIRST || midiNote >= MANUAL_KEY_LAST)
 		return;
 
-	iADSR[midiNote - MANUAL_KEY_FIRST] = ADSR_STEP_RELEASE;
+	const uint8_t note = midiNote - MANUAL_KEY_FIRST;
+
+	notes[instrumentIndex][note].iADSR = ADSR_STEP_RELEASE;
 }
 
-__attribute__((always_inline)) inline void updateParameters()
+__attribute__((always_inline)) inline void updateParameters(uint8_t instrIndex, uint8_t keyIndex)
 {
-	// update FM decay exponential
-	for (uint8_t ich = 0; ich < nch; ich++)
+	Note& note = notes[instrIndex][keyIndex];
+	Instrument& instrument = instruments[instrIndex];
+
+	note.FMexp -= (long)note.FMexp * instrument.FM_dec >> 16;
+
+	// RELEASE
+	if (note.iADSR == ADSR_STEP_RELEASE)
 	{
-		FMexp[ich] -= (long)FMexp[ich] * currentInstrument->FM_dec >> 16;
+		if (note.envADSR <= instrument.ADSR_r)
+		{
+			note.envADSR = 0;
+			note.iADSR = ADSR_STEP_IDLE;
+		}
+		else
+			note.envADSR -= instrument.ADSR_r;
 	}
-
-	// adjust the ADSR envelopes
-	for (uint8_t ich = 0; ich < nch; ich++)
+	// DECAY
+	if (note.iADSR == ADSR_STEP_DECAY)
 	{
-		// RELEASE
-		if (iADSR[ich] == ADSR_STEP_RELEASE)
-		{
-			if (envADSR[ich] <= currentInstrument->ADSR_r)
-			{
-				envADSR[ich] = 0;
-				iADSR[ich] = ADSR_STEP_NONE;
-			}
-			else
-				envADSR[ich] -= currentInstrument->ADSR_r;
-		}
-		// DECAY
-		if (iADSR[ich] == ADSR_STEP_DECAY)
-		{
-			envADSR[ich] *= currentInstrument->ADSR_d;
+		note.envADSR *= instrument.ADSR_d;
 
-			if (envADSR[ich] <= currentInstrument->ADSR_s)
-			{
-				envADSR[ich] = currentInstrument->ADSR_s;
-				iADSR[ich] = ADSR_STEP_SUSTAIN;
-			}
-		}
-		// ATTACK
-		if (iADSR[ich] == ADSR_STEP_ATACK)
+		if (note.envADSR <= instrument.ADSR_s)
 		{
-			envADSR[ich] += currentInstrument->ADSR_a;
+			note.envADSR = instrument.ADSR_s;
+			note.iADSR = ADSR_STEP_SUSTAIN;
+		}
+	}
+	// ATTACK
+	if (note.iADSR == ADSR_STEP_ATACK)
+	{
+		note.envADSR += instrument.ADSR_a;
 
-			if (envADSR[ich] >= 0xFFFF)
-			{
-				envADSR[ich] = 0xFFFF;
-				iADSR[ich] = ADSR_STEP_DECAY;
-			}
+		if (note.envADSR >= 0xFFFF)
+		{
+			note.envADSR = 0xFFFF;
+			note.iADSR = ADSR_STEP_DECAY;
 		}
 	}
 
-	// update the tone for channel 0
-	for (uint8_t ich = 0; ich < nch; ich++)
-	{
-		amp[ich] = (currentInstrument->amplitude * ((uint16_t)envADSR[ich] >> 8)) >> 8;
-		FMamp[ich] = currentInstrument->FM_ampl_end + ((long)FMda * FMexp[ich] >> 16);
-	}
+	note.amp = (instrument.amplitude * ((uint16_t)note.envADSR >> 8)) >> 8;
+	note.FMamp = instrument.FM_ampl_end + ((long)instrComp[instrIndex].FMda * note.FMexp >> 16);
 }
 
 #endif

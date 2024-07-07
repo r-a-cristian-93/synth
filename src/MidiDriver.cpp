@@ -26,14 +26,16 @@ void decode_message(double deltatime, std::vector<unsigned char> *buffer, void *
     case MIDI_TYPE_NOTE_ON:
     {
         note_on(message->data.note_on.note);
-        fm_synth_note_on(message->data.note_on.note, message->data.note_on.velocity);
+        fm_synth_note_on(message->data.note_on.note, 1);
+        fm_synth_note_on(message->data.note_on.note, 4);
     }
     break;
 
     case MIDI_TYPE_NOTE_OFF:
     {
         note_off(message->data.note_off.note);
-        fm_synth_note_off(message->data.note_off.note);
+        fm_synth_note_off(message->data.note_off.note, 1);
+        fm_synth_note_off(message->data.note_off.note, 4);
     }
     break;
 
@@ -49,7 +51,7 @@ void decode_message(double deltatime, std::vector<unsigned char> *buffer, void *
         if (controller == MIDI_CC_BANK_MSB)
         {
             set_next_waveform();
-            fm_synth_next_instrument();
+            // fm_synth_next_instrument();
         }
 
         // if (controller == MIDI_CC_VIBRATO_FAST)
