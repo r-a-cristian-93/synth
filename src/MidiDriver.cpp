@@ -20,22 +20,21 @@ void decode_message(double deltatime, std::vector<unsigned char> *buffer, void *
     midi_istream_from_buffer(&istream, &buffer->at(0), nBytes);
     struct midi_message *message = midi_decode(&istream);
     print_msg(message);
+    printf("%d", message->channel);
 
     switch (message->type)
     {
     case MIDI_TYPE_NOTE_ON:
     {
         note_on(message->data.note_on.note);
-        fm_synth_note_on(message->data.note_on.note, 1);
-        fm_synth_note_on(message->data.note_on.note, 4);
+        fm_synth_note_on(message->data.note_on.note, message->channel);
     }
     break;
 
     case MIDI_TYPE_NOTE_OFF:
     {
         note_off(message->data.note_off.note);
-        fm_synth_note_off(message->data.note_off.note, 1);
-        fm_synth_note_off(message->data.note_off.note, 4);
+        fm_synth_note_off(message->data.note_off.note, message->channel);
     }
     break;
 

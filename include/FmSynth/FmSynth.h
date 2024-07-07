@@ -117,25 +117,25 @@ __attribute__((always_inline)) inline int32_t fm_synth_generate_sample()
 
 void fm_synth_init();
 
-__attribute__((always_inline)) inline void fm_synth_note_on(uint8_t midiNote, uint8_t instrumentIndex)
+__attribute__((always_inline)) inline void fm_synth_note_on(uint8_t midiNote, uint8_t midiChannel)
 {
 	if (midiNote < MANUAL_KEY_FIRST || midiNote >= MANUAL_KEY_LAST)
 		return;
 
 	const uint8_t note = midiNote - MANUAL_KEY_FIRST;
 
-	notes[instrumentIndex][note].iADSR = ADSR_STEP_ATACK;
-	notes[instrumentIndex][note].FMexp = 0xFFFF;
+	notes[midiChannel - 1][note].iADSR = ADSR_STEP_ATACK;
+	notes[midiChannel - 1][note].FMexp = 0xFFFF;
 }
 
-__attribute__((always_inline)) inline void fm_synth_note_off(uint8_t midiNote, uint8_t instrumentIndex)
+__attribute__((always_inline)) inline void fm_synth_note_off(uint8_t midiNote, uint8_t midiChannel)
 {
 	if (midiNote < MANUAL_KEY_FIRST || midiNote >= MANUAL_KEY_LAST)
 		return;
 
 	const uint8_t note = midiNote - MANUAL_KEY_FIRST;
 
-	notes[instrumentIndex][note].iADSR = ADSR_STEP_RELEASE;
+	notes[midiChannel - 1][note].iADSR = ADSR_STEP_RELEASE;
 }
 
 __attribute__((always_inline)) inline void updateParameters(uint8_t instrIndex, uint8_t keyIndex)
