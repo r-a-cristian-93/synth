@@ -65,18 +65,28 @@ elseif(UNIX AND NOT APPLE)
   target_link_libraries(Synth dl pthread m curses asound)
 endif()
 
+
+
 # Add the test executable
 set(SOURCE_TEST
   test/TestPerformance.cpp
   src/OrganSynthesizer.cpp
 )
 add_executable(SynthTest ${SOURCE_TEST} ${SOURCE_SYNTH_ENGINE} ${SOURCE_FM_SYNTH} ${SOURCE_RTMIDI} ${SOURCE_NANOMIDI})
-
-# Include directories for tests
 target_include_directories(SynthTest PRIVATE ${PROJECT_SOURCE_DIR}/include)
+
+
+# Add FmSynth test
+set(SOURCE_FM_SYNTH_TEST
+  test/TestFmSynth.cpp
+)
+add_executable(FmSynthTest ${SOURCE_FM_SYNTH_TEST} ${SOURCE_FM_SYNTH})
+target_include_directories(FmSynthTest PRIVATE ${PROJECT_SOURCE_DIR}/include)
+
 
 if(WIN32)
   target_link_libraries(SynthTest winmm)
+  target_link_libraries(FmSynthTest winmm)
 elseif(UNIX AND NOT APPLE)
   target_link_libraries(SynthTest dl pthread m curses asound)
 endif()
@@ -84,3 +94,5 @@ endif()
 # Add the test
 enable_testing()
 add_test(NAME SynthTest COMMAND SynthTest)
+add_test(NAME FmSynthTest COMMAND FmSynthTest)
+
