@@ -95,6 +95,8 @@ __attribute__((always_inline)) inline int32_t fm_synth_generate_sample()
 
 	for (uint8_t iInstr = 0; iInstr < MIDI_CHANNELS; iInstr++)
 	{
+		Instrument& instrument = instruments[iInstr];
+
 		for (uint8_t iKey = 0; iKey < nkeys; iKey++)
 		{
 			if (notes[iInstr][iKey].iADSR == ADSR_STEP_IDLE)
@@ -108,7 +110,44 @@ __attribute__((always_inline)) inline int32_t fm_synth_generate_sample()
 			note.FMphase += instrComp[iInstr].FMinc[iKey];
 			note.phase += phaseIncrement[iKey + instruments[iInstr].pitch_shift];
 
-			updateParameters(iInstr, iKey);
+			note.FMexp -= (long)note.FMexp * instrument.FM_dec >> 16;
+
+			// RELEASE
+			if (note.iADSR == ADSR_STEP_RELEASE)
+			{
+				if (note.envADSR <= instrument.ADSR_r)
+				{
+					note.envADSR = 0;
+					note.iADSR = ADSR_STEP_IDLE;
+				}
+				else
+					note.envADSR -= instrument.ADSR_r;
+			}
+			// DECAY
+			if (note.iADSR == ADSR_STEP_DECAY)
+			{
+				note.envADSR *= instrument.ADSR_d;
+
+				if (note.envADSR <= instrument.ADSR_s)
+				{
+					note.envADSR = instrument.ADSR_s;
+					note.iADSR = ADSR_STEP_SUSTAIN;
+				}
+			}
+			// ATTACK
+			if (note.iADSR == ADSR_STEP_ATACK)
+			{
+				note.envADSR += instrument.ADSR_a;
+
+				if (note.envADSR >= 0xFFFF)
+				{
+					note.envADSR = 0xFFFF;
+					note.iADSR = ADSR_STEP_DECAY;
+				}
+			}
+
+			note.amp = (instrument.amplitude * ((uint16_t)note.envADSR >> 8)) >> 8;
+			note.FMamp = instrument.FM_ampl_end + ((long)instrComp[iInstr].FMda * note.FMexp >> 16);
 		}
 	}
 
@@ -136,51 +175,6 @@ __attribute__((always_inline)) inline void fm_synth_note_off(uint8_t midiNote, u
 	const uint8_t note = midiNote - MANUAL_KEY_FIRST;
 
 	notes[midiChannel - 1][note].iADSR = ADSR_STEP_RELEASE;
-}
-
-__attribute__((always_inline)) inline void updateParameters(uint8_t instrIndex, uint8_t keyIndex)
-{
-	Note& note = notes[instrIndex][keyIndex];
-	Instrument& instrument = instruments[instrIndex];
-
-	note.FMexp -= (long)note.FMexp * instrument.FM_dec >> 16;
-
-	// RELEASE
-	if (note.iADSR == ADSR_STEP_RELEASE)
-	{
-		if (note.envADSR <= instrument.ADSR_r)
-		{
-			note.envADSR = 0;
-			note.iADSR = ADSR_STEP_IDLE;
-		}
-		else
-			note.envADSR -= instrument.ADSR_r;
-	}
-	// DECAY
-	if (note.iADSR == ADSR_STEP_DECAY)
-	{
-		note.envADSR *= instrument.ADSR_d;
-
-		if (note.envADSR <= instrument.ADSR_s)
-		{
-			note.envADSR = instrument.ADSR_s;
-			note.iADSR = ADSR_STEP_SUSTAIN;
-		}
-	}
-	// ATTACK
-	if (note.iADSR == ADSR_STEP_ATACK)
-	{
-		note.envADSR += instrument.ADSR_a;
-
-		if (note.envADSR >= 0xFFFF)
-		{
-			note.envADSR = 0xFFFF;
-			note.iADSR = ADSR_STEP_DECAY;
-		}
-	}
-
-	note.amp = (instrument.amplitude * ((uint16_t)note.envADSR >> 8)) >> 8;
-	note.FMamp = instrument.FM_ampl_end + ((long)instrComp[instrIndex].FMda * note.FMexp >> 16);
 }
 
 #endif
