@@ -69,8 +69,6 @@ struct Note
 	uint16_t FMphase = 0;
 
 	uint32_t FMamp = 0;
-	uint32_t FMexp = 0;
-	uint32_t FMval = 0;
 
 	uint8_t iADSR = ADSR_STEP_IDLE;
 	float envADSR = 0;
@@ -105,14 +103,13 @@ __attribute__((always_inline)) inline int32_t fm_synth_generate_sample()
 			Note& note = notes[iInstr][iKey];
 
 			// use only first 8 bits of the phase increment
-			sample += sineTable[(note.phase + sineTable[note.FMphase >> 8] * note.FMamp) >> 8] * note.amp;
+			sample += sineTable[(note.phase + sineTable[note.FMphase >> 8] * (note.FMamp >> 16)) >> 8] * note.amp;
 
 			note.FMphase += instrComp[iInstr].FMinc[iKey];
 			note.phase += phaseIncrement[iKey + instruments[iInstr].pitch_shift];
 
-			note.FMexp -= (long)note.FMexp * instrument.FM_dec >> 16;
-
-			switch(note.iADSR){
+			switch(note.iADSR)
+			{
 				case ADSR_STEP_ATACK:
 				{
 					note.envADSR += instrument.ADSR_a;
@@ -146,11 +143,18 @@ __attribute__((always_inline)) inline int32_t fm_synth_generate_sample()
 						note.envADSR -= instrument.ADSR_r;
 				}
 				break;
-
 			}
 
 			note.amp = (instrument.amplitude * ((uint16_t)note.envADSR >> 8)) >> 8;
-			note.FMamp = instrument.FM_ampl_end + ((long)instrComp[iInstr].FMda * note.FMexp >> 16);
+
+			if (instrComp[iInstr].FMda > 0) {
+				if (note.FMamp > instrument.FM_ampl_end)
+					note.FMamp -= instrument.FM_dec;
+			}
+			else {
+				if (note.FMamp < instrument.FM_ampl_end)
+					note.FMamp += instrument.FM_dec;
+			}
 		}
 	}
 
@@ -167,7 +171,7 @@ __attribute__((always_inline)) inline void fm_synth_note_on(uint8_t midiNote, ui
 	const uint8_t note = midiNote - MANUAL_KEY_FIRST;
 
 	notes[midiChannel - 1][note].iADSR = ADSR_STEP_ATACK;
-	notes[midiChannel - 1][note].FMexp = 0xFFFF;
+	notes[midiChannel - 1][note].FMamp = instruments[midiChannel - 1].FM_ampl_start;
 }
 
 __attribute__((always_inline)) inline void fm_synth_note_off(uint8_t midiNote, uint8_t midiChannel)
