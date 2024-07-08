@@ -112,38 +112,41 @@ __attribute__((always_inline)) inline int32_t fm_synth_generate_sample()
 
 			note.FMexp -= (long)note.FMexp * instrument.FM_dec >> 16;
 
-			// RELEASE
-			if (note.iADSR == ADSR_STEP_RELEASE)
-			{
-				if (note.envADSR <= instrument.ADSR_r)
+			switch(note.iADSR){
+				case ADSR_STEP_ATACK:
 				{
-					note.envADSR = 0;
-					note.iADSR = ADSR_STEP_IDLE;
-				}
-				else
-					note.envADSR -= instrument.ADSR_r;
-			}
-			// DECAY
-			if (note.iADSR == ADSR_STEP_DECAY)
-			{
-				note.envADSR *= instrument.ADSR_d;
+					note.envADSR += instrument.ADSR_a;
 
-				if (note.envADSR <= instrument.ADSR_s)
-				{
-					note.envADSR = instrument.ADSR_s;
-					note.iADSR = ADSR_STEP_SUSTAIN;
+					if (note.envADSR >= 0xFFFF)
+					{
+						note.envADSR = 0xFFFF;
+						note.iADSR = ADSR_STEP_DECAY;
+					}
 				}
-			}
-			// ATTACK
-			if (note.iADSR == ADSR_STEP_ATACK)
-			{
-				note.envADSR += instrument.ADSR_a;
+				break;
+				case ADSR_STEP_DECAY:
+				{
+					note.envADSR *= instrument.ADSR_d;
 
-				if (note.envADSR >= 0xFFFF)
-				{
-					note.envADSR = 0xFFFF;
-					note.iADSR = ADSR_STEP_DECAY;
+					if (note.envADSR <= instrument.ADSR_s)
+					{
+						note.envADSR = instrument.ADSR_s;
+						note.iADSR = ADSR_STEP_SUSTAIN;
+					}
 				}
+				break;
+				case ADSR_STEP_RELEASE:
+				{
+					if (note.envADSR <= instrument.ADSR_r)
+					{
+						note.envADSR = 0;
+						note.iADSR = ADSR_STEP_IDLE;
+					}
+					else
+						note.envADSR -= instrument.ADSR_r;
+				}
+				break;
+
 			}
 
 			note.amp = (instrument.amplitude * ((uint16_t)note.envADSR >> 8)) >> 8;
