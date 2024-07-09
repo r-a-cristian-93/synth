@@ -51,7 +51,7 @@ Instrument instruments[MIDI_CHANNELS] = {
 // { 64,     24,      256,    CF(100),   0xC000,          8,       64,      512,      32,         8},  //  10 - Dirty synth wah
 
 
-Note notes[MIDI_CHANNELS][61] = {};
+Note notes[nkeys * MIDI_CHANNELS] = {};
 
 int8_t sineTable[TABLE_SIZE] = {0};
 uint16_t phaseIncrement[128] = {0};
@@ -74,20 +74,31 @@ void generate_phaseIncrement()
 	}
 }
 
-InstrumentComputedProperites instrComp[MIDI_CHANNELS] = {};
-
-void init_instruments()
-{
-	for (uint8_t iInstr = 0; iInstr < MIDI_CHANNELS; iInstr++)
+void init_notes() {
+	for (uint8_t insIndex = 0; insIndex < MIDI_CHANNELS; insIndex++)
 	{
-		instrComp[iInstr].FMda = instruments[iInstr].FM_ampl_start - instruments[iInstr].FM_ampl_end;
+		Instrument& instrument = instruments[insIndex];
 
-		for (int iKey = 0; iKey < 61; iKey++)
+		for (uint8_t keyIndex = 0; keyIndex < nkeys; keyIndex++)
 		{
-			instrComp[iInstr].FMinc[iKey] =
+			const uint16_t noteIndex = insIndex * nkeys + keyIndex;
+			Note& note = notes[noteIndex];
+
+			note.phaseIncrement = phaseIncrement[keyIndex + instruments[insIndex].pitch_shift];
+			note.insAmp = instrument.amplitude;
+			note.insPitchShift = instrument.pitch_shift;
+			note.insADSR_a = instrument.ADSR_a;
+			note.insADSR_d = instrument.ADSR_d;
+			note.insADSR_s = instrument.ADSR_s;
+			note.insADSR_r = instrument.ADSR_r;
+			note.insFM_ampl_start = instrument.FM_ampl_start;
+			note.insFM_ampl_end = instrument.FM_ampl_end;
+			note.insFM_dec = instrument.FM_dec;
+			note.insFMda = instrument.FM_ampl_start - instrument.FM_ampl_end;
+			note.insFMinc =
 				(
-					(long)phaseIncrement[iKey + instruments[iInstr].pitch_shift] *
-					instruments[iInstr].FM_inc
+					(long)phaseIncrement[keyIndex + instrument.pitch_shift] *
+					instrument.FM_inc
 				)
 				 / TABLE_SIZE;
 		}
@@ -99,5 +110,5 @@ void fm_synth_init()
 	generate_sineTable();
 	generate_phaseIncrement();
 
-	init_instruments();
+	init_notes();
 }
