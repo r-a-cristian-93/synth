@@ -52,8 +52,8 @@ struct Instrument
 	uint32_t ADSR_s;
 	float ADSR_r;
 	uint32_t FM_inc;
-	uint32_t FM_ampl_start;
-	uint32_t FM_ampl_end;
+	int32_t FM_ampl_start;
+	int32_t FM_ampl_end;
 	uint32_t FM_dec;
 };
 
@@ -85,8 +85,8 @@ struct Note
 	uint32_t insADSR_s = 0;
 	float insADSR_r = 0;
 	// uint32_t insFM_inc = 0;
-	uint32_t insFM_ampl_start = 0;
-	uint32_t insFM_ampl_end = 0;
+	int32_t insFM_ampl_start = 0;
+	int32_t insFM_ampl_end = 0;
 	uint32_t insFM_dec = 0;
 	int32_t insFMda = 0;
 	uint16_t insFMinc = 0;

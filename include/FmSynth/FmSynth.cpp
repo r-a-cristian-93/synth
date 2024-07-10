@@ -37,8 +37,8 @@ Instrument instruments[MIDI_CHANNELS] = {
 	{ 64,     12,        2,     CF(10),   0xFF00,          2,      256,          256,        128,        1},  //   10 - Synth strings
 
 	// Percussion/Accompaniament
-	{ 64,     12,      128,     CF(10),   0xFF00,         32,      128,          256,        128,      128},  //  11 - Bass
-	{ 64,      0,     8192,     CF(10),        0,         32,      400,         1024,        128,      128},  //  12 - Cymbal
+	{ 64,      0,     1024,    CF(1200),       0,          4,      256,     0x7FFFFF,      0x7FF,    0x7FF},  //  11 - Kick - G3
+	{ 64,      0,     1024,    CF(300),        0,          4,     6000,      0xFFFFF,   0xFFFFF0,   0xFFFF},  //  12 - Hihat
 	{ 64,      0,      512,     CF(10),        0,         32,       96,            0,        512,      128},  //  13 - Funky
 	{ 64,      0,      512,     CF(10),        0,         32,      528,         1024,        768,      128},  //  14 - Vibraphone
 	{ 64,      0,       64,     CF(10),        0,         32,      244,         1024,        512,      128},  //  15 - Metal
