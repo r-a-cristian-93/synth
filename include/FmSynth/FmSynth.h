@@ -204,4 +204,17 @@ __attribute__((always_inline)) inline void fm_synth_note_off(uint8_t midiNote, u
 	notes[noteIndex].iADSR = ADSR_STEP_RELEASE;
 }
 
+
+void fm_synth_increment_fmAsAe(uint8_t midiChannel);
+void fm_synth_increment_fmInc(uint8_t midiChannel);
+void fm_synth_increment_fmAs(uint8_t midiChannel);
+void fm_synth_increment_fmAe(uint8_t midiChannel);
+void fm_synth_increment_fmDec(uint8_t midiChannel);
+
+void fm_synth_decrement_fmAsAe(uint8_t midiChannel);
+void fm_synth_decrement_fmInc(uint8_t midiChannel);
+void fm_synth_decrement_fmAs(uint8_t midiChannel);
+void fm_synth_decrement_fmAe(uint8_t midiChannel);
+void fm_synth_decrement_fmDec(uint8_t midiChannel);
+
 #endif

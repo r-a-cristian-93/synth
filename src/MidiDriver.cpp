@@ -53,6 +53,22 @@ void decode_message(double deltatime, std::vector<unsigned char> *buffer, void *
             // fm_synth_next_instrument();
         }
 
+        if (controller == 10) {
+            fm_synth_increment_fmInc(message->channel);
+        }
+
+        if (controller == 11) {
+            fm_synth_decrement_fmInc(message->channel);
+        }
+
+        if (controller == 12) {
+            fm_synth_increment_fmAsAe(message->channel);
+        }
+
+        if (controller == 13) {
+            fm_synth_decrement_fmAsAe(message->channel);
+        }
+
         // if (controller == MIDI_CC_VIBRATO_FAST)
         //     organ_oscillator_set_vibrato_fast();
 

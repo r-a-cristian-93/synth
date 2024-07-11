@@ -23,11 +23,11 @@ Instrument instruments[MIDI_CHANNELS] = {
 	// 0-64   0-64    ARF/ms      ARF/ms  0-0xFFFF      ARF/ms               < 256
 
 	// Orchestra
-	{ 16,      0,      256,     CF(10),   0xFFFF,        512,      768,           64,         64,        0},  //   1 - Organ
-	{ 16,     12,      256,     CF(10),   0xFFFF,        512,      768,           64,         64,        0},  //   2 - Organ
-	{ 16,     19,      256,     CF(10),   0xFFFF,        512,      768,           64,         64,        0},  //   3 - Organ
-	{ 16,     24,      256,     CF(10),   0xFFFF,        512,      768,           64,         64,        0},  //   4 - Organ
-	{ 16,     31,      256,     CF(10),   0xFFFF,        512,      768,           64,         64,        0},  //   5 - Organ
+	{ 16,      0,      256,     CF(10),   0xFFFF,        512,      768,     0x2CFFFF,   0x2CFFFF,        0},  //   1 - Organ
+	{ 16,     12,      256,     CF(10),   0xFFFF,        512,      768,     0x2CFFFF,   0x2CFFFF,        0},  //   2 - Organ
+	{ 16,     19,      256,     CF(10),   0xFFFF,        512,      768,     0x2CFFFF,   0x2CFFFF,        0},  //   3 - Organ
+	{ 16,     24,      256,     CF(10),   0xFFFF,        512,      768,     0x2CFFFF,   0x2CFFFF,        0},  //   4 - Organ
+	{ 16,     31,      256,     CF(10),   0xFFFF,        512,      768,     0x2CFFFF,   0x2CFFFF,        0},  //   5 - Organ
 
 	// Effects
 	{ 64,     24,      512,    CF(300),        0,        256,      768,           23,         23,        0},  //   6 - Percussion 4"
@@ -112,3 +112,54 @@ void fm_synth_init()
 
 	init_notes();
 }
+
+void fm_synth_increment_fmInc(uint8_t midiChannel) {
+	const uint8_t insChannel = midiChannel - 1;
+
+	instruments[insChannel].FM_inc += TABLE_SIZE;
+	std::cout << "FM_inc: "  << instruments[insChannel].FM_inc << std::endl;
+
+	init_notes();
+}
+
+void fm_synth_decrement_fmInc(uint8_t midiChannel) {
+	const uint8_t insChannel = midiChannel - 1;
+
+	instruments[insChannel].FM_inc -= TABLE_SIZE;
+	std::cout << "FM_inc: "  << instruments[insChannel].FM_inc << std::endl;
+
+	init_notes();
+}
+
+void fm_synth_increment_fmAsAe(uint8_t midiChannel) {
+	const uint8_t insChannel = midiChannel - 1;
+
+	instruments[insChannel].FM_ampl_start += 65536;
+	instruments[insChannel].FM_ampl_end += 65536;
+
+	std::cout << "FM_as: "  << instruments[insChannel].FM_ampl_start << std::endl;
+	std::cout << "FM_ae: "  << instruments[insChannel].FM_ampl_end << std::endl;
+
+	init_notes();
+}
+
+void fm_synth_decrement_fmAsAe(uint8_t midiChannel) {
+	const uint8_t insChannel = midiChannel - 1;
+
+	instruments[insChannel].FM_ampl_start -= 65536;
+	instruments[insChannel].FM_ampl_end -= 65536;
+
+	std::cout << "FM_as: "  << instruments[insChannel].FM_ampl_start << std::endl;
+	std::cout << "FM_ae: "  << instruments[insChannel].FM_ampl_end << std::endl;
+
+	init_notes();
+}
+
+// void fm_synth_increment_fmAs(uint8_t midiChannel);
+// void fm_synth_increment_fmAe(uint8_t midiChannel);
+// void fm_synth_increment_fmDec(uint8_t midiChannel);
+
+// void fm_synth_decrement_fmInc(uint8_t midiChannel);
+// void fm_synth_decrement_fmAs(uint8_t midiChannel);
+// void fm_synth_decrement_fmAe(uint8_t midiChannel);
+// void fm_synth_decrement_fmDec(uint8_t midiChannel);
