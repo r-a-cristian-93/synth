@@ -53,6 +53,8 @@ void decode_message(double deltatime, std::vector<unsigned char> *buffer, void *
         if (controller == MIDI_CC_BANK_MSB)
         {
             set_next_waveform();
+            wave_organ_set_voice(value);
+
             // fm_synth_next_instrument();
         }
 
@@ -70,9 +72,6 @@ void decode_message(double deltatime, std::vector<unsigned char> *buffer, void *
 
         if (controller == 13) {
             fm_synth_decrement_fmAsAe(message->channel);
-        }
-        if (controller == 14) {
-            wave_organ_set_voice(value);
         }
 
         // if (controller == MIDI_CC_VIBRATO_FAST)
