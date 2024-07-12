@@ -88,9 +88,17 @@ add_executable(FmSynthTest ${SOURCE_FM_SYNTH_TEST} ${SOURCE_FM_SYNTH})
 target_include_directories(FmSynthTest PRIVATE ${PROJECT_SOURCE_DIR}/include)
 
 
+# WaveOrgan test
+set (SOURCE_WAVE_ORGAN_TEST
+  test/TestWaveOrgan.cpp
+)
+add_executable(WaveOrganTest ${SOURCE_WAVE_ORGAN_TEST} ${SOURCE_WAVE_ORGAN})
+target_include_directories(WaveOrganTest PRIVATE ${PROJECT_SOURCE_DIR}/include)
+
+
 if(WIN32)
   target_link_libraries(SynthTest winmm)
-  target_link_libraries(FmSynthTest winmm)
+
 elseif(UNIX AND NOT APPLE)
   target_link_libraries(SynthTest dl pthread m curses asound)
 endif()
@@ -99,4 +107,5 @@ endif()
 enable_testing()
 add_test(NAME SynthTest COMMAND SynthTest)
 add_test(NAME FmSynthTest COMMAND FmSynthTest)
+add_test(NAME WaveOrganTest COMMAND WaveOrganTest)
 

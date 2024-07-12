@@ -1,20 +1,16 @@
-#include <FmSynth/FmSynth.h>
+#include <WaveOrgan/WaveOrgan.h>
 #include <iostream>
-#include "Profiler.h"
 #include <chrono>
 
 int main()
 {
-    fm_synth_init();
+    wave_organ_init();
 
     const int frameCount = 1000000;
 
     for (int note = 36; note < 97; note++)
     {
-        for (int channel = 1; channel < 6; channel++)
-        {
-            fm_synth_note_on(note, channel);
-        }
+        wav_organ_note_on(note);
     }
 
     std::cout << "Starting test" << std::endl;
@@ -24,7 +20,7 @@ int main()
 
     for (int frame = 0; frame < frameCount; frame++)
     {
-        fm_synth_generate_sample();
+        wave_organ_generate_sample();
     }
 
     auto end = clock::now();
