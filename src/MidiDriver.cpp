@@ -8,6 +8,7 @@
 #include <OrganEngine/OrganOscillator.h>
 #include <OrganEngine/MidiManager.h>
 #include <FmSynth/FmSynth.h>
+#include <WaveOrgan/WaveOrgan.h>
 
 RtMidiIn *midiDevice = 0;
 
@@ -28,6 +29,7 @@ void decode_message(double deltatime, std::vector<unsigned char> *buffer, void *
     {
         note_on(message->data.note_on.note);
         fm_synth_note_on(message->data.note_on.note, message->channel);
+        wav_organ_note_on(message->data.note_on.note);
     }
     break;
 
@@ -35,6 +37,7 @@ void decode_message(double deltatime, std::vector<unsigned char> *buffer, void *
     {
         note_off(message->data.note_off.note);
         fm_synth_note_off(message->data.note_off.note, message->channel);
+        wav_organ_note_off(message->data.note_off.note);
     }
     break;
 

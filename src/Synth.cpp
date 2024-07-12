@@ -6,6 +6,7 @@
 #include <OrganEngine/WaveTables.h>
 #include <OrganEngine/NoteManager.h>
 #include <FmSynth/FmSynth.h>
+#include <WaveOrgan/WaveOrgan.h>
 #include <iostream>
 
 int main()
@@ -13,6 +14,7 @@ int main()
     waveforms_initialize();
     organ_oscillator_initialize();
     rotary_speaker_initialize();
+    wave_organ_init();
     fm_synth_init();
 
     midi_init();
