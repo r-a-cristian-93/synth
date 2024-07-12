@@ -25,11 +25,12 @@ extern float wav_phase[MIDI_NOTES_COUNT];
 extern float wav_phaseIncrement[MIDI_NOTES_COUNT];
 extern float wav_frequency[MIDI_NOTES_COUNT];
 extern bool wav_notes[MIDI_NOTES_COUNT];
-extern int32_t wav_lut[LUT_SIZE];
-extern uint8_t wav_voices_on;
+// extern int32_t wav_lut[LUT_SIZE];
+extern int16_t voice_lut[32][LUT_SIZE];
+extern int16_t* wav_active_voice;
 
-void wave_organ_set_voice_on(uint8_t voiceIndex);
-void wave_organ_set_voice_off(uint8_t voiceIndex);
+void wave_organ_set_voice(uint8_t voiceIndex);
+void fill_voice_combinations();
 
 __attribute__((always_inline)) inline
 void wave_organ_init()
@@ -40,11 +41,8 @@ void wave_organ_init()
         wav_phaseIncrement[i] = wav_frequency[i]  * ((float)LUT_SIZE / 44100.0) ;
 	}
 
-    wave_organ_set_voice_on(0);
-    wave_organ_set_voice_on(1);
-    wave_organ_set_voice_on(2);
-    wave_organ_set_voice_on(3);
-    wave_organ_set_voice_on(4);
+    fill_voice_combinations();
+    wave_organ_set_voice(1);
 }
 
 __attribute__((always_inline)) inline
@@ -66,12 +64,7 @@ __attribute__((always_inline)) inline int32_t wave_organ_generate_sample()
 		if (wav_notes[noteIndex] == false)
 			continue;
 
-		sample += wav_flute8[(uint16_t)wav_phase[noteIndex]];
-        sample += wav_flute4[(uint16_t)wav_phase[noteIndex]];
-        sample += wav_clarinet[(uint16_t)wav_phase[noteIndex]];
-        sample += wav_trumpet[(uint16_t)wav_phase[noteIndex]];
-        sample += wav_violin[(uint16_t)wav_phase[noteIndex]];
-        // sample += wav_lut[(uint16_t) wav_phase[noteIndex]];
+        sample += wav_active_voice[(uint16_t) wav_phase[noteIndex]];
 
 		wav_phase[noteIndex] += wav_phaseIncrement[noteIndex];
 
@@ -86,7 +79,7 @@ __attribute__((always_inline)) inline int32_t wave_organ_generate_sample()
         }
     }
 
-	return sample >> wav_voices_on;
+	return sample >> 3;
 }
 
 
