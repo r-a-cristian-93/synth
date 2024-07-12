@@ -71,6 +71,12 @@ void decode_message(double deltatime, std::vector<unsigned char> *buffer, void *
         if (controller == 13) {
             fm_synth_decrement_fmAsAe(message->channel);
         }
+        if (controller == 14) {
+            wave_organ_set_voice_on(value);
+        }
+        if (controller == 15) {
+            wave_organ_set_voice_off(value);
+        }
 
         // if (controller == MIDI_CC_VIBRATO_FAST)
         //     organ_oscillator_set_vibrato_fast();
