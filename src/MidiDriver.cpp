@@ -83,10 +83,6 @@ void decode_message(double deltatime, std::vector<unsigned char> *buffer, void *
             rotary_speaker_set_speed(value);
         }
 
-        if (controller = 93) {
-            rotary_speaker_set_depth(value);
-        }
-
         // if (controller == MIDI_CC_VIBRATO_FAST)
         //     organ_oscillator_set_vibrato_fast();
 

@@ -2,11 +2,12 @@
 #include <math.h>
 #include <iostream>
 
-int16_t sine_table[LUT_SIZE];
-int16_t sine_table_lfo[LUT_SIZE];
-int16_t smooth_triangle_table[LUT_SIZE];
-int16_t smooth_square_table[LUT_SIZE];
-int16_t smooth_sawtooth_table[LUT_SIZE];
+int16_t sine_table[LUT_SIZE] = {0};
+int16_t sine_table_lfo[LUT_SIZE] = {0};
+int16_t rotary_table_lfo[LUT_SIZE] = {0};
+int16_t smooth_triangle_table[LUT_SIZE] = {0};
+int16_t smooth_square_table[LUT_SIZE] = {0};
+int16_t smooth_sawtooth_table[LUT_SIZE] = {0};
 
 
 void generate_sine_table()
@@ -22,6 +23,19 @@ void generate_sine_table_lfo()
     for (int i = 0; i < LUT_SIZE; i++)
     {
         sine_table_lfo[i] = (sine_table[i] + MAX_AMPLITUDE) * 0.5;
+    }
+}
+
+void generate_roatary_table_lfo()
+{
+    for (int i = 0; i < LUT_SIZE; i++)
+    {
+        //                 sine table is +-0x7FFF
+        // + MAX_AMPLITUDE bring to  0 - 0xFFFF
+        // >> 5            scale to 0 - 0x7FF
+        // + 0x7800        bring to 0x7800 - 0x7FFF
+        // meaning 6.2%    amplitude modulation
+        rotary_table_lfo[i] = ((sine_table[i] + MAX_AMPLITUDE) >> 5) + 0x7800;
     }
 }
 
@@ -82,6 +96,7 @@ void waveforms_initialize()
 {
     generate_sine_table();
     generate_sine_table_lfo();
+    generate_roatary_table_lfo();
     generate_smooth_triangle_table();
     generate_smooth_square_table();
     generate_smooth_sawtooth_table();
