@@ -7,41 +7,19 @@ RingBuffer  rotarySpeaker_ringBuffer;
 float       rotarySpeaker_lfoPhase;
 float       rotarySpeaker_lfoPhaseIncrement = ROTARY_SPEAKER_FAST;
 
-// Parameter   rotarySpeaker_lfoPhaseIncrement
-// {
-//     ROTARY_SPEAKER_FAST,
-//     ROTARY_SPEAKER_FAST,
-//     0.001,
-//     ROTARY_SPEAKER_FAST,
-//     0.0,
-//     0.01 / SAMPLE_RATE
-// };
-
 void rotary_speaker_initialize()
 {
 	rotarySpeaker_ringBuffer.resize(BASE_DELAY_SEC * SAMPLE_RATE * 2);
-	rotary_speaker_set_depth(0.5);
-	rotary_speaker_set_velocity_fast();
+	rotary_speaker_set_depth(127);
+	rotary_speaker_set_speed(127);
 }
 
-void rotary_speaker_set_depth(float depth)
+void rotary_speaker_set_depth(uint8_t midiParam)
 {
-	if (depth < 0)
-		rotarySpeaker_depth = 0;
-	else if (depth > 1)
-		rotarySpeaker_depth = 1;
-	else
-		rotarySpeaker_depth = depth;
+	rotarySpeaker_depth = midiParam * (1.0 / 127.0);
 }
 
-void rotary_speaker_set_velocity_fast() {
-    // rotarySpeaker_lfoPhaseIncrement.setValue(ROTARY_SPEAKER_FAST);
+void rotary_speaker_set_speed(uint8_t midiParam) {
+	rotarySpeaker_lfoPhaseIncrement = midiParam * (10.0 / 127.0) * PHASE_LUT_SCALE_FACTOR;
 }
 
-void rotary_speaker_set_velocity_slow() {
-    // rotarySpeaker_lfoPhaseIncrement.setValue(ROTARY_SPEAKER_SLOW);
-}
-
-void rotary_speaker_set_velocity_off() {
-    // rotarySpeaker_lfoPhaseIncrement.setValue(ROTARY_SPEAKER_OFF);
-}

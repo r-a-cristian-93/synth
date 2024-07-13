@@ -9,6 +9,7 @@
 #include <OrganEngine/MidiManager.h>
 #include <FmSynth/FmSynth.h>
 #include <WaveOrgan/WaveOrgan.h>
+#include <OrganEngine/RotarySpeaker.h>
 
 RtMidiIn *midiDevice = 0;
 
@@ -76,6 +77,14 @@ void decode_message(double deltatime, std::vector<unsigned char> *buffer, void *
 
         if (controller == 13) {
             fm_synth_decrement_fmAsAe(message->channel);
+        }
+
+        if (controller == 92) {
+            rotary_speaker_set_speed(value);
+        }
+
+        if (controller = 93) {
+            rotary_speaker_set_depth(value);
         }
 
         // if (controller == MIDI_CC_VIBRATO_FAST)

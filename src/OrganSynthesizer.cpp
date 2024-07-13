@@ -8,7 +8,6 @@
 
 void generateSamples(ma_device* pDevice, float* pInput, float* pOutput, ma_uint32 frameCount)
 {
-    rotary_speaker_parameters_update();
     reset_tonewheel_amplitude();
     set_tonewheels_amplitude();
 

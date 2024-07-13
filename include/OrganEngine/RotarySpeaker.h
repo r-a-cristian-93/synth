@@ -17,20 +17,15 @@ extern int         rotarySpeaker_additionalDelay;
 extern RingBuffer  rotarySpeaker_ringBuffer;
 
 extern float       rotarySpeaker_lfoPhase;
-// extern Parameter   rotarySpeaker_lfoPhaseIncrement;
 extern float       rotarySpeaker_lfoPhaseIncrement;
 
 void rotary_speaker_initialize();
-void rotary_speaker_set_depth(float depth);
-void rotary_speaker_set_velocity_fast();
-void rotary_speaker_set_velocity_slow();
-void rotary_speaker_set_velocity_off();
+void rotary_speaker_set_depth(uint8_t midiParam);
+void rotary_speaker_set_speed(uint8_t midiParam);
 
 // inline
 int16_t rotary_speaker_process_sample(int16_t input);
 void rotary_speaker_lfo_advance();
-void rotary_speaker_parameters_update();
-
 
 __attribute__((always_inline)) inline
 int16_t rotary_speaker_process_sample(int16_t input)
@@ -51,6 +46,9 @@ int16_t rotary_speaker_process_sample(int16_t input)
     // results 6.2% amplitude modulation
     output = (output * ((sine_table_lfo[(int)(rotarySpeaker_lfoPhase)] >> 4) + 0x7FFF)) >> 15;
 
+    // Variably scale tremolo amplitude
+    // output = (int32_t)(output * (rotarySpeaker_depth * sine_table_lfo[(int)(rotarySpeaker_lfoPhase)] + (1-rotarySpeaker_depth) * 0x7FFF)) >> 15;
+
     rotary_speaker_lfo_advance();
 
     return output;
@@ -59,7 +57,6 @@ int16_t rotary_speaker_process_sample(int16_t input)
 __attribute__((always_inline)) inline
 void rotary_speaker_lfo_advance()
 {
-    // rotarySpeaker_lfoPhase += rotarySpeaker_lfoPhaseIncrement.current_value;
     rotarySpeaker_lfoPhase += rotarySpeaker_lfoPhaseIncrement;
 
 
@@ -68,12 +65,6 @@ void rotary_speaker_lfo_advance()
 
     if (rotarySpeaker_lfoPhase  < 0)
         rotarySpeaker_lfoPhase  += LUT_SIZE;
-}
-
-__attribute__((always_inline)) inline
-void rotary_speaker_parameters_update()
-{
-    // rotarySpeaker_lfoPhaseIncrement.update();
 }
 
 #endif
