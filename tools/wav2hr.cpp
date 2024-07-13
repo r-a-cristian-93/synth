@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <cmath>
 #include <cstring>
+#include <cstdlib>
 
 // Structure to hold the WAV file header
 struct WAVHeader {
@@ -33,11 +34,12 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    const char* inputFilename = argv[1];
-    const char* outputHeaderFilename = argv[2];
-    const char* outputWavFilename = argv[3];
-    const char* tableName = argv[4];
-    const char* defName = argv[5];
+    const int bitDepth = atoi(argv[1]);
+    const char* inputFilename = argv[2];
+    const char* outputHeaderFilename = argv[3];
+    const char* outputWavFilename = argv[4];
+    const char* tableName = argv[5];
+    const char* defName = argv[6];
 
     // Open the input WAV file
     std::ifstream wavFile(inputFilename, std::ios::binary);
@@ -97,7 +99,7 @@ int main(int argc, char *argv[]) {
     headerFile << "const int16_t wav_" << tableName << "[1024] = \n{\n";
 
     for (size_t i = 0; i < newSamples.size(); ++i) {
-        headerFile << (newSamples[i] >> 16);
+        headerFile << (newSamples[i] >> (32 - bitDepth) );
         if (i < newSamples.size() - 1) {
             headerFile << ", ";
         }
