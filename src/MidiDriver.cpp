@@ -10,6 +10,7 @@
 #include <FmSynth/FmSynth.h>
 #include <WaveOrgan/WaveOrgan.h>
 #include <OrganEngine/RotarySpeaker.h>
+#include <DrumMachine/DrumMachine.h>
 
 RtMidiIn *midiDevice = 0;
 
@@ -31,6 +32,7 @@ void decode_message(double deltatime, std::vector<unsigned char> *buffer, void *
         note_on(message->data.note_on.note);
         fm_synth_note_on(message->data.note_on.note, message->channel);
         wav_organ_note_on(message->data.note_on.note);
+        drum_machine_play(message->data.note_on.note);
     }
     break;
 

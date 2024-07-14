@@ -52,6 +52,10 @@ set (SOURCE_WAVE_ORGAN
   include/WaveOrgan/WaveOrgan.cpp
 )
 
+set (SOURCE_DRUM_MACHINE
+  include/DrumMachine/DrumMachine.cpp
+)
+
 if(BUILD_FOR_JACK)
   add_definitions(
     -DMA_ENABLE_ONLY_SPECIFIC_BACKENDS
@@ -60,7 +64,7 @@ if(BUILD_FOR_JACK)
   message(STATUS "Building with JACK support")
 endif()
 
-add_executable(Synth ${SOURCE_SYNTH} ${SOURCE_SYNTH_ENGINE} ${SOURCE_FM_SYNTH} ${SOURCE_WAVE_ORGAN} ${SOURCE_RTMIDI} ${SOURCE_NANOMIDI})
+add_executable(Synth ${SOURCE_SYNTH} ${SOURCE_SYNTH_ENGINE} ${SOURCE_FM_SYNTH} ${SOURCE_WAVE_ORGAN} ${SOURCE_DRUM_MACHINE} ${SOURCE_RTMIDI} ${SOURCE_NANOMIDI})
 target_include_directories(Synth PRIVATE ${PROJECT_SOURCE_DIR}/include)
 
 if(WIN32)
@@ -76,7 +80,7 @@ set(SOURCE_TEST
   test/TestPerformance.cpp
   src/OrganSynthesizer.cpp
 )
-add_executable(SynthTest ${SOURCE_TEST} ${SOURCE_SYNTH_ENGINE} ${SOURCE_FM_SYNTH} ${SOURCE_WAVE_ORGAN} ${SOURCE_RTMIDI} ${SOURCE_NANOMIDI})
+add_executable(SynthTest ${SOURCE_TEST} ${SOURCE_SYNTH_ENGINE} ${SOURCE_FM_SYNTH} ${SOURCE_WAVE_ORGAN} ${SOURCE_DRUM_MACHINE} ${SOURCE_RTMIDI} ${SOURCE_NANOMIDI})
 target_include_directories(SynthTest PRIVATE ${PROJECT_SOURCE_DIR}/include)
 
 
