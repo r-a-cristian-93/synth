@@ -26,7 +26,8 @@ __attribute__((always_inline)) inline int32_t drum_machine_generate_sample()
 		if (ins.playing == false)
 			continue;
 
-        sample += (ins.lut[ins.phase] * ins.velocity) >> 9;
+        // 0x7FFF * 7F >> 7 = 0x7EFF
+        sample += (ins.lut[ins.phase] * ins.velocity) >> 7;
 
 		ins.phase++;
 
