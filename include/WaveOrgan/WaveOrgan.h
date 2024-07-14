@@ -59,6 +59,7 @@ __attribute__((always_inline)) inline int32_t wave_organ_generate_sample()
         }
     }
 
+    // >> 4 Make room for more notes
 	return sample >> 4;
 }
 
