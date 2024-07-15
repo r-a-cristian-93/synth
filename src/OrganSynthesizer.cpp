@@ -82,10 +82,10 @@ void generateDrumMachineSamples(ma_device* pDevice, float* pInput, float* pOutpu
 
     for (int iFrame = 0; iFrame < frameCount; iFrame++)
     {
-        sample = drum_machine_generate_sample();
+        sample = wave_organ_generate_sample();
+        sample += drum_machine_generate_sample();
 
         sample = ((float)  sample) / (MAX_AMPLITUDE);
-
         *out++ = sample;
         *out++ = sample;
     }
