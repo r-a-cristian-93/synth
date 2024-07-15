@@ -22,6 +22,8 @@ constexpr uint8_t VOICES_COUNT = 5;
 #include <WaveOrgan/violin.h>
 #include <WaveOrgan/bass.h>
 
+
+
 extern float wav_phase[MIDI_NOTES_COUNT];
 extern float wav_phaseIncrement[MIDI_NOTES_COUNT];
 extern float wav_frequency[MIDI_NOTES_COUNT];
@@ -30,8 +32,12 @@ extern int16_t voice_lut[32][LUT_SIZE];
 extern int16_t* wav_active_voice;
 extern uint8_t wav_bass_volume;
 
+
+
 void wave_organ_set_voice(uint8_t voiceIndex);
 void fill_voice_combinations();
+
+
 
 
 __attribute__((always_inline)) inline int32_t wave_organ_generate_sample()

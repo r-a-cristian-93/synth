@@ -7,6 +7,7 @@
 #include <OrganEngine/NoteManager.h>
 #include <FmSynth/FmSynth.h>
 #include <WaveOrgan/WaveOrgan.h>
+#include <WaveOrgan/Envelope.h>
 #include <iostream>
 
 int main()
@@ -16,6 +17,7 @@ int main()
     rotary_speaker_initialize();
     wave_organ_init();
     fm_synth_init();
+    envelope_initialize();
 
     midi_init();
     audio_driver_init();

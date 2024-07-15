@@ -2,8 +2,9 @@
 #define NOTE_MANAGER_H
 
 #include <list>
-#include <OrganEngine/Envelope.h>
+#include <cstdint>
 #include <OrganEngine/OrganOscillator.h>
+#include <OrganEngine/Config.h>
 
 #define MAX_NOTES 128
 
