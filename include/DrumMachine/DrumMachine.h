@@ -35,7 +35,7 @@ __attribute__((always_inline)) inline int32_t drum_machine_generate_sample()
             ins.playing = false;
     }
 
-	return sample >> 2;
+	return sample >> 5;
 }
 
 __attribute__((always_inline)) inline

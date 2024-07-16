@@ -24,14 +24,14 @@ constexpr uint8_t VOICES_COUNT = 5;
 #include <WaveOrgan/Envelope.h>
 
 struct LPF {
-    float output = 0.0;
-    float alpha = 0.85;
+    int32_t output = 0.0;
+    uint8_t alpha = 110;
 
     int32_t getSample(int32_t input) {
 
-        output = (1.0 - alpha) * input + alpha * output;
+        output = ((127 - alpha) * input + alpha * output) >> 7;
 
-        return (int32_t) output;
+        return output;
     }
 };
 
@@ -127,7 +127,7 @@ void wave_organ_set_bass_volume(uint8_t volume) {
 
 __attribute__((always_inline)) inline
 void wave_organ_set_lpf(uint8_t alpha) {
-    lpf.alpha = (float)alpha * (1.0 / 127.0);
+    lpf.alpha = alpha;
 }
 
 
