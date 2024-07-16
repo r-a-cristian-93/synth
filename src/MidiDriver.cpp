@@ -9,7 +9,6 @@
 #include <OrganEngine/MidiManager.h>
 #include <FmSynth/FmSynth.h>
 #include <WaveOrgan/WaveOrgan.h>
-#include <WaveOrgan/WavePiano.h>
 #include <OrganEngine/RotarySpeaker.h>
 #include <DrumMachine/DrumMachine.h>
 
@@ -33,7 +32,6 @@ void decode_message(double deltatime, std::vector<unsigned char> *buffer, void *
         note_on(message->data.note_on.note);
         fm_synth_note_on(message->data.note_on.note, message->channel);
         wav_organ_note_on(message->data.note_on.note);
-        wav_piano_note_on(message->data.note_on.note);
 
         drum_machine_play(message->data.note_on.note, message->data.note_on.velocity);
     }
@@ -44,7 +42,6 @@ void decode_message(double deltatime, std::vector<unsigned char> *buffer, void *
         note_off(message->data.note_off.note);
         fm_synth_note_off(message->data.note_off.note, message->channel);
         wav_organ_note_off(message->data.note_off.note);
-        wav_piano_note_off(message->data.note_off.note);
     }
     break;
 
@@ -66,6 +63,10 @@ void decode_message(double deltatime, std::vector<unsigned char> *buffer, void *
         }
 
         if (controller == 20) {
+            wave_organ_set_orchestra_volume(value);
+        }
+
+        if (controller == 21) {
             wave_organ_set_bass_volume(value);
         }
 

@@ -5,7 +5,7 @@
 ./wav2hr.exe 16 ./wav_original/orchestra_trumpet_c2.wav   ./header_orchestra_unsigned_16/trumpet.h        ./wav_orchestra_unsigned_16/trumpet.wav      trumpet      TRUMPET
 ./wav2hr.exe 16 ./wav_original/orchestra_violin_c2.wav    ./header_orchestra_unsigned_16/violin.h         ./wav_orchestra_unsigned_16/violin.wav       violin       VIOLIN
 ./wav2hr.exe 16 ./wav_original/orchestra_clarinet_c2.wav  ./header_orchestra_unsigned_16/clarinet.h       ./wav_orchestra_unsigned_16/clarinet.wav     clarinet     CLARINET
-./wav2hr.exe 8 ./wav_original/orchestra_bass_c2.wav       ./header_orchestra_unsigned_16/bass.h           ./wav_orchestra_unsigned_16/bass.wav         bass         BASS
+./wav2hr.exe 16 ./wav_original/orchestra_bass_c2.wav       ./header_orchestra_unsigned_16/bass.h           ./wav_orchestra_unsigned_16/bass.wav         bass         BASS
 
 # resample to 16bit, generate header
 ./wav2hc.exe 16 ./wav_original/perc_kick.wav              ./header_perc_unsigned_16_44100/perc_kick.h      none                                         perc_kick    PERC_KICK

@@ -3,8 +3,9 @@
 float wav_phase[MIDI_NOTES_COUNT] = {0};
 float wav_phaseIncrement[MIDI_NOTES_COUNT] = {0};
 float wav_frequency[MIDI_NOTES_COUNT] = {0};
-bool wav_notes[MIDI_NOTES_COUNT] = {false};
+Envelope wav_notes[MIDI_NOTES_COUNT] = {};
 uint8_t wav_bass_volume = 127;
+uint8_t wav_orchestra_volume = 127;
 
 
 int16_t voice_lut[32][LUT_SIZE] = {0};
