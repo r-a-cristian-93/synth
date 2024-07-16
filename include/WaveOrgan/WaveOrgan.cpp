@@ -1,5 +1,7 @@
 #include <WaveOrgan/WaveOrgan.h>
 
+LPF lpf = {};
+
 float wav_phase[MIDI_NOTES_COUNT] = {0};
 float wav_phaseIncrement[MIDI_NOTES_COUNT] = {0};
 float wav_frequency[MIDI_NOTES_COUNT] = {0};

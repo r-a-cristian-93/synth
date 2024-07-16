@@ -70,6 +70,10 @@ void decode_message(double deltatime, std::vector<unsigned char> *buffer, void *
             wave_organ_set_bass_volume(value);
         }
 
+        if (controller == 22) {
+            wave_organ_set_lpf(value);
+        }
+
         if (controller == 10) {
             fm_synth_increment_fmInc(message->channel);
         }
