@@ -5,7 +5,16 @@
 ./wav2hr.exe 16 ./wav_original/orchestra_trumpet_c2.wav   ./header_orchestra_unsigned_16/trumpet.h        ./wav_orchestra_unsigned_16/trumpet.wav      trumpet      TRUMPET
 ./wav2hr.exe 16 ./wav_original/orchestra_violin_c2.wav    ./header_orchestra_unsigned_16/violin.h         ./wav_orchestra_unsigned_16/violin.wav       violin       VIOLIN
 ./wav2hr.exe 16 ./wav_original/orchestra_clarinet_c2.wav  ./header_orchestra_unsigned_16/clarinet.h       ./wav_orchestra_unsigned_16/clarinet.wav     clarinet     CLARINET
-./wav2hr.exe 16 ./wav_original/orchestra_bass_c2.wav       ./header_orchestra_unsigned_16/bass.h           ./wav_orchestra_unsigned_16/bass.wav         bass         BASS
+./wav2hr.exe 16 ./wav_original/orchestra_bass_c2.wav      ./header_orchestra_unsigned_16/bass.h           ./wav_orchestra_unsigned_16/bass.wav         bass         BASS
+
+./wav2hr.exe 16 ./wav_original/effect_harpsicord_c2.wav   ./header_effects_unsigned_16/harpsi.h           ./wav_effects_unsigned_16/harpsi.wav         harpsi       HARPSI
+./wav2hr.exe 16 ./wav_original/effect_piano_c2.wav        ./header_effects_unsigned_16/piano.h            ./wav_effects_unsigned_16/piano.wav          piano        PIANO
+./wav2hr.exe 16 ./wav_original/effect_perc4_c2.wav        ./header_effects_unsigned_16/perc4.h            ./wav_effects_unsigned_16/perc4.wav          perc4        PERC4
+./wav2hr.exe 16 ./wav_original/effect_bells_c2.wav        ./header_effects_unsigned_16/bells.h            ./wav_effects_unsigned_16/bells.wav          bells        BELLS
+./wav2hr.exe 16 ./wav_original/effect_synth_c2.wav        ./header_effects_unsigned_16/synth.h            ./wav_effects_unsigned_16/synth.wav          synth        SYNTH
+
+
+
 
 # resample to 16bit, generate header
 ./wav2hc.exe 16 ./wav_original/perc_kick.wav              ./header_perc_unsigned_16_44100/perc_kick.h      none                                         perc_kick    PERC_KICK

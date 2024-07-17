@@ -15,13 +15,19 @@ constexpr uint8_t VOICES_COUNT = 5;
 
 #include <cstdint>
 #include <math.h>
-#include <WaveOrgan/flute4.h>
-#include <WaveOrgan/flute8.h>
-#include <WaveOrgan/clarinet.h>
-#include <WaveOrgan/trumpet.h>
-#include <WaveOrgan/violin.h>
-#include <WaveOrgan/bass.h>
+#include <WaveOrgan/orchestra/flute4.h>
+#include <WaveOrgan/orchestra/flute8.h>
+#include <WaveOrgan/orchestra/clarinet.h>
+#include <WaveOrgan/orchestra/trumpet.h>
+#include <WaveOrgan/orchestra/violin.h>
+#include <WaveOrgan/orchestra/bass.h>
 #include <WaveOrgan/Envelope.h>
+
+#include <WaveOrgan/effects/perc4.h>
+#include <WaveOrgan/effects/piano.h>
+#include <WaveOrgan/effects/harpsi.h>
+#include <WaveOrgan/effects/bells.h>
+#include <WaveOrgan/effects/synth.h>
 
 struct LPF {
     int32_t output = 0.0;
@@ -43,12 +49,17 @@ extern float wav_frequency[MIDI_NOTES_COUNT];
 extern Envelope wav_notes[MIDI_NOTES_COUNT];
 
 extern int16_t voice_lut[32][LUT_SIZE];
+extern int16_t effect_lut[32][LUT_SIZE];
 extern int16_t* wav_active_voice;
+extern int16_t* wav_active_effect;
 extern uint8_t wav_orchestra_volume;
 extern uint8_t wav_bass_volume;
 
 void wave_organ_set_voice(uint8_t voiceIndex);
+void wave_organ_set_effect(uint8_t voiceIndex);
 void fill_voice_combinations();
+void fill_effect_combinations();
+
 
 __attribute__((always_inline)) inline int32_t wave_organ_generate_sample()
 {
@@ -69,7 +80,7 @@ __attribute__((always_inline)) inline int32_t wave_organ_generate_sample()
 
         // piano
 		float envelopeAmpl = envelope_get_amplitude(&wav_notes[noteIndex]) * 127;
-        sample += (int32_t)((float)wav_active_voice[(uint16_t) wav_phase[noteIndex]] * envelopeAmpl);
+        sample += (int32_t)((float)wav_active_effect[(uint16_t) wav_phase[noteIndex]] * envelopeAmpl);
 
         // lpf
         sample = lpf.getSample(sample);
@@ -102,7 +113,9 @@ void wave_organ_init()
 	}
 
     fill_voice_combinations();
+    fill_effect_combinations();
     wave_organ_set_voice(1);
+    wave_organ_set_effect(1);
 }
 
 __attribute__((always_inline)) inline

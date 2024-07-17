@@ -11,7 +11,10 @@ uint8_t wav_orchestra_volume = 127;
 
 
 int16_t voice_lut[32][LUT_SIZE] = {0};
+int16_t effect_lut[32][LUT_SIZE] = {0};
+
 int16_t* wav_active_voice = voice_lut[0];
+int16_t* wav_active_effect = effect_lut[0];
 
 void fill_voice_combinations()
 {
@@ -49,7 +52,50 @@ void fill_voice_combinations()
     }
 }
 
+
+void fill_effect_combinations()
+{
+    // First voice is silence, skip it
+    for (int mask = 1; mask < 32; ++mask)
+    {
+        uint8_t effect_on_perc4 = mask & (1 << 0);
+        uint8_t effect_on_piano = (mask & (1 << 1)) >> 1;
+        uint8_t effect_on_harpsi = (mask & (1 << 2)) >> 2;
+        uint8_t effect_on_bells = (mask & (1 << 3)) >> 3;
+        uint8_t effect_on_synth = (mask & (1 << 4)) >> 4;
+
+        for (uint16_t lutIndex = 0; lutIndex < LUT_SIZE; lutIndex++)
+        {
+            int32_t sample = 0;
+
+            sample += wav_perc4[lutIndex] *   effect_on_perc4;
+            sample += wav_piano[lutIndex] *   effect_on_piano;
+            sample += wav_harpsi[lutIndex] * effect_on_harpsi;
+            sample += wav_bells[lutIndex] *  effect_on_bells;
+            sample += wav_synth[lutIndex] *   effect_on_synth;
+
+            // Scale based on number of voices;
+            sample = sample / (
+                effect_on_perc4 +
+                effect_on_piano +
+                effect_on_harpsi +
+                effect_on_bells +
+                effect_on_synth +
+                1
+            );
+
+            effect_lut[mask][lutIndex] = sample;
+        }
+    }
+}
+
 void wave_organ_set_voice(uint8_t voiceIndex)
 {
     wav_active_voice = voice_lut[voiceIndex];
 }
+
+void wave_organ_set_effect(uint8_t effectIndex)
+{
+    wav_active_effect = effect_lut[effectIndex];
+}
+

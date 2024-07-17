@@ -17,7 +17,7 @@ float       rotarySpeaker_lfoPhaseIncrement = ROTARY_SPEAKER_FAST;
 void rotary_speaker_initialize()
 {
 	rotarySpeaker_ringBuffer.resize(BASE_DELAY_SEC * SAMPLE_RATE * 2);
-	rotary_speaker_set_speed(127);
+	rotary_speaker_set_speed(20);
 }
 
 void rotary_speaker_set_speed(uint8_t midiParam) {

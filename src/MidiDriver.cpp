@@ -62,6 +62,11 @@ void decode_message(double deltatime, std::vector<unsigned char> *buffer, void *
             // fm_synth_next_instrument();
         }
 
+        if (controller == MIDI_CC_BANK_LSB)
+        {
+            wave_organ_set_effect(value);
+        }
+
         if (controller == 20) {
             wave_organ_set_orchestra_volume(value);
         }
