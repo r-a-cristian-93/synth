@@ -3,7 +3,7 @@
 
 #include <cstdint>
 
-#define INSTRUMENTS_COUNT (4)
+#define INSTRUMENTS_COUNT (5)
 
 struct DrumInstrument {
     const int16_t* lut;

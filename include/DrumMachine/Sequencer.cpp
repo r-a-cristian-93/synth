@@ -1,25 +1,32 @@
 #include <DrumMachine/Sequencer.h>
 
 
-const uint8_t seq1_steps = 16;
-const uint8_t seq1_values[TRACKS_COUNT][seq1_steps] = {
-    {127,    0,    0,    0,  127,    0,    0,    0,  127,    0,    0,    0,  127,    0,    0,    0},
-    {  0,    0,   50,    0,    0,    0,   50,    0,    0,    0,   50,    0,    0,    0,   50,    0},
-    { 50,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0},
-    { 50,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0}
+const Sequence waltz ={};
+const Sequence tango = {};
+const Sequence march = {};
+const Sequence swing = {};
+const Sequence slow_rock = {};
+
+const Sequence disco = {
+    {127,    0,    0,    0,    0,    0,    0,    0,  127,    0,    0,    0,    0,    0,    0,    0},
+    {  0,    0,    0,    0,  127,    0,    0,    0,    0,    0,    0,    0,  127,    0,    0,    0},
+    {  0,    0,  127,    0,    0,    0,  127,    0,    0,    0,  127,    0,    0,    0,  127,    0},
+    {  0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0},
+    {  0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0}
 };
 
-const uint8_t seq2_steps = 8;
-const uint8_t seq2_values[TRACKS_COUNT][seq2_steps] = {
-    {127,    0,  127,    0,  127,    0,  127,    0},
-    {  0,   50,   50,   50,   50,   50,   50,   50},
-    {  0,    0,    0,    0,    0,    0,    0,    0},
-    {  0,   80,    0,   80,    0,   80,   80,   80}
-};
+const Sequence samba = {};
+const Sequence bossa_nova = {};
 
-const Sequence sequences[] = {
-    {seq1_steps, seq1_values},
-    {seq2_steps, seq2_values}
+const Sequence* sequences[] = {
+    &waltz,
+    &tango,
+    &march,
+    &swing,
+    &slow_rock,
+    &disco,
+    &samba,
+    &bossa_nova
 };
 
 uint8_t active_sequence = 0;
