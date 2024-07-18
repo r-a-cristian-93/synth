@@ -89,7 +89,7 @@ void generateDrumMachineSamples(ma_device* pDevice, float* pInput, float* pOutpu
         sample = rotary_speaker_process_sample(sample);
         sample += drum_machine_generate_sample();
 
-        sample = ((float) sample) / MAX_AMPLITUDE;
+        sample = (((float) sample) / MAX_AMPLITUDE) * 10;
         *out++ = sample;
         *out++ = sample;
     }

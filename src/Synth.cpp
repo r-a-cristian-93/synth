@@ -19,7 +19,7 @@ int main()
     wave_organ_init();
     fm_synth_init();
     envelope_initialize();
-    sequencer_init(120, 44100);
+    sequencer_init();
 
     midi_init();
     audio_driver_init();
