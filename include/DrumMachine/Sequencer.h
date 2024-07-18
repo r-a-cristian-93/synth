@@ -34,8 +34,8 @@ void sequencer_init()
     active_sequence = 0;
     current_step = 0;
     sample_counter = 0;
-    sequencer_set_bpm(90);
-    sequencer_set_sequence(5);
+    sequencer_set_bpm(180);
+    sequencer_set_sequence(4);
 }
 
 __attribute__((always_inline)) inline
@@ -58,16 +58,18 @@ __attribute__((always_inline)) inline
 void sequencer_tick()
 {
     sample_counter++;
-    if (sample_counter >= samples_per_step) {
+    if (sample_counter >= samples_per_step)
+    {
         sample_counter = 0;
 
         const Sequence& seq = *sequences[active_sequence];
 
-        for (int track = 0; track < TRACKS_COUNT; ++track) {
-            drum_machine_play(track, seq[track][current_step]);
-
-            // Simulate playing the step. Replace this with actual playback code.
-            // std::cout << "Track " << track << " Step " << (int)current_step << ": " << (int)seq.values[track][current_step] << std::endl;
+        for (int track = 0; track < TRACKS_COUNT; ++track)
+        {
+            if (seq[track][current_step] > 0)
+            {
+                drum_machine_play(track, seq[track][current_step]);
+            }
         }
 
         // Advance to the next step, wrapping around if necessary based on the number of steps in the sequence

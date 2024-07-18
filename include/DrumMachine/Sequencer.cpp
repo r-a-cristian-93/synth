@@ -5,7 +5,14 @@ const Sequence waltz ={};
 const Sequence tango = {};
 const Sequence march = {};
 const Sequence swing = {};
-const Sequence slow_rock = {};
+
+const Sequence slow_rock = {
+    {   0,    0,    0,    0,    0,    0,    0,    0,   80,    0,   80,    0},
+    {   0,    0,    0,    0,   80,    0,    0,    0,    0,    0,    0,    0},
+    { 100,  110,  127,    0,   47,    0,  127,    0,   47,    0,   47,    0},
+    {   0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0},
+    {   0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0}
+};
 
 const Sequence disco = {
     {127,    0,    0,    0,    0,    0,    0,    0,  127,    0,    0,    0,    0,    0,    0,    0},
