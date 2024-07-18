@@ -54,6 +54,7 @@ set (SOURCE_WAVE_ORGAN
 
 set (SOURCE_DRUM_MACHINE
   include/DrumMachine/DrumMachine.cpp
+  include/DrumMachine/Sequencer.cpp
 )
 
 if(BUILD_FOR_JACK)

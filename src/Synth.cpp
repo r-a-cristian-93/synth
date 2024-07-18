@@ -9,6 +9,7 @@
 #include <WaveOrgan/WaveOrgan.h>
 #include <WaveOrgan/Envelope.h>
 #include <iostream>
+#include <DrumMachine/Sequencer.h>
 
 int main()
 {
@@ -18,6 +19,7 @@ int main()
     wave_organ_init();
     fm_synth_init();
     envelope_initialize();
+    sequencer_init(120, 44100);
 
     midi_init();
     audio_driver_init();

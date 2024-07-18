@@ -6,6 +6,7 @@
 #include <FmSynth/FmSynth.h>
 #include <WaveOrgan/WaveOrgan.h>
 #include <DrumMachine/DrumMachine.h>
+#include <DrumMachine/Sequencer.h>
 
 void generateSamples(ma_device* pDevice, float* pInput, float* pOutput, ma_uint32 frameCount)
 {
@@ -82,6 +83,8 @@ void generateDrumMachineSamples(ma_device* pDevice, float* pInput, float* pOutpu
 
     for (int iFrame = 0; iFrame < frameCount; iFrame++)
     {
+        sequencer_tick();
+
         sample = wave_organ_generate_sample();
         sample = rotary_speaker_process_sample(sample);
         sample += drum_machine_generate_sample();
