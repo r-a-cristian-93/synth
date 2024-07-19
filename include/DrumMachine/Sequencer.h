@@ -34,8 +34,8 @@ void sequencer_init()
     active_sequence = 0;
     current_step = 0;
     sample_counter = 0;
-    sequencer_set_bpm(180);
-    sequencer_set_sequence(1);
+    sequencer_set_bpm(90);
+    sequencer_set_sequence(0);
 }
 
 __attribute__((always_inline)) inline
