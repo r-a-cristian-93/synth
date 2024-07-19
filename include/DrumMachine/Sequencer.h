@@ -73,7 +73,10 @@ void sequencer_tick()
         }
 
         // Advance to the next step, wrapping around if necessary based on the number of steps in the sequence
-        current_step = (current_step + 1) % seq[0].size();
+        current_step++;
+		if (current_step >= seq[0].size()) {
+			current_step = 0;
+		}
     }
 }
 
