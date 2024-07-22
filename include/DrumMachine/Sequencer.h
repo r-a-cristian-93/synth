@@ -2,26 +2,22 @@
 #define SEQUENCER_H
 
 #include <cstdint>
-#include <cstdlib>
-#include <cstring>
-#include <iostream>
-#include <vector>
 #include <DrumMachine/DrumMachine.h>
 
 #define TRACKS_COUNT (5)
-#define SEQUENCES_COUNT (7)
+#define SEQUENCES_COUNT (8)
 #ifndef SAMPLE_RATE
 #define SAMPLE_RATE (44100)
 #endif
 
-typedef std::vector<uint8_t> Sequence[TRACKS_COUNT];
-
-extern const Sequence* sequences[];
-
-extern uint8_t active_sequence;
-extern uint8_t current_step;
+extern const uint8_t* sequences[];
+extern const uint8_t sequences_length[];
 extern uint32_t sample_counter;
 extern uint32_t samples_per_step;
+
+extern const uint8_t* first_trigger;
+extern const uint8_t* last_trigger;
+extern const uint8_t* current_trigger;
 
 
 // inline
@@ -31,8 +27,6 @@ void sequencer_set_sequence(uint8_t sequenceNumber);
 __attribute__((always_inline)) inline
 void sequencer_init()
 {
-    active_sequence = 0;
-    current_step = 0;
     sample_counter = 0;
     sequencer_set_bpm(90);
     sequencer_set_sequence(0);
@@ -50,7 +44,9 @@ void sequencer_set_sequence(uint8_t sequenceNumber)
 {
     if (sequenceNumber < SEQUENCES_COUNT)
     {
-        active_sequence = sequenceNumber;
+        first_trigger = sequences[sequenceNumber];
+        last_trigger = first_trigger + sequences_length[sequenceNumber] * TRACKS_COUNT;
+        current_trigger = first_trigger;
     }
 }
 
@@ -58,26 +54,30 @@ __attribute__((always_inline)) inline
 void sequencer_tick()
 {
     sample_counter++;
-    if (sample_counter >= samples_per_step)
+
+    if (sample_counter < samples_per_step)
     {
-        sample_counter = 0;
+        return;
+    }
 
-        const Sequence& seq = *sequences[active_sequence];
+    sample_counter = 0;
 
-        for (int track = 0; track < TRACKS_COUNT; ++track)
+    for (int track = 0; track < TRACKS_COUNT; ++track)
+    {
+        int current_velocity = *(current_trigger++);
+
+        if (current_velocity > 0)
         {
-            if (seq[track][current_step] > 0)
-            {
-                drum_machine_play(track, seq[track][current_step]);
-            }
+            drum_machine_play(track, current_velocity);
         }
+    }
 
-        // Advance to the next step, wrapping around if necessary based on the number of steps in the sequence
-        current_step++;
-		if (current_step >= seq[0].size()) {
-			current_step = 0;
-		}
+    // Wrapping around based on the number of steps in the sequence
+    if (current_trigger == last_trigger)
+    {
+        current_trigger = first_trigger;
     }
 }
+
 
 #endif

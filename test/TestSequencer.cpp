@@ -7,7 +7,7 @@ int main()
 {
     sequencer_init();
     sequencer_set_bpm(300);
-    sequencer_set_sequence(5);
+    sequencer_set_sequence(6);
 
 
     const int frameCount = 1000000000;
