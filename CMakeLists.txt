@@ -101,6 +101,15 @@ add_executable(WaveOrganTest ${SOURCE_WAVE_ORGAN_TEST} ${SOURCE_WAVE_ORGAN})
 target_include_directories(WaveOrganTest PRIVATE ${PROJECT_SOURCE_DIR}/include)
 
 
+# WaveOrgan test
+set (SOURCE_SEQUENCER_TEST
+  test/TestSequencer.cpp
+)
+add_executable(SequencerTest ${SOURCE_SEQUENCER_TEST} ${SOURCE_DRUM_MACHINE})
+target_include_directories(SequencerTest PRIVATE ${PROJECT_SOURCE_DIR}/include)
+
+
+
 if(WIN32)
   target_link_libraries(SynthTest winmm)
 
