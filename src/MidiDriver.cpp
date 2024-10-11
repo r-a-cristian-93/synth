@@ -22,8 +22,8 @@ void decode_message(double deltatime, std::vector<unsigned char> *buffer, void *
     // Nanomidi does not read from std::vector so send the address of the first element
     midi_istream_from_buffer(&istream, &buffer->at(0), nBytes);
     struct midi_message *message = midi_decode(&istream);
-    print_msg(message);
-    printf("%d", message->channel);
+    // print_msg(message);
+    // printf("%d", message->channel);
 
     switch (message->type)
     {

@@ -1,6 +1,7 @@
 #include <WaveOrgan/WaveOrgan.h>
 
 LPF lpf = {};
+SoftClip softClip = {};
 
 float wav_phase[MIDI_NOTES_COUNT] = {0};
 float wav_phaseIncrement[MIDI_NOTES_COUNT] = {0};

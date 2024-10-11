@@ -10,10 +10,6 @@
 #endif
 
 #include <cstdint>
-
-constexpr uint8_t VOICES_COUNT = 5;
-
-#include <cstdint>
 #include <math.h>
 #include <WaveOrgan/orchestra/flute4.h>
 #include <WaveOrgan/orchestra/flute8.h>
@@ -28,6 +24,8 @@ constexpr uint8_t VOICES_COUNT = 5;
 #include <WaveOrgan/effects/harpsi.h>
 #include <WaveOrgan/effects/bells.h>
 #include <WaveOrgan/effects/synth.h>
+#include <WaveOrgan/SoftClip.h>
+#include <iostream>
 
 struct LPF {
     int32_t output = 0.0;
@@ -42,6 +40,7 @@ struct LPF {
 };
 
 extern LPF lpf;
+extern SoftClip softClip;
 
 extern float wav_phase[MIDI_NOTES_COUNT];
 extern float wav_phaseIncrement[MIDI_NOTES_COUNT];
@@ -61,7 +60,8 @@ void fill_voice_combinations();
 void fill_effect_combinations();
 
 
-__attribute__((always_inline)) inline int32_t wave_organ_generate_sample()
+__attribute__((always_inline)) inline
+int32_t wave_organ_generate_sample()
 {
 	int32_t sample = 0;
 
@@ -72,10 +72,10 @@ __attribute__((always_inline)) inline int32_t wave_organ_generate_sample()
 
         if (wav_notes[noteIndex].state != ADSR_RELEASE) {
             // organ
-            sample += (wav_active_voice[(uint16_t) wav_phase[noteIndex]] * wav_orchestra_volume);
+            sample += (wav_active_voice[(uint16_t) wav_phase[noteIndex]] * 127);
 
             // bass
-            sample += (wav_bass[(uint16_t) wav_phase[noteIndex]] * wav_bass_volume);
+            sample += (wav_bass[(uint16_t) wav_phase[noteIndex]]);
         }
 
         // piano
@@ -100,7 +100,20 @@ __attribute__((always_inline)) inline int32_t wave_organ_generate_sample()
 
     //   voice * vol * inst * keys
     // ( 32767 * 127 *  3   *  20 ) >> 13 = 30479
-	return sample >> 13;
+    sample = sample >> 8;
+
+    if (sample > 48780)
+    {
+        std::cout << "b " << sample << std::endl;
+    }
+
+    sample = SoftClip_ProcessSample(&softClip, sample);
+
+    if (sample > 32767)
+    {
+        std::cout << sample << std::endl;
+    }
+	return sample;
 }
 
 __attribute__((always_inline)) inline
@@ -116,6 +129,8 @@ void wave_organ_init()
     fill_effect_combinations();
     wave_organ_set_voice(1);
     wave_organ_set_effect(1);
+
+    SoftClip_Init(&softClip, 65536, 2047, 2.0);
 }
 
 __attribute__((always_inline)) inline

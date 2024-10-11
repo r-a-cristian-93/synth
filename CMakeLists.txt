@@ -50,6 +50,7 @@ set (SOURCE_FM_SYNTH
 set (SOURCE_WAVE_ORGAN
   include/WaveOrgan/WaveOrgan.cpp
   include/WaveOrgan/Envelope.cpp
+  include/WaveOrgan/SoftClip.cpp
 )
 
 set (SOURCE_DRUM_MACHINE
