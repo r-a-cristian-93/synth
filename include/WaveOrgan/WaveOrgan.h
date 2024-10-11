@@ -25,7 +25,6 @@
 #include <WaveOrgan/effects/bells.h>
 #include <WaveOrgan/effects/synth.h>
 #include <WaveOrgan/SoftClip.h>
-#include <iostream>
 
 struct LPF {
     int32_t output = 0.0;
@@ -72,15 +71,15 @@ int32_t wave_organ_generate_sample()
 
         if (wav_notes[noteIndex].state != ADSR_RELEASE) {
             // organ
-            sample += (wav_active_voice[(uint16_t) wav_phase[noteIndex]] * 127);
+            sample += (wav_active_voice[(uint16_t) wav_phase[noteIndex]] * wav_orchestra_volume);
 
             // bass
-            sample += (wav_bass[(uint16_t) wav_phase[noteIndex]]);
+            sample += (wav_bass[(uint16_t) wav_phase[noteIndex]] * wav_bass_volume);
         }
 
         // piano
-		float envelopeAmpl = envelope_get_amplitude(&wav_notes[noteIndex]) * 127;
-        sample += (int32_t)((float)wav_active_effect[(uint16_t) wav_phase[noteIndex]] * envelopeAmpl);
+		float envelopeAmpl = envelope_get_amplitude(&wav_notes[noteIndex]);
+        sample += (int32_t)((float)wav_active_effect[(uint16_t) wav_phase[noteIndex]] * envelopeAmpl * wav_orchestra_volume);
 
         // lpf
         sample = lpf.getSample(sample);
@@ -101,18 +100,8 @@ int32_t wave_organ_generate_sample()
     //   voice * vol * inst * keys
     // ( 32767 * 127 *  3   *  20 ) >> 13 = 30479
     sample = sample >> 8;
-
-    if (sample > 48780)
-    {
-        std::cout << "b " << sample << std::endl;
-    }
-
     sample = SoftClip_ProcessSample(&softClip, sample);
 
-    if (sample > 32767)
-    {
-        std::cout << sample << std::endl;
-    }
 	return sample;
 }
 

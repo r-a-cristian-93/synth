@@ -92,11 +92,14 @@ void fill_effect_combinations()
 
 void wave_organ_set_voice(uint8_t voiceIndex)
 {
-    wav_active_voice = voice_lut[voiceIndex];
+	if (voiceIndex < 32)
+		wav_active_voice = voice_lut[voiceIndex];
 }
 
 void wave_organ_set_effect(uint8_t effectIndex)
 {
-    wav_active_effect = effect_lut[effectIndex];
+	if (effectIndex < 32)
+		wav_active_effect = effect_lut[effectIndex];
 }
+
 
