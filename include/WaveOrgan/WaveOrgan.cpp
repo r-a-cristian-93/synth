@@ -1,7 +1,6 @@
 #include <WaveOrgan/WaveOrgan.h>
 
 LPF lpf = {};
-SoftClip softClip = {};
 
 float wav_phase[MIDI_NOTES_COUNT] = {0};
 float wav_phaseIncrement[MIDI_NOTES_COUNT] = {0};
@@ -44,8 +43,7 @@ void fill_voice_combinations()
                 voice_on_flute4 +
                 voice_on_clarinet +
                 voice_on_trumpet +
-                voice_on_violin +
-                1
+                voice_on_violin
             );
 
             voice_lut[mask][lutIndex] = sample;
@@ -81,8 +79,7 @@ void fill_effect_combinations()
                 effect_on_piano +
                 effect_on_harpsi +
                 effect_on_bells +
-                effect_on_synth +
-                1
+                effect_on_synth
             );
 
             effect_lut[mask][lutIndex] = sample;

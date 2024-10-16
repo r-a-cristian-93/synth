@@ -22,7 +22,7 @@ void generate_sine_table_lfo()
 {
     for (int i = 0; i < LUT_SIZE; i++)
     {
-        sine_table_lfo[i] = (sine_table[i] + MAX_AMPLITUDE) * 0.5;
+        sine_table_lfo[i] = ((int32_t)sine_table[i] + MAX_AMPLITUDE) * 0.5;
     }
 }
 

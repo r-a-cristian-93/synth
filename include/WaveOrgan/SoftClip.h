@@ -4,13 +4,13 @@
 #include <cstdint>
 #include <math.h>
 
+#define MAX_INPUT_VALUE (65535)
+
 struct SoftClip {
-    int32_t* table = nullptr;
-    int32_t tableSize = 0;
-    int32_t threshold = 0;
+    int16_t table[MAX_INPUT_VALUE + 1] = {0};
 };
 
-void SoftClip_Init(SoftClip* softClip, int32_t maxValue, int32_t minValue, int32_t ratio);
+void SoftClip_Init(SoftClip* softClip, int32_t threshold, int32_t ratio);
 
 int32_t SoftClip_ProcessSample(SoftClip* softClip, int32_t sample);
 

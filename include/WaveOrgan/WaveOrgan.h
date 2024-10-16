@@ -28,18 +28,18 @@
 
 struct LPF {
     int32_t output = 0.0;
-    uint8_t alpha = 110;
+    int32_t alpha = 110;
 
     int32_t getSample(int32_t input) {
 
-        output = ((127 - alpha) * input + alpha * output) >> 7;
+        output = (127 - alpha) * input + alpha * output;
+        output = output >> 7;
 
         return output;
     }
 };
 
 extern LPF lpf;
-extern SoftClip softClip;
 
 extern float wav_phase[MIDI_NOTES_COUNT];
 extern float wav_phaseIncrement[MIDI_NOTES_COUNT];
@@ -81,9 +81,6 @@ int32_t wave_organ_generate_sample()
 		float envelopeAmpl = envelope_get_amplitude(&wav_notes[noteIndex]);
         sample += (int32_t)((float)wav_active_effect[(uint16_t) wav_phase[noteIndex]] * envelopeAmpl * wav_orchestra_volume);
 
-        // lpf
-        sample = lpf.getSample(sample);
-
 		wav_phase[noteIndex] += wav_phaseIncrement[noteIndex];
 
         while (wav_phase[noteIndex] >= LUT_SIZE)
@@ -99,8 +96,11 @@ int32_t wave_organ_generate_sample()
 
     //   voice * vol * inst * keys
     // ( 32767 * 127 *  3   *  20 ) >> 13 = 30479
-    sample = sample >> 8;
-    sample = SoftClip_ProcessSample(&softClip, sample);
+	// ( 32767 * 127 *  3   *  10 ) >> 12 = 30479
+    sample = sample >> 10;
+
+    // lpf
+    sample = lpf.getSample(sample);
 
 	return sample;
 }
@@ -118,8 +118,6 @@ void wave_organ_init()
     fill_effect_combinations();
     wave_organ_set_voice(1);
     wave_organ_set_effect(1);
-
-    SoftClip_Init(&softClip, 65536, 2047, 2.0);
 }
 
 __attribute__((always_inline)) inline

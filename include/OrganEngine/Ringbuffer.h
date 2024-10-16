@@ -1,6 +1,9 @@
 #ifndef __RINGBUFFER_H
 #define __RINGBUFFER_H
 
+// From BerVibrato
+// https://github.com/Bershov/Vibrato-effect/tree/master
+
 #ifdef _MSC_VER
 #define INLINE __forceinline
 #else
@@ -10,9 +13,10 @@
 #include <vector>
 #include <cstdint>
 
-// Hermite polynomial interpolation. More points - better response at high frequencies
+// Hermite polynomial interpolation.
+// More points - better response at high frequencies
 __attribute__((always_inline)) inline
-int16_t getSampleHermite4p3o(float x, int16_t *y)
+int32_t getSampleHermite4p3o(float x, int32_t *y)
 {
     static float c0, c1, c2, c3;
 
@@ -21,7 +25,7 @@ int16_t getSampleHermite4p3o(float x, int16_t *y)
     c1 = (1.0/2.0)*((float)y[2]-(float)y[0]);
     c2 = ((float)y[0] - (5.0/2.0)*(float)y[1]) + (2.0*(float)y[2] - (1.0/2.0)*(float)y[3]);
     c3 = (1.0/2.0)*((float)y[3]-(float)y[0]) + (3.0/2.0)*((float)y[1]-(float)y[2]);
-    return (int16_t) (((c3*x+c2)*x+c1)*x+c0);
+    return (int32_t) (((c3*x+c2)*x+c1)*x+c0);
 }
 
 class RingBuffer
@@ -30,8 +34,8 @@ public:
 	RingBuffer();
 
     void write(float sample);
-    void write_margined(int16_t sample);
-    int16_t readWithDelay(int delay);
+    void write_margined(int32_t sample);
+    int32_t readWithDelay(int delay);
 	void resize(int size);
 
 public:
@@ -51,7 +55,7 @@ public:
     }
 
 private:
-	std::vector<int16_t>  buffer;
+	std::vector<int32_t>  buffer;
 	int                 writeIndex;
 	int                 size;
 
