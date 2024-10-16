@@ -106,21 +106,6 @@ int32_t wave_organ_generate_sample()
 }
 
 __attribute__((always_inline)) inline
-void wave_organ_init()
-{
-	for (int i = 0; i < MIDI_NOTES_COUNT; i++)
-	{
-		wav_frequency[i] = 110.0 * pow(2.0, ((i - 21) / 12.0));
-        wav_phaseIncrement[i] = wav_frequency[i]  * ((float)LUT_SIZE / 44100.0) ;
-	}
-
-    fill_voice_combinations();
-    fill_effect_combinations();
-    wave_organ_set_voice(1);
-    wave_organ_set_effect(1);
-}
-
-__attribute__((always_inline)) inline
 void wav_organ_note_on(uint8_t midiNote) {
     wav_notes[midiNote - 36].state = ADSR_ATTACK;
 }
@@ -145,6 +130,21 @@ void wave_organ_set_lpf(uint8_t alpha) {
     lpf.alpha = alpha;
 }
 
+__attribute__((always_inline)) inline
+void wave_organ_init()
+{
+	for (int i = 0; i < MIDI_NOTES_COUNT; i++)
+	{
+		wav_frequency[i] = 110.0 * pow(2.0, ((i - 21) / 12.0));
+        wav_phaseIncrement[i] = wav_frequency[i]  * ((float)LUT_SIZE / 44100.0) ;
+	}
 
+    fill_voice_combinations();
+    fill_effect_combinations();
+    wave_organ_set_voice(0);
+    wave_organ_set_effect(1);
+    wave_organ_set_bass_volume(0);
+    envelope_set_release_rate(0);
+}
 
 #endif

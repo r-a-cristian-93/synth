@@ -9,6 +9,7 @@
 #include <OrganEngine/MidiManager.h>
 #include <FmSynth/FmSynth.h>
 #include <WaveOrgan/WaveOrgan.h>
+#include <WaveOrgan/Envelope.h>
 #include <OrganEngine/RotarySpeaker.h>
 #include <DrumMachine/DrumMachine.h>
 
@@ -22,8 +23,8 @@ void decode_message(double deltatime, std::vector<unsigned char> *buffer, void *
     // Nanomidi does not read from std::vector so send the address of the first element
     midi_istream_from_buffer(&istream, &buffer->at(0), nBytes);
     struct midi_message *message = midi_decode(&istream);
-    // print_msg(message);
-    // printf("%d", message->channel);
+    print_msg(message);
+    printf("%d", message->channel);
 
     switch (message->type)
     {
@@ -97,6 +98,11 @@ void decode_message(double deltatime, std::vector<unsigned char> *buffer, void *
 
         if (controller == 92) {
             rotary_speaker_set_speed(value);
+        }
+
+        if (controller == 64)
+        {
+            envelope_set_release_rate(value);
         }
 
         // if (controller == MIDI_CC_VIBRATO_FAST)

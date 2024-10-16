@@ -1,6 +1,8 @@
 #ifndef ENVELOPE_ADSR_H
 #define ENVELOPE_ADSR_H
 
+#include <cstdint>
+
 enum ADSR_STATE
 {
     ADSR_IDLE = 0,
@@ -19,8 +21,6 @@ struct Envelope
 struct EnvelopeSettings
 {
     float attackRate;
-    float decayRate;
-    float sustainLevel;
     float releaseRate;
 };
 
@@ -30,5 +30,6 @@ void envelope_initialize();
 float envelope_get_amplitude(Envelope *envelope);
 void envelope_note_on(Envelope *envelope);
 void envelope_note_off(Envelope *envelope);
+void envelope_set_release_rate(uint8_t midiParam);
 
 #endif

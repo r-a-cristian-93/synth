@@ -1,7 +1,7 @@
 #include "Envelope.h"
 
 #ifndef SAMPLE_RATE
-#define SAMPLE_RATE (44100)
+#define SAMPLE_RATE (44100.0)
 #endif
 
 #ifndef MAX_AMPLITUDE
@@ -12,13 +12,14 @@
 #define MIN_AMPLITUDE (0.0)
 #endif
 
+#define MIN_RELEASE_RATE (20.0)
+#define MAX_RELEASE_RATE (0.3)
+
 EnvelopeSettings envelope_settings;
 
 void envelope_initialize() {
-    envelope_settings.attackRate = 50.0 / SAMPLE_RATE;
-    envelope_settings.decayRate = 0.4 / SAMPLE_RATE;
-    envelope_settings.releaseRate = 5.0 / SAMPLE_RATE;
-    envelope_settings.sustainLevel = 0.0;
+    envelope_settings.attackRate = 100.0 / SAMPLE_RATE;
+    envelope_settings.releaseRate = MIN_RELEASE_RATE / SAMPLE_RATE;
 }
 
 float envelope_get_amplitude(Envelope* envelope)
@@ -34,9 +35,9 @@ float envelope_get_amplitude(Envelope* envelope)
             }
             break;
         case ADSR_DECAY:
-            envelope->amplitudeValue -= envelope_settings.decayRate;
-            if (envelope->amplitudeValue <= envelope_settings.sustainLevel) {
-                envelope->amplitudeValue = envelope_settings.sustainLevel;
+            envelope->amplitudeValue -= envelope_settings.releaseRate;
+            if (envelope->amplitudeValue <= MIN_AMPLITUDE) {
+                envelope->amplitudeValue = MIN_AMPLITUDE;
                 envelope->state = ADSR_SUSTAIN;
             }
             break;
@@ -48,6 +49,9 @@ float envelope_get_amplitude(Envelope* envelope)
                 envelope->amplitudeValue = MIN_AMPLITUDE;
                 envelope->state = ADSR_IDLE;
             }
+            break;
+        default:
+            break;
     }
 
     return envelope->amplitudeValue;
@@ -61,4 +65,11 @@ void envelope_note_on(Envelope* envelope)
 void envelope_note_off(Envelope* envelope)
 {
     envelope->state = ADSR_RELEASE;
+}
+
+#include <math.h>
+#include <iostream>
+void envelope_set_release_rate(uint8_t midiParam)
+{
+    envelope_settings.releaseRate = (((float)midiParam  / 127.0 * (MAX_RELEASE_RATE - MIN_RELEASE_RATE)) + MIN_RELEASE_RATE) /  SAMPLE_RATE;
 }
